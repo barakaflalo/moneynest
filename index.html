@@ -333,6 +333,52 @@ body.lang-en .field input,body.lang-en .field textarea{direction:ltr;}
   </div>
 </div>
 
+<div class="popup-overlay" id="popup-edit">
+  <div class="popup" style="max-width:360px;width:100%;max-height:85vh;overflow-y:auto;">
+    <div class="popup-title he">✏️ עריכת הוצאה</div>
+    <div class="popup-title en">✏️ Edit Expense</div>
+    <div style="margin-bottom:10px;">
+      <div style="font-size:9px;color:var(--muted);margin-bottom:4px;" class="he">סכום</div>
+      <div style="font-size:9px;color:var(--muted);margin-bottom:4px;" class="en">Amount</div>
+      <input id="edit-amount" type="number" class="popup-inp" style="margin-bottom:0;" placeholder="0"/>
+    </div>
+    <div style="margin-bottom:10px;">
+      <div style="font-size:9px;color:var(--muted);margin-bottom:4px;" class="he">תיאור</div>
+      <div style="font-size:9px;color:var(--muted);margin-bottom:4px;" class="en">Description</div>
+      <input id="edit-desc" type="text" class="popup-inp" style="margin-bottom:0;" placeholder="תיאור..."/>
+    </div>
+    <div style="margin-bottom:10px;">
+      <div style="font-size:9px;color:var(--muted);margin-bottom:4px;" class="he">תאריך</div>
+      <div style="font-size:9px;color:var(--muted);margin-bottom:4px;" class="en">Date</div>
+      <input id="edit-date" type="date" class="popup-inp" style="margin-bottom:0;"/>
+    </div>
+    <div style="margin-bottom:10px;">
+      <div style="font-size:9px;color:var(--muted);margin-bottom:4px;" class="he">סוג הוצאה</div>
+      <div style="font-size:9px;color:var(--muted);margin-bottom:4px;" class="en">Type</div>
+      <div style="display:flex;gap:6px;">
+        <button class="rep-btn on" id="edit-type-var" onclick="setEditType('var')"><span class="he">רגילה</span><span class="en">Regular</span></button>
+        <button class="rep-btn" id="edit-type-fix" onclick="setEditType('fix')"><span class="he">קבועה</span><span class="en">Fixed</span></button>
+        <button class="rep-btn" id="edit-type-inst" onclick="setEditType('inst')"><span class="he">תשלומים</span><span class="en">Installments</span></button>
+      </div>
+    </div>
+    <div style="margin-bottom:10px;">
+      <div style="font-size:9px;color:var(--muted);margin-bottom:4px;" class="he">אמצעי תשלום</div>
+      <div style="font-size:9px;color:var(--muted);margin-bottom:4px;" class="en">Payment</div>
+      <select id="edit-payment" class="popup-inp" style="margin-bottom:0;">
+        <option class="he">אשראי</option><option class="en">Credit</option>
+        <option class="he">מזומן</option><option class="en">Cash</option>
+        <option>Bit</option><option>PayBox</option>
+        <option class="he">אחר</option><option class="en">Other</option>
+      </select>
+    </div>
+    <div class="popup-btns" style="margin-top:10px;">
+      <button class="popup-ok" onclick="saveEditExpense()"><span class="he">✓ שמור</span><span class="en">✓ Save</span></button>
+      <button class="popup-cancel" style="border-color:var(--red);color:var(--red);" onclick="deleteEditExpense()"><span class="he">🗑️ מחק</span><span class="en">🗑️ Delete</span></button>
+    </div>
+    <button class="popup-cancel" style="width:100%;margin-top:8px;" onclick="closePopup('popup-edit')"><span class="he">ביטול</span><span class="en">Cancel</span></button>
+  </div>
+</div>
+
 <div class="popup-overlay" id="popup-confirm">
   <div class="popup" style="border-color:var(--red);">
     <div class="popup-title" style="color:var(--red);" class="he">⚠️ אישור מחיקה</div>
@@ -410,6 +456,7 @@ body.lang-en .field input,body.lang-en .field textarea{direction:ltr;}
     </div>
     <div class="topbar-actions">
       <button class="icon-btn" onclick="toggleLang()">EN|עב</button>
+      <button class="icon-btn" onclick="showScreen('screen-themes')" title="עיצוב">🎨</button>
       <button class="icon-btn" onclick="showScreen('screen-settings')">⚙️</button>
     </div>
   </div>
@@ -703,6 +750,13 @@ body.lang-en .field input,body.lang-en .field textarea{direction:ltr;}
     <div style="width:60px;"></div>
   </div>
   <div class="content">
+    <div class="period-row" style="margin-bottom:12px;">
+      <button class="period-btn on" onclick="selHistoryPeriod(this,'all')"><span class="he">הכל</span><span class="en">All</span></button>
+      <button class="period-btn" onclick="selHistoryPeriod(this,'today')"><span class="he">היום</span><span class="en">Today</span></button>
+      <button class="period-btn" onclick="selHistoryPeriod(this,'week')"><span class="he">שבוע</span><span class="en">Week</span></button>
+      <button class="period-btn" onclick="selHistoryPeriod(this,'month')"><span class="he">חודש</span><span class="en">Month</span></button>
+      <button class="period-btn" onclick="selHistoryPeriod(this,'3months')"><span class="he">3 חודשים</span><span class="en">3 Months</span></button>
+    </div>
     <div id="history-list"><!-- נמולא דינמית --></div>
   </div>
 </div>
@@ -732,6 +786,7 @@ body.lang-en .field input,body.lang-en .field textarea{direction:ltr;}
       <div class="btn-info"><span class="btn-title he">העלה מהגלריה</span><span class="btn-title en">Upload from Gallery</span></div>
     </button>
     <input type="file" id="receipt-input" accept="image/*" style="display:none;" onchange="handleReceiptUpload(this)">
+<input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none;" onchange="handleReceiptUpload(this)">
   </div>
 </div>
 
@@ -808,6 +863,28 @@ body.lang-en .field input,body.lang-en .field textarea{direction:ltr;}
       </button>
     </div>
     <div id="budget-by-cat"><!-- נמולא דינמית --></div>
+
+    <!-- הכנסות חודשיות -->
+    <div class="card" style="border-color:var(--accent);margin-top:6px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <span class="section-label he" style="margin:0;">💵 הכנסות חודשיות</span>
+        <span class="section-label en" style="margin:0;">💵 Monthly Income</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:10px;color:var(--muted);" class="he">הצג בדוחות</span>
+          <span style="font-size:10px;color:var(--muted);" class="en">Show in reports</span>
+          <div class="toggle" id="income-toggle" onclick="toggleIncomeReports()"></div>
+        </div>
+      </div>
+      <div id="income-list" style="margin-bottom:10px;"><!-- נמולא דינמית --></div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input id="income-name" class="popup-inp" style="flex:1;margin:0;padding:9px;" placeholder='מקור הכנסה...'/>
+        <input id="income-amount" type="number" class="popup-inp" style="width:90px;margin:0;padding:9px;" placeholder="סכום"/>
+      </div>
+      <button class="btn primary" onclick="addIncome()" style="margin:0;">
+        <span class="btn-ic">➕</span>
+        <span class="he">הוסף הכנסה</span><span class="en">Add Income</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -870,6 +947,20 @@ body.lang-en .field input,body.lang-en .field textarea{direction:ltr;}
       </div>
     </div>
     <div class="settings-group">
+      <span class="settings-title he">👤 שם משתמש</span>
+      <span class="settings-title en">👤 USERNAME</span>
+      <div class="field" style="border-color:var(--accent);">
+        <span class="field-ic">👤</span>
+        <div class="field-info">
+          <span class="field-lbl he">שם שיופיע בשיתוף ובדוחות</span>
+          <span class="field-lbl en">Name shown in shares & reports</span>
+          <input id="username-inp" type="text" placeholder="למשל: ברק / משפחת כהן..." style="width:100%;background:transparent;border:none;color:var(--text);font-size:13px;font-weight:600;outline:none;"/>
+        </div>
+        <button onclick="saveUserName()" style="background:none;border:none;color:var(--accent);font-size:18px;cursor:pointer;">✓</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
       <span class="settings-title he">📖 מדריך</span>
       <span class="settings-title en">📖 GUIDE</span>
       <button class="btn" onclick="showGuide()">
@@ -893,6 +984,46 @@ body.lang-en .field input,body.lang-en .field textarea{direction:ltr;}
         <span class="btn-ic">🗑️</span>
         <div class="btn-info"><span class="btn-title he">מחק את כל הנתונים</span><span class="btn-title en">Delete All Data</span><span class="btn-sub he">פעולה בלתי הפיכה!</span><span class="btn-sub en">Irreversible action!</span></div>
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN: THEMES ====================-->
+<div class="screen" id="screen-themes">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('screen-home')"><span class="he">← חזרה</span><span class="en">← Back</span></button>
+    <div class="logo-text he">🎨 עיצוב וצבעים</div>
+    <div class="logo-text en">🎨 Theme & Colors</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div class="content">
+    <span class="section-label he">🎨 בחר עיצוב</span>
+    <span class="section-label en">🎨 Choose Theme</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div onclick="setTheme('green')" style="border-radius:14px;padding:18px;border:3px solid #1a9e5c;background:#0a1a0a;cursor:pointer;text-align:center;box-shadow:0 0 14px rgba(26,158,92,0.3);">
+        <div style="font-size:28px;margin-bottom:8px;">🟢</div>
+        <div style="font-size:13px;font-weight:700;color:#1a9e5c;" class="he">ירוק (ברירת מחדל)</div>
+        <div style="font-size:13px;font-weight:700;color:#1a9e5c;" class="en">Green (default)</div>
+      </div>
+      <div onclick="setTheme('gold')" style="border-radius:14px;padding:18px;border:3px solid #d4a853;background:#0a0a0a;cursor:pointer;text-align:center;box-shadow:0 0 14px rgba(212,168,83,0.3);">
+        <div style="font-size:28px;margin-bottom:8px;">🟡</div>
+        <div style="font-size:13px;font-weight:700;color:#d4a853;" class="he">שחור + זהב</div>
+        <div style="font-size:13px;font-weight:700;color:#d4a853;" class="en">Black + Gold</div>
+      </div>
+      <div onclick="setTheme('blue')" style="border-radius:14px;padding:18px;border:3px solid #3a7bd5;background:#0a0f1a;cursor:pointer;text-align:center;box-shadow:0 0 14px rgba(58,123,213,0.3);">
+        <div style="font-size:28px;margin-bottom:8px;">🔵</div>
+        <div style="font-size:13px;font-weight:700;color:#3a7bd5;" class="he">כחול כהה</div>
+        <div style="font-size:13px;font-weight:700;color:#3a7bd5;" class="en">Dark Blue</div>
+      </div>
+      <div onclick="setTheme('light')" style="border-radius:14px;padding:18px;border:3px solid #534AB7;background:#f8f8fc;cursor:pointer;text-align:center;box-shadow:0 0 14px rgba(83,74,183,0.2);">
+        <div style="font-size:28px;margin-bottom:8px;">⚪</div>
+        <div style="font-size:13px;font-weight:700;color:#534AB7;" class="he">בהיר + סגול</div>
+        <div style="font-size:13px;font-weight:700;color:#534AB7;" class="en">Light + Purple</div>
+      </div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:11px;color:var(--muted);" class="he">העיצוב הנבחר נשמר אוטומטית</div>
+      <div style="font-size:11px;color:var(--muted);" class="en">Selected theme is auto-saved</div>
     </div>
   </div>
 </div>
@@ -1023,6 +1154,12 @@ function init(){
   }else{
     showScreen('screen-home');
   }
+  // אתחל שם משתמש
+  var uninp = document.getElementById('username-inp');
+  if(uninp && DB.settings.userName) uninp.value = DB.settings.userName;
+  // אתחל toggle הכנסות
+  var itoggle = document.getElementById('income-toggle');
+  if(itoggle) itoggle.className = 'toggle'+(DB.settings.showIncomeInReports?' on':'');
 }
 
 // ==================== SCREENS ====================
@@ -1035,6 +1172,7 @@ function showScreen(id){
   if(id==='screen-history') renderHistory();
   if(id==='screen-receipts') renderReceipts();
   if(id==='screen-home') updateHomeStats();
+  if(id==='screen-budget') renderIncome();
 }
 
 // ==================== LANG ====================
@@ -1311,14 +1449,18 @@ function renderExpenses(){
       }).join('')+'</div>':'';
     var typeBadge=e.type==='fix'?'<span style="font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid var(--blue);color:var(--blue);background:var(--blue-dim);" class="he">קבועה</span><span style="font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid var(--blue);color:var(--blue);background:var(--blue-dim);" class="en">Fixed</span>':
       e.type==='inst'?'<span style="font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid var(--gold);color:var(--gold);background:var(--gold-dim);">'+e.instPaid+'/'+e.instCount+'</span>':'';
-    return '<div class="card" style="border-color:'+e.catColor+'33;">' +
+    return '<div class="card" style="border-color:'+e.catColor+'33;" oncontextmenu="editExpense('+e.id+');return false;" id="exp-'+e.id+'" ontouchstart="startLongPress('+e.id+')" ontouchend="cancelLongPress()" ontouchmove="cancelLongPress()">' +
       '<div style="display:flex;align-items:center;gap:10px;">' +
         '<span style="font-size:22px;">'+e.catIc+'</span>' +
         '<div style="flex:1;">' +
           '<div style="font-size:13px;font-weight:700;color:var(--text);">'+e.desc+'</div>' +
           '<div style="font-size:10px;color:var(--muted);margin-top:2px;">'+e.date+' · '+e.payment+' '+typeBadge+'</div>' +
         '</div>' +
-        '<div style="font-size:15px;font-weight:700;color:var(--red);">-₪'+e.amount.toLocaleString()+'</div>' +
+        '<div style="text-align:left;">' +
+          '<div style="font-size:15px;font-weight:700;color:var(--red);">-₪'+e.amount.toLocaleString()+'</div>' +
+          '<div style="font-size:9px;color:var(--muted);text-align:center;cursor:pointer;" onclick="editExpense('+e.id+')" class="he">✏️ ערוך</div>' +
+          '<div style="font-size:9px;color:var(--muted);text-align:center;cursor:pointer;" onclick="editExpense('+e.id+')" class="en">✏️ Edit</div>' +
+        '</div>' +
       '</div>' +
       instProg +
     '</div>';
@@ -1336,11 +1478,12 @@ function selExpTab(el,tab){
 function renderHistory(){
   var el=document.getElementById('history-list');
   if(!el) return;
-  if(!DB.expenses.length){
-    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;" class="he">אין היסטוריה עדיין</div><div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;" class="en">No history yet</div>';
+  var filtered = getFilteredHistory ? getFilteredHistory() : DB.expenses;
+  if(!filtered.length){
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;" class="he">אין היסטוריה בתקופה זו</div><div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;" class="en">No history for this period</div>';
     return;
   }
-  el.innerHTML=DB.expenses.slice().reverse().map(function(e){
+  el.innerHTML=filtered.slice().reverse().map(function(e){
     return '<div class="card">' +
       '<div style="display:flex;align-items:center;gap:10px;">' +
         '<span style="font-size:22px;">'+e.catIc+'</span>' +
@@ -1384,7 +1527,7 @@ function renderReceipts(){
   el.innerHTML=html;
 }
 
-function takeReceipt(){document.getElementById('receipt-input').click();}
+function takeReceipt(){document.getElementById('camera-input').click();}
 function uploadReceipt(){document.getElementById('receipt-input').click();}
 function handleReceiptUpload(inp){
   if(!inp.files||!inp.files[0]) return;
@@ -1496,6 +1639,223 @@ function skipGuide(){
   DB.settings.firstTime=false;
   saveDB();
   showScreen('screen-home');
+}
+
+// ==================== EDIT EXPENSE ====================
+var editingId = null;
+var longPressTimer = null;
+
+function startLongPress(id){
+  longPressTimer = setTimeout(function(){editExpense(id);},600);
+}
+function cancelLongPress(){
+  if(longPressTimer) clearTimeout(longPressTimer);
+}
+
+function editExpense(id){
+  var exp = DB.expenses.find(function(e){return e.id===id;});
+  if(!exp) return;
+  editingId = id;
+  document.getElementById('edit-amount').value = exp.amount;
+  document.getElementById('edit-desc').value = exp.desc;
+  document.getElementById('edit-date').value = exp.date;
+  document.getElementById('edit-payment').value = exp.payment;
+  setEditType(exp.type||'var');
+  openPopup('popup-edit');
+}
+
+function setEditType(t){
+  ['var','fix','inst'].forEach(function(type){
+    var el=document.getElementById('edit-type-'+type);
+    if(el) el.className='rep-btn'+(t===type?' on':'');
+  });
+}
+
+function saveEditExpense(){
+  var exp = DB.expenses.find(function(e){return e.id===editingId;});
+  if(!exp) return;
+  exp.amount = parseFloat(document.getElementById('edit-amount').value)||exp.amount;
+  exp.desc = document.getElementById('edit-desc').value||exp.desc;
+  exp.date = document.getElementById('edit-date').value||exp.date;
+  exp.payment = document.getElementById('edit-payment').value||exp.payment;
+  var selType = document.querySelector('#popup-edit .rep-btn.on');
+  if(selType) exp.type = selType.id.replace('edit-type-','');
+  saveDB();
+  closePopup('popup-edit');
+  renderHistory();
+  renderExpenses();
+  updateHomeStats();
+  showToast(document.body.classList.contains('lang-en')?'✅ Saved!':'✅ נשמר!');
+}
+
+function deleteEditExpense(){
+  if(!editingId) return;
+  DB.expenses = DB.expenses.filter(function(e){return e.id!==editingId;});
+  saveDB();
+  closePopup('popup-edit');
+  renderHistory();
+  renderExpenses();
+  updateHomeStats();
+  showToast('🗑️ נמחק!');
+}
+
+// ==================== HISTORY FILTER ====================
+var historyPeriod = 'all';
+function selHistoryPeriod(el, period){
+  historyPeriod = period;
+  el.closest('.period-row').querySelectorAll('.period-btn').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+  renderHistory();
+}
+
+function getFilteredHistory(){
+  var now = new Date();
+  return DB.expenses.filter(function(e){
+    if(historyPeriod==='all') return true;
+    var d = new Date(e.date);
+    if(historyPeriod==='today'){
+      return d.toDateString()===now.toDateString();
+    }
+    if(historyPeriod==='week'){
+      var week = new Date(now); week.setDate(now.getDate()-7);
+      return d >= week;
+    }
+    if(historyPeriod==='month'){
+      return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    }
+    if(historyPeriod==='3months'){
+      var m3 = new Date(now); m3.setMonth(now.getMonth()-3);
+      return d >= m3;
+    }
+    return true;
+  });
+}
+
+// ==================== INCOME ====================
+function addIncome(){
+  var name = document.getElementById('income-name').value.trim();
+  var amount = parseFloat(document.getElementById('income-amount').value);
+  if(!name||!amount) return;
+  if(!DB.settings.incomes) DB.settings.incomes=[];
+  DB.settings.incomes.push({id:Date.now(),name:name,amount:amount});
+  saveDB();
+  renderIncome();
+  document.getElementById('income-name').value='';
+  document.getElementById('income-amount').value='';
+  showToast('✅ הכנסה נוספה!');
+}
+
+function deleteIncome(id){
+  if(!DB.settings.incomes) return;
+  DB.settings.incomes = DB.settings.incomes.filter(function(i){return i.id!==id;});
+  saveDB();
+  renderIncome();
+}
+
+function toggleIncomeReports(){
+  DB.settings.showIncomeInReports = !DB.settings.showIncomeInReports;
+  var t = document.getElementById('income-toggle');
+  if(t) t.className = 'toggle'+(DB.settings.showIncomeInReports?' on':'');
+  saveDB();
+}
+
+function renderIncome(){
+  var el = document.getElementById('income-list');
+  if(!el) return;
+  var incomes = DB.settings.incomes||[];
+  var total = incomes.reduce(function(s,i){return s+i.amount;},0);
+  if(!incomes.length){
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px;" class="he">אין הכנסות רשומות</div>';
+    return;
+  }
+  el.innerHTML = incomes.map(function(i){
+    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border2);">' +
+      '<span style="font-size:12px;color:var(--text);flex:1;font-weight:600;">'+i.name+'</span>' +
+      '<span style="font-size:13px;font-weight:700;color:var(--accent);">₪'+i.amount.toLocaleString()+'</span>' +
+      '<button style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;" onclick="deleteIncome('+i.id+')">🗑️</button>' +
+      '</div>';
+  }).join('') +
+  '<div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border);">' +
+    '<span style="font-size:11px;font-weight:700;color:var(--text);" class="he">סה"כ הכנסות</span>' +
+    '<span style="font-size:11px;font-weight:700;color:var(--text);" class="en">Total Income</span>' +
+    '<span style="font-size:14px;font-weight:700;color:var(--accent);">₪'+total.toLocaleString()+'</span>' +
+  '</div>';
+}
+
+// ==================== PDF REAL ====================
+function exportPDF(){
+  var exps = DB.expenses;
+  var total = exps.reduce(function(s,e){return s+e.amount;},0);
+  var rows = exps.map(function(e){
+    return '<tr><td>'+e.date+'</td><td>'+e.catIc+' '+e.desc+'</td><td>'+e.catName+'</td><td>'+e.payment+'</td><td style="color:#e05555;font-weight:bold;">₪'+e.amount.toLocaleString()+'</td></tr>';
+  }).join('');
+  var userName = DB.settings.userName||'MoneyNest';
+  var html = '<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>MoneyNest Report</title>' +
+    '<style>body{font-family:Arial,sans-serif;direction:rtl;padding:20px;color:#1a1a2e;}' +
+    'h1{color:#1a9e5c;}table{width:100%;border-collapse:collapse;margin-top:20px;}' +
+    'th{background:#1a9e5c;color:#fff;padding:10px;text-align:right;}' +
+    'td{padding:8px;border-bottom:1px solid #e0e0e0;}' +
+    '.total{background:#f0fff4;font-weight:bold;padding:12px;border-radius:8px;margin-top:14px;font-size:16px;}' +
+    '</style></head><body>' +
+    '<h1>💰 MoneyNest — דוח הוצאות</h1>' +
+    '<p>'+userName+' · '+new Date().toLocaleDateString('he-IL')+'</p>' +
+    '<table><thead><tr><th>תאריך</th><th>תיאור</th><th>קטגוריה</th><th>אמצעי תשלום</th><th>סכום</th></tr></thead>' +
+    '<tbody>'+rows+'</tbody></table>' +
+    '<div class="total">סה"כ הוצאות: ₪'+total.toLocaleString()+'</div>' +
+    '<p style="font-size:10px;color:#888;margin-top:20px;">נוצר על ידי MoneyNest — barakaflalo.github.io/moneynest</p>' +
+    '</body></html>';
+  var w = window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();setTimeout(function(){w.print();},500);}
+  else{showToast(document.body.classList.contains('lang-en')?'Allow popups for PDF':'אפשר popups להדפסת PDF');}
+}
+
+// ==================== EXCEL REAL ====================
+function exportExcel(){
+  var bom = '﻿';
+  var header = '"תאריך","תיאור","קטגוריה","סכום","אמצעי תשלום","סוג"
+';
+  var rows = DB.expenses.map(function(e){
+    return '"'+e.date+'","'+e.desc+'","'+e.catName+'","'+e.amount+'","'+e.payment+'","'+e.type+'"';
+  }).join('
+');
+  var csv = bom + header + rows;
+  var blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'moneynest_'+new Date().toISOString().split('T')[0]+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📊 CSV הורד!');
+}
+
+// ==================== EMAIL WITH RECEIPTS ====================
+function exportEmail(){
+  var userName = DB.settings.userName||'MoneyNest';
+  var exps = DB.expenses.slice(-20);
+  var total = exps.reduce(function(s,e){return s+e.amount;},0);
+  var body = userName+' — דוח הוצאות
+'+new Date().toLocaleDateString('he-IL')+'
+
+';
+  body += 'סה"כ: ₪'+total.toLocaleString()+'
+
+';
+  exps.forEach(function(e){body+=e.date+' | '+e.catIc+' '+e.desc+' | ₪'+e.amount+' | '+e.payment+'
+';});
+  body += '
+---
+נוצר על ידי MoneyNest';
+  window.location.href = 'mailto:?subject='+encodeURIComponent('MoneyNest — דוח הוצאות — '+userName)+'&body='+encodeURIComponent(body);
+}
+
+// ==================== USERNAME ====================
+function saveUserName(){
+  var val = document.getElementById('username-inp');
+  if(val&&val.value.trim()){
+    DB.settings.userName = val.value.trim();
+    saveDB();
+    showToast('✅ שם נשמר!');
+  }
 }
 
 // ==================== START ====================
