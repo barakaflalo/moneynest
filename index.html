@@ -1543,16 +1543,14 @@ function handleReceiptUpload(inp){
 }
 
 // ==================== EXPORT ====================
-function exportPDF(){showToast(document.body.classList.contains('lang-en')?'📄 Generating PDF...':'📄 מכין PDF...');}
-function exportExcel(){
-  var csv='תאריך,תיאור,קטגוריה,סכום,אמצעי תשלום\n';
-  DB.expenses.forEach(function(e){csv+=e.date+','+e.desc+','+e.catName+','+e.amount+','+e.payment+'\n';});
+
+);
   var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');a.href=url;a.download='moneynest_export.csv';a.click();
   showToast('📊 CSV הורד!');
 }
-function exportEmail(){window.location.href='mailto:?subject=MoneyNest Export&body='+encodeURIComponent('הוצאות מ-MoneyNest:\n\n'+DB.expenses.map(function(e){return e.date+' - '+e.desc+': ₪'+e.amount;}).join('\n'));}
+).join('\n'));}
 function exportDrive(){showToast(document.body.classList.contains('lang-en')?'🔵 Connect Google Drive in settings':'🔵 חבר Google Drive בהגדרות');}
 function exportShare(){
   var text='הוצאות מ-MoneyNest:\n'+DB.expenses.slice(-5).map(function(e){return e.date+' - '+e.desc+': ₪'+e.amount;}).join('\n');
