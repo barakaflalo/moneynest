@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="MoneyNest — יומן ניהול הוצאות חכם">
+<meta name="theme-color" content="#0a1a0a">
+<title>MoneyNest — יומן ניהול הוצאות</title>
+<link rel="manifest" href="manifest.json">
+<style>
+/* ===== RESET & BASE ===== */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0a1a0a;--bg2:#111a11;--bg3:#1a2a1a;--bg4:#222;
+  --accent:#1a9e5c;--accent2:#0d7a45;--accent-dim:rgba(26,158,92,0.12);--accent-border:rgba(26,158,92,0.3);
+  --gold:#d4a853;--gold-dim:rgba(212,168,83,0.12);--gold-border:rgba(212,168,83,0.3);
+  --blue:#3a7bd5;--blue-dim:rgba(58,123,213,0.12);--blue-border:rgba(58,123,213,0.3);
+  --red:#e05555;--red-dim:rgba(224,85,85,0.12);--red-border:rgba(224,85,85,0.3);
+  --text:#f0f0f0;--muted:#888;--muted2:#555;
+  --border:#333;--border2:#222;
+  --r:10px;--r2:14px;--r3:18px;
+}
+/* Light theme */
+body.theme-light{
+  --bg:#f8f9fa;--bg2:#fff;--bg3:#f0f0f8;--bg4:#e8e8f0;
+  --text:#1a1a2e;--muted:#666;--muted2:#aaa;--border:#e0e0ec;--border2:#eee;
+}
+/* Blue theme */
+body.theme-blue{
+  --bg:#0a0f1a;--bg2:#111a2a;--bg3:#1a2a3a;--bg4:#222;
+  --accent:#3a7bd5;--accent2:#2a5aaa;--accent-dim:rgba(58,123,213,0.12);--accent-border:rgba(58,123,213,0.3);
+}
+/* Gold theme */
+body.theme-gold{
+  --bg:#0a0a0a;--bg2:#1a1a1a;--bg3:#2a2a2a;--bg4:#333;
+  --accent:#d4a853;--accent2:#b8860b;--accent-dim:rgba(212,168,83,0.12);--accent-border:rgba(212,168,83,0.3);
+}
+
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;direction:rtl;}
+
+/* ===== SCREENS ===== */
+.screen{position:fixed;inset:0;background:var(--bg);overflow-y:auto;display:none;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ===== TOPBAR ===== */
+.topbar{background:var(--bg2);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--accent);position:sticky;top:0;z-index:50;flex-shrink:0;}
+.topbar-logo{display:flex;align-items:center;gap:10px;}
+.logo-text{font-size:18px;font-weight:900;color:var(--accent);}
+.logo-sub{font-size:9px;color:var(--muted);letter-spacing:1px;}
+.topbar-actions{display:flex;align-items:center;gap:8px;}
+.icon-btn{background:var(--bg3);border:2px solid var(--border);color:var(--text);border-radius:var(--r);padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;}
+.back-btn{background:var(--bg);border:2px solid var(--border);color:var(--text);border-radius:var(--r);padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;}
+
+/* ===== CONTENT ===== */
+.content{padding:14px;flex:1;}
+.section-label{font-size:11px;color:var(--text);font-weight:700;margin-bottom:8px;display:block;letter-spacing:0.5px;}
+
+/* ===== CARDS ===== */
+.card{background:var(--bg2);border-radius:var(--r2);padding:14px;margin-bottom:10px;border:2px solid var(--border);}
+.card.accent{border-color:var(--accent);box-shadow:0 0 14px var(--accent-dim);}
+.card.gold{border-color:var(--gold);box-shadow:0 0 14px var(--gold-dim);}
+.card.blue{border-color:var(--blue);box-shadow:0 0 14px var(--blue-dim);}
+.card.red{border-color:var(--red);}
+
+/* ===== BUTTONS ===== */
+.btn{width:100%;padding:13px;border-radius:var(--r2);border:2px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;font-weight:700;cursor:pointer;text-align:right;display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.btn.accent{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);}
+.btn.gold{border-color:var(--gold);background:var(--gold-dim);color:var(--gold);}
+.btn.blue{border-color:var(--blue);background:var(--blue-dim);color:var(--blue);}
+.btn.red{border-color:var(--red);background:var(--red-dim);color:var(--red);}
+.btn.primary{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);box-shadow:0 0 12px var(--accent-dim);}
+.btn-ic{font-size:20px;flex-shrink:0;}
+.btn-info{flex:1;}
+.btn-title{font-size:13px;font-weight:700;display:block;}
+.btn-sub{font-size:10px;opacity:0.7;margin-top:2px;display:block;}
+.btn-arr{font-size:14px;color:var(--muted);}
+
+.save-btn{width:100%;padding:15px;border-radius:var(--r2);border:3px solid var(--accent);background:var(--accent-dim);color:var(--accent);font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 0 14px var(--accent-dim);margin-top:4px;}
+
+/* ===== FORM FIELDS ===== */
+.field{background:var(--bg2);border-radius:var(--r);padding:11px 13px;margin-bottom:8px;border:2px solid var(--border);display:flex;align-items:center;gap:10px;}
+.field-ic{font-size:17px;flex-shrink:0;}
+.field-info{flex:1;}
+.field-lbl{font-size:9px;color:var(--muted);margin-bottom:2px;display:block;}
+.field-val{font-size:13px;color:var(--text);font-weight:600;}
+.field-arr{font-size:14px;color:var(--muted);}
+.field input,.field select{background:transparent;border:none;color:var(--text);font-size:13px;font-weight:600;width:100%;outline:none;font-family:inherit;}
+.field textarea{background:transparent;border:none;color:var(--text);font-size:13px;width:100%;outline:none;font-family:inherit;resize:none;}
+
+/* ===== TOGGLE ===== */
+.toggle{width:44px;height:25px;border-radius:13px;background:var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background 0.2s;}
+.toggle.on{background:var(--accent);}
+.toggle::after{content:'';position:absolute;width:19px;height:19px;border-radius:50%;background:#fff;top:3px;right:3px;transition:right 0.2s;}
+.toggle.on::after{right:22px;}
+
+/* ===== GRID ===== */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+
+/* ===== HOME SCREEN ===== */
+.home-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px 14px 0;}
+.sum-card{background:var(--bg2);border-radius:var(--r2);padding:12px;border:2px solid var(--border);text-align:center;}
+.sum-num{font-size:18px;font-weight:700;color:var(--accent);}
+.sum-lbl{font-size:9px;color:var(--muted);margin-top:3px;}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;}
+.home-card{border-radius:var(--r2);padding:16px 14px;cursor:pointer;text-align:right;border:3px solid var(--accent);background:var(--bg);box-shadow:0 0 14px var(--accent-dim);}
+.home-card.gold{border-color:var(--gold);box-shadow:0 0 14px var(--gold-dim);}
+.home-card.blue{border-color:var(--blue);box-shadow:0 0 14px var(--blue-dim);}
+.home-card.red{border-color:var(--red);box-shadow:0 0 14px var(--red-dim);}
+.home-card.full{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:14px 16px;}
+.home-card .hc-ic{font-size:26px;margin-bottom:8px;display:block;}
+.home-card .hc-title{font-size:13px;font-weight:700;color:var(--text);display:block;}
+.home-card .hc-sub{font-size:10px;color:var(--muted);margin-top:3px;display:block;}
+
+/* ===== ADD EXPENSE ===== */
+.type-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+.type-btn{padding:12px 4px;border-radius:var(--r2);border:2px solid var(--border);background:var(--bg);cursor:pointer;text-align:center;transition:all 0.15s;}
+.type-btn.on-var{border-color:var(--accent);background:var(--accent-dim);}
+.type-btn.on-fix{border-color:var(--blue);background:var(--blue-dim);}
+.type-btn.on-inst{border-color:var(--gold);background:var(--gold-dim);}
+.type-ic{font-size:22px;display:block;margin-bottom:5px;}
+.type-nm{font-size:11px;color:var(--text);font-weight:700;}
+.type-desc{font-size:9px;color:var(--muted);margin-top:2px;display:block;}
+.type-btn.on-var .type-nm{color:var(--accent);}
+.type-btn.on-fix .type-nm{color:var(--blue);}
+.type-btn.on-inst .type-nm{color:var(--gold);}
+
+.amount-box{background:var(--bg2);border-radius:var(--r2);padding:18px;text-align:center;border:3px solid var(--accent);box-shadow:0 0 16px var(--accent-dim);margin-bottom:14px;transition:all 0.2s;}
+.amount-box.fix{border-color:var(--blue);box-shadow:0 0 16px var(--blue-dim);}
+.amount-box.inst{border-color:var(--gold);box-shadow:0 0 16px var(--gold-dim);}
+.amount-label{font-size:11px;color:var(--accent);font-weight:700;margin-bottom:8px;display:block;}
+.amount-box.fix .amount-label{color:var(--blue);}
+.amount-box.inst .amount-label{color:var(--gold);}
+.amount-display{font-size:46px;font-weight:700;color:var(--accent);margin-bottom:3px;}
+.amount-box.fix .amount-display{color:var(--blue);}
+.amount-box.inst .amount-display{color:var(--gold);}
+.amount-currency{font-size:11px;color:var(--muted);}
+
+.numpad{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:12px;}
+.nkey{padding:14px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);color:var(--text);font-size:17px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.1s;}
+.nkey:active{background:var(--bg3);}
+.nkey.del{color:var(--red);border-color:var(--red);}
+.nkey.dot{color:var(--gold);}
+
+.cats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;}
+.cat-btn{padding:9px 4px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);text-align:center;cursor:pointer;transition:all 0.15s;}
+.cat-btn.sel{border-color:var(--accent);background:var(--accent-dim);}
+.cat-ic{font-size:18px;display:block;margin-bottom:2px;}
+.cat-nm{font-size:9px;color:var(--text);font-weight:600;}
+.cat-btn.sel .cat-nm{color:var(--accent);}
+
+.inst-box,.fix-box{border-radius:var(--r2);padding:13px 14px;margin-bottom:12px;display:none;}
+.inst-box.show,.fix-box.show{display:block;}
+.inst-box{border:2px solid var(--gold);background:var(--bg2);}
+.fix-box{border:2px solid var(--blue);background:var(--bg2);}
+.extra-label{font-size:11px;font-weight:700;margin-bottom:10px;display:block;}
+.inst-box .extra-label{color:var(--gold);}
+.fix-box .extra-label{color:var(--blue);}
+.inst-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.inst-txt{font-size:12px;color:var(--text);font-weight:600;flex:1;}
+.inst-controls{display:flex;align-items:center;gap:8px;}
+.inst-ctrl-btn{width:32px;height:32px;border-radius:8px;border:2px solid var(--gold);background:var(--bg);color:var(--gold);font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.inst-val{font-size:16px;font-weight:700;color:var(--gold);min-width:28px;text-align:center;}
+.inst-summary{background:var(--bg);border-radius:8px;padding:10px;border:1px solid var(--gold-border);}
+.sum-row{display:flex;justify-content:space-between;margin-bottom:4px;}
+.sum-row:last-child{margin:0;}
+.sum-lbl2{font-size:10px;color:var(--muted);}
+.sum-val2{font-size:11px;font-weight:700;color:var(--gold);}
+.rep-row{display:flex;gap:6px;flex-wrap:wrap;}
+.rep-btn{padding:7px 12px;border-radius:8px;border:2px solid var(--border);background:var(--bg2);color:var(--text);font-size:11px;font-weight:700;cursor:pointer;}
+.rep-btn.on{border-color:var(--blue);background:var(--blue-dim);color:var(--blue);}
+
+.pay-section{background:var(--bg2);border-radius:var(--r);padding:12px 13px;margin-bottom:8px;border:2px solid var(--border);}
+.pay-lbl{font-size:9px;color:var(--muted);margin-bottom:8px;display:block;}
+.pay-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.pay-btn{padding:9px 4px;border-radius:8px;border:2px solid var(--border);background:var(--bg2);color:var(--text);font-size:11px;font-weight:700;cursor:pointer;text-align:center;}
+.pay-btn.sel{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);}
+.pay-ic{font-size:17px;display:block;margin-bottom:3px;}
+
+/* ===== STATS ===== */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.stat-card{background:var(--bg2);border-radius:var(--r2);padding:13px;border:2px solid var(--border);}
+.stat-card.main{border-color:var(--accent);grid-column:1/-1;}
+.stat-lbl{font-size:10px;color:var(--muted);margin-bottom:4px;display:block;}
+.stat-val{font-size:20px;font-weight:700;color:var(--accent);}
+.stat-val.red{color:var(--red);}
+.stat-val.gold{color:var(--gold);}
+.stat-val.blue{color:var(--blue);}
+.stat-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* ===== CHART ===== */
+.chart-wrap{background:var(--bg2);border-radius:var(--r2);padding:14px;border:2px solid var(--border);margin-bottom:14px;}
+.chart-title{font-size:11px;color:var(--text);font-weight:700;margin-bottom:12px;display:block;}
+.chart-bars{display:flex;gap:5px;align-items:flex-end;height:90px;margin-bottom:6px;}
+.bar-grp{flex:1;display:flex;gap:2px;align-items:flex-end;}
+.bar-col{flex:1;border-radius:3px 3px 0 0;min-height:3px;transition:height 0.5s;}
+.bar-lbl{font-size:8px;color:var(--muted);text-align:center;margin-top:4px;}
+.chart-legend{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted);}
+.leg-dot{width:8px;height:8px;border-radius:2px;}
+
+/* ===== CAT BARS ===== */
+.cat-breakdown{background:var(--bg2);border-radius:var(--r2);padding:14px;border:2px solid var(--border);margin-bottom:14px;}
+.cat-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.cat-row:last-child{margin:0;}
+.cat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.cat-name{font-size:12px;color:var(--text);font-weight:600;flex:1;}
+.cat-bar-bg{flex:2;height:5px;border-radius:3px;background:var(--border);overflow:hidden;}
+.cat-bar-fill{height:100%;border-radius:3px;}
+.cat-amt{font-size:11px;font-weight:700;min-width:55px;text-align:left;}
+.cat-pct{font-size:10px;color:var(--muted);min-width:28px;text-align:left;}
+
+/* ===== EXPENSE LIST ===== */
+.exp-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border2);}
+.exp-row:last-child{border:none;}
+.exp-ic{font-size:20px;flex-shrink:0;}
+.exp-info{flex:1;}
+.exp-name{font-size:13px;color:var(--text);font-weight:600;}
+.exp-date{font-size:10px;color:var(--muted);margin-top:2px;}
+.exp-amt{font-size:14px;font-weight:700;color:var(--red);}
+
+/* ===== INSTALLMENT PROGRESS ===== */
+.inst-dots{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+.inst-dot{width:30px;height:30px;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid var(--border);}
+.inst-dot.done{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);}
+.inst-dot.current{border-color:var(--gold);background:var(--gold);color:#000;}
+.inst-dot.future{color:var(--muted2);}
+.inst-dot-n{font-size:7px;}
+.inst-dot-v{font-size:10px;font-weight:700;}
+
+/* ===== RECEIPTS ===== */
+.receipts-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.receipt-card{background:var(--bg2);border-radius:var(--r);border:2px solid var(--border);overflow:hidden;cursor:pointer;}
+.receipt-thumb{height:65px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:26px;}
+.receipt-info{padding:7px;}
+.receipt-name{font-size:10px;color:var(--text);font-weight:600;display:block;}
+.receipt-date{font-size:8px;color:var(--muted);}
+.add-receipt-card{background:var(--bg2);border:2px dashed var(--accent);border-radius:var(--r);height:97px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;}
+.add-receipt-ic{font-size:24px;}
+.add-receipt-txt{font-size:10px;color:var(--accent);font-weight:700;}
+
+/* ===== PERIOD TABS ===== */
+.period-row{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:3px;}
+.period-btn{flex-shrink:0;padding:8px 14px;border-radius:8px;border:2px solid var(--border);background:var(--bg2);color:var(--text);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.period-btn.on{border-color:var(--accent);background:var(--accent-dim);color:var(--accent);}
+
+/* ===== EXPENSE TYPE TABS ===== */
+.exp-tabs{display:flex;gap:0;margin-bottom:14px;border-radius:var(--r);overflow:hidden;border:2px solid var(--border);}
+.exp-tab{flex:1;padding:9px 4px;border:none;background:var(--bg2);color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;text-align:center;}
+.exp-tab.on{background:var(--accent-dim);color:var(--accent);}
+
+/* ===== APPNEST BADGE ===== */
+.appnest-badge{margin:14px 0 0;padding:11px 14px;background:rgba(212,168,83,0.08);border:1px solid rgba(212,168,83,0.2);border-radius:var(--r2);}
+.appnest-badge a{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.an-texts{flex:1;}
+.an-name{font-size:13px;font-weight:700;color:#d4a853;}
+.an-sub{font-size:11px;color:var(--muted);}
+.an-arr{font-size:16px;color:#d4a853;}
+
+/* ===== POPUP ===== */
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+.popup-overlay.show{display:flex;}
+.popup{background:var(--bg2);border-radius:var(--r3);padding:22px;width:100%;max-width:320px;border:3px solid var(--accent);}
+.popup-title{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:14px;}
+.popup-inp{width:100%;padding:11px 13px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;margin-bottom:10px;direction:rtl;outline:none;font-family:inherit;}
+.popup-btns{display:flex;gap:8px;}
+.popup-ok{flex:1;padding:11px;border-radius:var(--r);border:2px solid var(--accent);background:var(--accent-dim);color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;}
+.popup-cancel{flex:1;padding:11px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;font-weight:700;cursor:pointer;}
+
+/* ===== WELCOME / GUIDE ===== */
+.guide-step{background:var(--bg2);border-radius:var(--r2);padding:20px;margin-bottom:12px;border:2px solid var(--border);text-align:center;}
+.guide-ic{font-size:48px;margin-bottom:12px;display:block;}
+.guide-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.guide-desc{font-size:13px;color:var(--muted);line-height:1.7;}
+.guide-dots{display:flex;gap:6px;justify-content:center;margin:16px 0;}
+.gdot{width:8px;height:8px;border-radius:50%;background:var(--border);cursor:pointer;}
+.gdot.on{background:var(--accent);}
+
+/* ===== SETTINGS ===== */
+.settings-group{margin-bottom:18px;}
+.settings-title{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;margin-bottom:8px;display:block;}
+
+/* ===== ABOUT ===== */
+.about-logo{text-align:center;padding:24px 0 16px;}
+.about-version{font-size:11px;color:var(--muted);text-align:center;margin-bottom:20px;}
+
+/* ===== BOTTOM BAR ===== */
+.bottom-fixed{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(0deg,var(--bg) 60%,transparent);padding:12px 14px 20px;pointer-events:none;}
+.bottom-fixed button,.bottom-fixed a{pointer-events:all;}
+
+/* ===== LANG ===== */
+.he{display:block;}.en{display:none;}
+body.lang-en .he{display:none;}body.lang-en .en{display:block;}
+body.lang-en{direction:ltr;}
+body.lang-en .field input,body.lang-en .field textarea{direction:ltr;}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:400px){
+  .home-card .hc-ic{font-size:22px;}
+  .home-card .hc-title{font-size:12px;}
+  .amount-display{font-size:38px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== POPUPS ==================== -->
+<div class="popup-overlay" id="popup-payment">
+  <div class="popup">
+    <div class="popup-title he">➕ הוסף אמצעי תשלום</div>
+    <div class="popup-title en">➕ Add Payment Method</div>
+    <input class="popup-inp" id="payment-inp" placeholder="Bit, PayBox, העברה..."/>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:10px;" class="he">יישמר לשימוש חוזר</div>
+    <div class="popup-btns">
+      <button class="popup-ok" onclick="addCustomPayment()"><span class="he">✓ הוסף</span><span class="en">✓ Add</span></button>
+      <button class="popup-cancel" onclick="closePopup('popup-payment')"><span class="he">ביטול</span><span class="en">Cancel</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="popup-overlay" id="popup-category">
+  <div class="popup">
+    <div class="popup-title he">➕ הוסף קטגוריה</div>
+    <div class="popup-title en">➕ Add Category</div>
+    <input class="popup-inp" id="cat-name-inp" placeholder="שם הקטגוריה..."/>
+    <input class="popup-inp" id="cat-ic-inp" placeholder="אמוג'י (למשל 🏖️)"/>
+    <div class="popup-btns">
+      <button class="popup-ok" onclick="addCustomCategory()"><span class="he">✓ הוסף</span><span class="en">✓ Add</span></button>
+      <button class="popup-cancel" onclick="closePopup('popup-category')"><span class="he">ביטול</span><span class="en">Cancel</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="popup-overlay" id="popup-confirm">
+  <div class="popup" style="border-color:var(--red);">
+    <div class="popup-title" style="color:var(--red);" class="he">⚠️ אישור מחיקה</div>
+    <div class="popup-title" style="color:var(--red);" class="en">⚠️ Confirm Delete</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;" class="he">האם אתה בטוח? פעולה זו בלתי הפיכה!</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;" class="en">Are you sure? This action cannot be undone!</p>
+    <div class="popup-btns">
+      <button class="popup-ok" style="border-color:var(--red);background:var(--red-dim);color:var(--red);" onclick="confirmDelete()"><span class="he">מחק</span><span class="en">Delete</span></button>
+      <button class="popup-cancel" onclick="closePopup('popup-confirm')"><span class="he">ביטול</span><span class="en">Cancel</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN: WELCOME GUIDE ==================== -->
+<div class="screen" id="screen-welcome">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <svg width="32" height="32" viewBox="0 0 58 58" id="logo-welcome">
+        <polygon points="29,2 54,16 54,42 29,56 4,42 4,16" fill="#1a9e5c"/>
+        <polygon points="29,5 51,17.5 51,40.5 29,53 7,40.5 7,17.5" fill="#0a1a0a"/>
+        <ellipse cx="29" cy="46" rx="13" ry="4" fill="#3a2800"/>
+        <ellipse cx="29" cy="45" rx="10" ry="3" fill="#5a4000"/>
+        <circle cx="23" cy="43" r="3.5" fill="#d4a853"/>
+        <text x="23" y="44.5" text-anchor="middle" fill="#0a0a0a" font-size="4" font-weight="900">₪</text>
+        <circle cx="29" cy="42.5" r="3.5" fill="#d4a853"/>
+        <text x="29" y="44" text-anchor="middle" fill="#0a0a0a" font-size="4" font-weight="900">₪</text>
+        <circle cx="35" cy="43" r="3.5" fill="#d4a853"/>
+        <text x="35" y="44.5" text-anchor="middle" fill="#0a0a0a" font-size="4" font-weight="900">₪</text>
+        <ellipse cx="29" cy="29" rx="7" ry="8" fill="#1e1e1e"/>
+        <ellipse cx="29" cy="18" rx="6.5" ry="6.5" fill="#e8e8e0"/>
+        <circle cx="31" cy="17" r="2" fill="#d4a853"/>
+        <circle cx="31" cy="17" r="1" fill="#0a0a0a"/>
+        <path d="M33 19 L39 21 L33 23 Z" fill="#d4a853"/>
+        <path d="M22 25 Q12 19 8 23 Q10 29 18 28 Q20 27 22 29Z" fill="#222"/>
+        <path d="M36 25 Q46 19 50 23 Q48 29 40 28 Q38 27 36 29Z" fill="#222"/>
+        <path d="M24 38 Q29 43 34 38 Q31 41 29 39 Q27 41 24 38Z" fill="#d0d0c8"/>
+      </svg>
+      <div>
+        <div class="logo-text">MoneyNest</div>
+        <div class="logo-sub he">יומן ניהול הוצאות</div>
+        <div class="logo-sub en">Expense Manager</div>
+      </div>
+    </div>
+    <button class="icon-btn" onclick="skipGuide()"><span class="he">דלג</span><span class="en">Skip</span></button>
+  </div>
+  <div class="content" id="guide-content">
+    <!-- נמולא דינמית -->
+  </div>
+  <div class="bottom-fixed">
+    <button class="save-btn" id="guide-next-btn" onclick="nextGuideStep()">
+      <span id="guide-btn-text" class="he">הבא ←</span>
+    </button>
+  </div>
+</div>
+
+<!-- ==================== SCREEN: HOME ==================== -->
+<div class="screen" id="screen-home">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <svg width="30" height="30" viewBox="0 0 58 58">
+        <polygon points="29,2 54,16 54,42 29,56 4,42 4,16" fill="#1a9e5c"/>
+        <polygon points="29,5 51,17.5 51,40.5 29,53 7,40.5 7,17.5" fill="#0a1a0a"/>
+        <circle cx="23" cy="43" r="3.5" fill="#d4a853"/>
+        <circle cx="29" cy="42.5" r="3.5" fill="#d4a853"/>
+        <circle cx="35" cy="43" r="3.5" fill="#d4a853"/>
+        <ellipse cx="29" cy="18" rx="6.5" ry="6.5" fill="#e8e8e0"/>
+        <path d="M33 19 L39 21 L33 23 Z" fill="#d4a853"/>
+        <path d="M22 25 Q12 19 8 23 Q10 29 18 28Z" fill="#222"/>
+        <path d="M36 25 Q46 19 50 23 Q48 29 40 28Z" fill="#222"/>
+      </svg>
+      <div>
+        <div class="logo-text">MoneyNest</div>
+        <div class="logo-sub" id="home-month">מאי 2026</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="toggleLang()">EN|עב</button>
+      <button class="icon-btn" onclick="showScreen('screen-settings')">⚙️</button>
+    </div>
+  </div>
+
+  <!-- סיכום חודשי -->
+  <div class="home-summary">
+    <div class="sum-card">
+      <div class="sum-num" id="home-total">₪0</div>
+      <div class="sum-lbl he">הוצאות החודש</div>
+      <div class="sum-lbl en">This Month</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-num" id="home-count" style="color:var(--gold);">0</div>
+      <div class="sum-lbl he">רשומות</div>
+      <div class="sum-lbl en">Records</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-num" id="home-budget-left" style="color:var(--blue);">₪0</div>
+      <div class="sum-lbl he">נותר בתקציב</div>
+      <div class="sum-lbl en">Budget Left</div>
+    </div>
+  </div>
+
+  <!-- כפתורי ניווט -->
+  <div class="home-grid">
+    <div class="home-card" style="border-color:var(--accent);box-shadow:0 0 14px var(--accent-dim);grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:14px 16px;" onclick="showScreen('screen-add')">
+      <span style="font-size:28px;">➕</span>
+      <div>
+        <div class="hc-title he" style="font-size:15px;font-weight:700;color:var(--accent);">הוסף הוצאה</div>
+        <div class="hc-title en" style="font-size:15px;font-weight:700;color:var(--accent);">Add Expense</div>
+        <div class="hc-sub he">רשום הוצאה חדשה</div>
+        <div class="hc-sub en">Record a new expense</div>
+      </div>
+      <span style="color:var(--accent);font-size:18px;margin-right:auto;">←</span>
+    </div>
+    <div class="home-card" onclick="showScreen('screen-reports')">
+      <span class="hc-ic">📊</span>
+      <span class="hc-title he">דוחות</span><span class="hc-title en">Reports</span>
+      <span class="hc-sub he">סיכומים וגרפים</span><span class="hc-sub en">Charts & summaries</span>
+    </div>
+    <div class="home-card gold" onclick="showScreen('screen-expenses')">
+      <span class="hc-ic">📋</span>
+      <span class="hc-title he">הוצאות</span><span class="hc-title en">Expenses</span>
+      <span class="hc-sub he">קבועות, תשלומים</span><span class="hc-sub en">Fixed, installments</span>
+    </div>
+    <div class="home-card blue" onclick="showScreen('screen-receipts')">
+      <span class="hc-ic">📷</span>
+      <span class="hc-title he">קבלות</span><span class="hc-title en">Receipts</span>
+      <span class="hc-sub he">צלם ושמור</span><span class="hc-sub en">Scan & save</span>
+    </div>
+    <div class="home-card" style="border-color:var(--blue);" onclick="showScreen('screen-export')">
+      <span class="hc-ic">📤</span>
+      <span class="hc-title he">ייצוא</span><span class="hc-title en">Export</span>
+      <span class="hc-sub he">PDF, מייל, Drive</span><span class="hc-sub en">PDF, email, Drive</span>
+    </div>
+    <div class="home-card red" onclick="showScreen('screen-budget')">
+      <span class="hc-ic">🎯</span>
+      <span class="hc-title he">תקציב</span><span class="hc-title en">Budget</span>
+      <span class="hc-sub he">הגדר מגבלות</span><span class="hc-sub en">Set limits</span>
+    </div>
+    <div class="home-card full" onclick="showScreen('screen-history')">
+      <span style="font-size:22px;">📚</span>
+      <div>
+        <div class="hc-title he">היסטוריה</div><div class="hc-title en">History</div>
+        <div class="hc-sub he">כל ההוצאות</div><div class="hc-sub en">All expenses</div>
+      </div>
+      <span style="color:var(--accent);font-size:16px;margin-right:auto;">←</span>
+    </div>
+  </div>
+
+  <!-- AppNest Badge -->
+  <div style="padding:0 14px 20px;">
+    <div class="appnest-badge">
+      <a href="https://barakaflalo.github.io/appnest" target="_blank">
+        <svg width="28" height="28" viewBox="0 0 58 58">
+          <polygon points="29,2 54,16 54,42 29,56 4,42 4,16" fill="#d4a853"/>
+          <polygon points="29,5 51,17.5 51,40.5 29,53 7,40.5 7,17.5" fill="#0a0a0a"/>
+          <ellipse cx="29" cy="19" rx="6.5" ry="6.5" fill="#e8e8e0"/>
+          <path d="M33 20 L39 22 L33 24 Z" fill="#d4a853"/>
+          <path d="M22 26 Q12 20 8 24 Q10 30 18 29Z" fill="#222"/>
+          <path d="M36 26 Q46 20 50 24 Q48 30 40 29Z" fill="#222"/>
+        </svg>
+        <div class="an-texts">
+          <div class="an-name">AppNest</div>
+          <div class="an-sub he">עוד אפליקציות חינמיות מבית AppNest ›</div>
+          <div class="an-sub en">More free apps from AppNest ›</div>
+        </div>
+        <span class="an-arr">›</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN: ADD EXPENSE ==================== -->
+<div class="screen" id="screen-add">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('screen-home')"><span class="he">← חזרה</span><span class="en">← Back</span></button>
+    <div class="logo-text he">➕ הוסף הוצאה</div>
+    <div class="logo-text en">➕ Add Expense</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div class="content" style="padding-bottom:100px;">
+    <span class="section-label he">📋 סוג הוצאה</span>
+    <span class="section-label en">📋 Expense Type</span>
+    <div class="type-row">
+      <div class="type-btn on-var" id="type-var" onclick="selExpType('var')">
+        <span class="type-ic">💸</span>
+        <span class="type-nm he">רגילה</span><span class="type-nm en">Regular</span>
+        <span class="type-desc he">הוצאה רגילה</span><span class="type-desc en">One-time expense</span>
+      </div>
+      <div class="type-btn" id="type-fix" onclick="selExpType('fix')">
+        <span class="type-ic">🔄</span>
+        <span class="type-nm he">קבועה</span><span class="type-nm en">Fixed</span>
+        <span class="type-desc he">חוזרת אוטומטית</span><span class="type-desc en">Recurring</span>
+      </div>
+      <div class="type-btn" id="type-inst" onclick="selExpType('inst')">
+        <span class="type-ic">📦</span>
+        <span class="type-nm he">תשלומים</span><span class="type-nm en">Installments</span>
+        <span class="type-desc he">מתפרסת לחודשים</span><span class="type-desc en">Spread over months</span>
+      </div>
+    </div>
+
+    <div class="amount-box" id="amount-box">
+      <span class="amount-label" id="amount-label">💰 כמה הוצאת?</span>
+      <div class="amount-display" id="amount-display">0</div>
+      <div class="amount-currency he">₪ שקל</div>
+      <div class="amount-currency en">₪ Shekel</div>
+    </div>
+
+    <div class="numpad">
+      <button class="nkey" onclick="pressNum('7')">7</button>
+      <button class="nkey" onclick="pressNum('8')">8</button>
+      <button class="nkey" onclick="pressNum('9')">9</button>
+      <button class="nkey" onclick="pressNum('4')">4</button>
+      <button class="nkey" onclick="pressNum('5')">5</button>
+      <button class="nkey" onclick="pressNum('6')">6</button>
+      <button class="nkey" onclick="pressNum('1')">1</button>
+      <button class="nkey" onclick="pressNum('2')">2</button>
+      <button class="nkey" onclick="pressNum('3')">3</button>
+      <button class="nkey dot" onclick="pressNum('.')">.</button>
+      <button class="nkey" onclick="pressNum('0')">0</button>
+      <button class="nkey del" onclick="pressNum('del')">⌫</button>
+    </div>
+
+    <div class="inst-box" id="inst-box">
+      <span class="extra-label he">📦 כמה תשלומים?</span>
+      <span class="extra-label en">📦 How many installments?</span>
+      <div class="inst-row">
+        <span class="inst-txt he">מספר תשלומים</span>
+        <span class="inst-txt en">Installments</span>
+        <div class="inst-controls">
+          <button class="inst-ctrl-btn" onclick="changeInst(-1)">−</button>
+          <span class="inst-val" id="inst-count">4</span>
+          <button class="inst-ctrl-btn" onclick="changeInst(1)">+</button>
+        </div>
+      </div>
+      <div class="inst-summary">
+        <div class="sum-row"><span class="sum-lbl2 he">סה"כ עסקה</span><span class="sum-lbl2 en">Total</span><span class="sum-val2" id="inst-total">₪0</span></div>
+        <div class="sum-row"><span class="sum-lbl2 he">תשלום חודשי</span><span class="sum-lbl2 en">Monthly</span><span class="sum-val2" id="inst-monthly">₪0 × 4</span></div>
+      </div>
+    </div>
+
+    <div class="fix-box" id="fix-box">
+      <span class="extra-label he">🔄 תדירות חזרה</span>
+      <span class="extra-label en">🔄 Recurrence</span>
+      <div class="rep-row" id="rep-row">
+        <div class="rep-btn on he" onclick="selRep(this)">כל חודש</div>
+        <div class="rep-btn on en" onclick="selRep(this)">Monthly</div>
+        <div class="rep-btn he" onclick="selRep(this)">כל שבוע</div>
+        <div class="rep-btn en" onclick="selRep(this)">Weekly</div>
+        <div class="rep-btn he" onclick="selRep(this)">כל שנה</div>
+        <div class="rep-btn en" onclick="selRep(this)">Yearly</div>
+        <div class="rep-btn he" onclick="selRep(this)">אחר</div>
+        <div class="rep-btn en" onclick="selRep(this)">Other</div>
+      </div>
+    </div>
+
+    <span class="section-label he">📁 קטגוריה</span>
+    <span class="section-label en">📁 Category</span>
+    <div class="cats-grid" id="cats-grid">
+      <!-- נמולא דינמית -->
+    </div>
+
+    <span class="section-label he">📝 פרטים</span>
+    <span class="section-label en">📝 Details</span>
+    <div class="field">
+      <span class="field-ic">📝</span>
+      <div class="field-info">
+        <span class="field-lbl he">תיאור</span><span class="field-lbl en">Description</span>
+        <input id="exp-desc" type="text" placeholder="תיאור קצר..."/>
+      </div>
+    </div>
+    <div class="field">
+      <span class="field-ic">📅</span>
+      <div class="field-info">
+        <span class="field-lbl he">תאריך</span><span class="field-lbl en">Date</span>
+        <input id="exp-date" type="date"/>
+      </div>
+    </div>
+    <div class="field">
+      <span class="field-ic">📝</span>
+      <div class="field-info">
+        <span class="field-lbl he">הערות (אופציונלי)</span><span class="field-lbl en">Notes (optional)</span>
+        <textarea id="exp-notes" rows="2" placeholder="הערות נוספות..."></textarea>
+      </div>
+    </div>
+
+    <div class="pay-section">
+      <span class="pay-lbl he">💳 אמצעי תשלום שבוצעה הקניה</span>
+      <span class="pay-lbl en">💳 Payment method used</span>
+      <div class="pay-row" id="pay-row">
+        <div class="pay-btn sel" onclick="selPay(this)">
+          <span class="pay-ic">💳</span>
+          <span class="he">אשראי</span><span class="en">Credit</span>
+        </div>
+        <div class="pay-btn" onclick="selPay(this)">
+          <span class="pay-ic">💵</span>
+          <span class="he">מזומן</span><span class="en">Cash</span>
+        </div>
+        <div class="pay-btn" id="pay-other-btn" onclick="openPopup('popup-payment')">
+          <span class="pay-ic">➕</span>
+          <span class="he">אחר</span><span class="en">Other</span>
+        </div>
+      </div>
+    </div>
+
+    <button style="width:100%;padding:10px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;" onclick="takeReceipt()">
+      <span>📷</span>
+      <span class="he">צלם קבלה (אופציונלי)</span>
+      <span class="en">Take Receipt Photo (optional)</span>
+    </button>
+
+    <button class="save-btn" onclick="saveExpense()">
+      <span class="he">✓ שמור הוצאה ←</span>
+      <span class="en">✓ Save Expense ←</span>
+    </button>
+  </div>
+</div>
+
+<!-- ==================== SCREEN: REPORTS ==================== -->
+<div class="screen" id="screen-reports">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('screen-home')"><span class="he">← חזרה</span><span class="en">← Back</span></button>
+    <div class="logo-text he">📊 דוחות</div>
+    <div class="logo-text en">📊 Reports</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div class="content">
+    <div class="period-row">
+      <button class="period-btn" onclick="selPeriod(this,'week')"><span class="he">שבוע</span><span class="en">Week</span></button>
+      <button class="period-btn on" onclick="selPeriod(this,'month')"><span class="he">חודש</span><span class="en">Month</span></button>
+      <button class="period-btn" onclick="selPeriod(this,'3months')"><span class="he">3 חודשים</span><span class="en">3 Months</span></button>
+      <button class="period-btn" onclick="selPeriod(this,'year')"><span class="he">שנה</span><span class="en">Year</span></button>
+      <button class="period-btn" onclick="selPeriod(this,'all')"><span class="he">הכל</span><span class="en">All</span></button>
+    </div>
+    <div id="reports-content"><!-- נמולא דינמית --></div>
+    <div class="appnest-badge">
+      <a href="https://barakaflalo.github.io/appnest" target="_blank">
+        <svg width="24" height="24" viewBox="0 0 58 58"><polygon points="29,2 54,16 54,42 29,56 4,42 4,16" fill="#d4a853"/><polygon points="29,5 51,17.5 51,40.5 29,53 7,40.5 7,17.5" fill="#0a0a0a"/><ellipse cx="29" cy="19" rx="6.5" ry="6.5" fill="#e8e8e0"/><path d="M22 26 Q12 20 8 24 Q10 30 18 29Z" fill="#222"/><path d="M36 26 Q46 20 50 24 Q48 30 40 29Z" fill="#222"/></svg>
+        <div class="an-texts"><div class="an-name">AppNest</div><div class="an-sub he">עוד אפליקציות ›</div><div class="an-sub en">More apps ›</div></div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN: EXPENSES ==================== -->
+<div class="screen" id="screen-expenses">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('screen-home')"><span class="he">← חזרה</span><span class="en">← Back</span></button>
+    <div class="logo-text he">📋 הוצאות</div>
+    <div class="logo-text en">📋 Expenses</div>
+    <button class="icon-btn" onclick="showScreen('screen-add')">+ <span class="he">הוסף</span><span class="en">Add</span></button>
+  </div>
+  <div class="content">
+    <div class="exp-tabs">
+      <button class="exp-tab on" onclick="selExpTab(this,'all')"><span class="he">📊 הכל</span><span class="en">📊 All</span></button>
+      <button class="exp-tab" onclick="selExpTab(this,'fix')"><span class="he">🔄 קבועות</span><span class="en">🔄 Fixed</span></button>
+      <button class="exp-tab" onclick="selExpTab(this,'inst')"><span class="he">📦 תשלומים</span><span class="en">📦 Install.</span></button>
+      <button class="exp-tab" onclick="selExpTab(this,'var')"><span class="he">💸 משתנות</span><span class="en">💸 Variable</span></button>
+    </div>
+    <div id="expenses-list"><!-- נמולא דינמית --></div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN: HISTORY ==================== -->
+<div class="screen" id="screen-history">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('screen-home')"><span class="he">← חזרה</span><span class="en">← Back</span></button>
+    <div class="logo-text he">📚 היסטוריה</div>
+    <div class="logo-text en">📚 History</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div class="content">
+    <div id="history-list"><!-- נמולא דינמית --></div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN: RECEIPTS ==================== -->
+<div class="screen" id="screen-receipts">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('screen-home')"><span class="he">← חזרה</span><span class="en">← Back</span></button>
+    <div class="logo-text he">📷 קבלות</div>
+    <div class="logo-text en">📷 Receipts</div>
+    <div id="receipts-count" style="font-size:11px;color:var(--accent);font-weight:700;">0</div>
+  </div>
+  <div class="content">
+    <div class="receipts-grid" id="receipts-grid">
+      <div class="add-receipt-card" onclick="takeReceipt()">
+        <span class="add-receipt-ic">📷</span>
+        <span class="add-receipt-txt he">+ צלם קבלה</span>
+        <span class="add-receipt-txt en">+ Take Photo</span>
+      </div>
+    </div>
+    <button class="btn" onclick="takeReceipt()">
+      <span class="btn-ic">📷</span>
+      <div class="btn-info"><span class="btn-title he">צלם קבלה חדשה</span><span class="btn-title en">Take New Receipt</span></div>
+    </button>
+    <button class="btn" onclick="uploadReceipt()">
+      <span class="btn-ic">🖼️</span>
+      <div class="btn-info"><span class="btn-title he">העלה מהגלריה</span><span class="btn-title en">Upload from Gallery</span></div>
+    </button>
+    <input type="file" id="receipt-input" accept="image/*" style="display:none;" onchange="handleReceiptUpload(this)">
+  </div>
+</div>
+
+<!-- ==================== SCREEN: EXPORT ==================== -->
+<div class="screen" id="screen-export">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('screen-home')"><span class="he">← חזרה</span><span class="en">← Back</span></button>
+    <div class="logo-text he">📤 ייצוא</div>
+    <div class="logo-text en">📤 Export</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div class="content">
+    <span class="section-label he">📅 טווח זמן</span>
+    <span class="section-label en">📅 Date Range</span>
+    <div class="period-row">
+      <button class="period-btn on" onclick="selPeriod(this,'month')"><span class="he">החודש</span><span class="en">This Month</span></button>
+      <button class="period-btn" onclick="selPeriod(this,'3months')"><span class="he">3 חודשים</span><span class="en">3 Months</span></button>
+      <button class="period-btn" onclick="selPeriod(this,'year')"><span class="he">השנה</span><span class="en">This Year</span></button>
+      <button class="period-btn" onclick="selPeriod(this,'all')"><span class="he">הכל</span><span class="en">All</span></button>
+    </div>
+    <span class="section-label he">📤 אפשרויות ייצוא</span>
+    <span class="section-label en">📤 Export Options</span>
+    <button class="btn primary" onclick="exportPDF()">
+      <span class="btn-ic">📄</span>
+      <div class="btn-info"><span class="btn-title he">ייצא PDF</span><span class="btn-title en">Export PDF</span><span class="btn-sub he">דוח מעוצב עם גרפים</span><span class="btn-sub en">Formatted report with charts</span></div>
+      <span class="btn-arr">›</span>
+    </button>
+    <button class="btn gold" onclick="exportExcel()">
+      <span class="btn-ic">📊</span>
+      <div class="btn-info"><span class="btn-title he">ייצא Excel/CSV</span><span class="btn-title en">Export Excel/CSV</span><span class="btn-sub he">גיליון עם כל ההוצאות</span><span class="btn-sub en">Spreadsheet with all expenses</span></div>
+      <span class="btn-arr">›</span>
+    </button>
+    <button class="btn blue" onclick="exportEmail()">
+      <span class="btn-ic">📧</span>
+      <div class="btn-info"><span class="btn-title he">שלח למייל</span><span class="btn-title en">Send by Email</span><span class="btn-sub he">PDF + CSV למייל</span><span class="btn-sub en">PDF + CSV to email</span></div>
+      <span class="btn-arr">›</span>
+    </button>
+    <span class="section-label he" style="margin-top:6px;">☁️ גיבוי לענן</span>
+    <span class="section-label en" style="margin-top:6px;">☁️ Cloud Backup</span>
+    <button class="btn blue" onclick="exportDrive()">
+      <span class="btn-ic">🔵</span>
+      <div class="btn-info"><span class="btn-title">Google Drive</span><span class="btn-sub he">שמור אוטומטית לדרייב</span><span class="btn-sub en">Auto-save to Drive</span></div>
+      <span class="btn-arr">›</span>
+    </button>
+    <button class="btn" onclick="exportShare()">
+      <span class="btn-ic">📱</span>
+      <div class="btn-info"><span class="btn-title he">שתף</span><span class="btn-title en">Share</span><span class="btn-sub">WhatsApp, Telegram...</span></div>
+      <span class="btn-arr">›</span>
+    </button>
+  </div>
+</div>
+
+<!-- ==================== SCREEN: BUDGET ==================== -->
+<div class="screen" id="screen-budget">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('screen-home')"><span class="he">← חזרה</span><span class="en">← Back</span></button>
+    <div class="logo-text he">🎯 תקציב</div>
+    <div class="logo-text en">🎯 Budget</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div class="content">
+    <div class="card accent">
+      <span class="section-label he">תקציב חודשי כולל</span>
+      <span class="section-label en">Monthly Budget</span>
+      <div class="field" style="border-color:var(--accent);margin-bottom:8px;">
+        <span class="field-ic">💰</span>
+        <div class="field-info">
+          <span class="field-lbl">₪</span>
+          <input id="budget-inp" type="number" placeholder="6000" style="font-size:20px;font-weight:700;color:var(--accent);"/>
+        </div>
+      </div>
+      <button class="save-btn" style="margin-top:0;" onclick="saveBudget()">
+        <span class="he">✓ שמור תקציב</span><span class="en">✓ Save Budget</span>
+      </button>
+    </div>
+    <div id="budget-by-cat"><!-- נמולא דינמית --></div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN: SETTINGS ==================== -->
+<div class="screen" id="screen-settings">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('screen-home')"><span class="he">← חזרה</span><span class="en">← Back</span></button>
+    <div class="logo-text he">⚙️ הגדרות</div>
+    <div class="logo-text en">⚙️ Settings</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div class="content">
+    <div class="settings-group">
+      <span class="settings-title he">🎨 עיצוב</span>
+      <span class="settings-title en">🎨 THEME</span>
+      <div class="grid-2">
+        <button class="btn" id="theme-green" onclick="setTheme('green')"><span class="btn-ic">🟢</span><span class="he">ירוק (ברירת מחדל)</span><span class="en">Green (default)</span></button>
+        <button class="btn" id="theme-gold" onclick="setTheme('gold')"><span class="btn-ic">🟡</span><span class="he">שחור + זהב</span><span class="en">Black + Gold</span></button>
+        <button class="btn" id="theme-blue" onclick="setTheme('blue')"><span class="btn-ic">🔵</span><span class="he">כחול כהה</span><span class="en">Dark Blue</span></button>
+        <button class="btn" id="theme-light" onclick="setTheme('light')"><span class="btn-ic">⚪</span><span class="he">בהיר + סגול</span><span class="en">Light + Purple</span></button>
+      </div>
+    </div>
+    <div class="settings-group">
+      <span class="settings-title he">🌍 שפה ומטבע</span>
+      <span class="settings-title en">🌍 LANGUAGE & CURRENCY</span>
+      <div class="field" onclick="toggleLang()">
+        <span class="field-ic">🌍</span>
+        <div class="field-info"><span class="field-lbl he">שפה</span><span class="field-lbl en">Language</span>
+        <span class="field-val" id="lang-display">עברית</span></div>
+        <span class="field-arr">›</span>
+      </div>
+      <div class="field">
+        <span class="field-ic">💱</span>
+        <div class="field-info"><span class="field-lbl he">מטבע</span><span class="field-lbl en">Currency</span>
+        <select id="currency-sel" style="background:transparent;border:none;color:var(--text);font-size:13px;font-weight:600;outline:none;">
+          <option value="ILS">₪ שקל ישראלי</option>
+          <option value="USD">$ דולר אמריקאי</option>
+          <option value="EUR">€ אירו</option>
+          <option value="GBP">£ לירה שטרלינג</option>
+        </select></div>
+      </div>
+    </div>
+    <div class="settings-group">
+      <span class="settings-title he">🔔 התראות</span>
+      <span class="settings-title en">🔔 NOTIFICATIONS</span>
+      <div class="field">
+        <span class="field-ic">⚠️</span>
+        <div class="field-info"><span class="field-lbl he">התראה על חריגה מתקציב</span><span class="field-lbl en">Budget overrun alert</span><span class="field-val he">פעיל</span><span class="field-val en">Active</span></div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="field">
+        <span class="field-ic">📅</span>
+        <div class="field-info"><span class="field-lbl he">תזכורת יומית</span><span class="field-lbl en">Daily reminder</span><span class="field-val">20:00</span></div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="field">
+        <span class="field-ic">📦</span>
+        <div class="field-info"><span class="field-lbl he">תזכורת תשלום קרוב</span><span class="field-lbl en">Upcoming payment reminder</span><span class="field-val he">יום לפני</span><span class="field-val en">Day before</span></div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+    <div class="settings-group">
+      <span class="settings-title he">📖 מדריך</span>
+      <span class="settings-title en">📖 GUIDE</span>
+      <button class="btn" onclick="showGuide()">
+        <span class="btn-ic">📖</span>
+        <div class="btn-info"><span class="btn-title he">מדריך למשתמש</span><span class="btn-title en">User Guide</span><span class="btn-sub he">כל הפיצ'רים מוסברים</span><span class="btn-sub en">All features explained</span></div>
+        <span class="btn-arr">›</span>
+      </button>
+    </div>
+    <div class="settings-group">
+      <span class="settings-title he">ℹ️ אודות</span>
+      <span class="settings-title en">ℹ️ ABOUT</span>
+      <button class="btn" onclick="showScreen('screen-about')">
+        <span class="btn-ic">ℹ️</span>
+        <div class="btn-info"><span class="btn-title">MoneyNest</span><span class="btn-sub he">גרסה 1.0 · זכויות ויצרן</span><span class="btn-sub en">Version 1.0 · Credits</span></div>
+        <span class="btn-arr">›</span>
+      </button>
+    </div>
+    <div class="settings-group">
+      <span class="settings-title" style="color:var(--red);">⚠️ DANGER ZONE</span>
+      <button class="btn red" onclick="openPopup('popup-confirm')">
+        <span class="btn-ic">🗑️</span>
+        <div class="btn-info"><span class="btn-title he">מחק את כל הנתונים</span><span class="btn-title en">Delete All Data</span><span class="btn-sub he">פעולה בלתי הפיכה!</span><span class="btn-sub en">Irreversible action!</span></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SCREEN: ABOUT ==================== -->
+<div class="screen" id="screen-about">
+  <div class="topbar">
+    <button class="back-btn" onclick="showScreen('screen-settings')"><span class="he">← חזרה</span><span class="en">← Back</span></button>
+    <div class="logo-text he">ℹ️ אודות</div>
+    <div class="logo-text en">ℹ️ About</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div class="content">
+    <div class="about-logo">
+      <svg width="72" height="72" viewBox="0 0 58 58">
+        <polygon points="29,2 54,16 54,42 29,56 4,42 4,16" fill="#1a9e5c"/>
+        <polygon points="29,5 51,17.5 51,40.5 29,53 7,40.5 7,17.5" fill="#0a1a0a"/>
+        <ellipse cx="29" cy="46" rx="13" ry="4" fill="#3a2800"/>
+        <ellipse cx="29" cy="45" rx="10" ry="3" fill="#5a4000"/>
+        <circle cx="23" cy="43" r="3.5" fill="#d4a853"/>
+        <text x="23" y="44.5" text-anchor="middle" fill="#0a0a0a" font-size="4" font-weight="900">₪</text>
+        <circle cx="29" cy="42.5" r="3.5" fill="#d4a853"/>
+        <text x="29" y="44" text-anchor="middle" fill="#0a0a0a" font-size="4" font-weight="900">₪</text>
+        <circle cx="35" cy="43" r="3.5" fill="#d4a853"/>
+        <text x="35" y="44.5" text-anchor="middle" fill="#0a0a0a" font-size="4" font-weight="900">₪</text>
+        <ellipse cx="29" cy="29" rx="7" ry="8" fill="#1e1e1e"/>
+        <ellipse cx="29" cy="18" rx="6.5" ry="6.5" fill="#e8e8e0"/>
+        <circle cx="31" cy="17" r="2" fill="#d4a853"/>
+        <circle cx="31" cy="17" r="1" fill="#0a0a0a"/>
+        <path d="M33 19 L39 21 L33 23 Z" fill="#d4a853"/>
+        <path d="M22 25 Q12 19 8 23 Q10 29 18 28Q20 27 22 29Z" fill="#222"/>
+        <path d="M36 25 Q46 19 50 23 Q48 29 40 28 Q38 27 36 29Z" fill="#222"/>
+        <path d="M24 38 Q29 43 34 38 Q31 41 29 39 Q27 41 24 38Z" fill="#d0d0c8"/>
+      </svg>
+      <div style="font-size:26px;font-weight:900;color:var(--accent);margin-top:10px;">MoneyNest</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;" class="he">יומן ניהול הוצאות</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;" class="en">Expense Manager</div>
+    </div>
+    <div class="about-version">Version 1.0.0 · 2026</div>
+
+    <div class="card">
+      <div style="font-size:12px;color:var(--muted);line-height:1.8;" class="he">
+        MoneyNest נבנה כדי לתת לכולם כלי פשוט וחזק לניהול הכסף. עקוב אחרי הוצאות, נהל תקציב, צלם קבלות — הכל במקום אחד.
+      </div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.8;" class="en">
+        MoneyNest was built to give everyone a simple yet powerful money management tool. Track expenses, manage budget, capture receipts — all in one place.
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:2px;" class="he">פותח על ידי</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:2px;" class="en">Developed by</div>
+        <div style="font-size:15px;font-weight:700;color:var(--accent);">Barak Aflalo</div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:2px;">© 2026 AppNest</div>
+        <div style="font-size:11px;color:var(--muted);" class="he">כל הזכויות שמורות</div>
+        <div style="font-size:11px;color:var(--muted);" class="en">All rights reserved</div>
+      </div>
+    </div>
+
+    <a href="https://barakaflalo.github.io/appnest" target="_blank" style="text-decoration:none;">
+      <div class="card" style="border-color:var(--gold-border);text-align:center;">
+        <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:4px;">🪺 AppNest</div>
+        <div style="font-size:11px;color:var(--muted);" class="he">עוד אפליקציות חינמיות במשפחת AppNest</div>
+        <div style="font-size:11px;color:var(--muted);" class="en">More free apps from the AppNest family</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<script>
+// ==================== DATA ====================
+var DB = {
+  expenses: [],
+  receipts: [],
+  settings: {
+    theme: 'green',
+    lang: 'he',
+    currency: 'ILS',
+    budget: 6000,
+    budgetByCat: {},
+    notifyBudget: true,
+    notifyDaily: true,
+    notifyPayment: true,
+    firstTime: true
+  }
+};
+
+var CATS = [
+  {id:'home',ic:'🏠',he:'בית',en:'Home',color:'#e05555'},
+  {id:'car',ic:'🚗',he:'רכב',en:'Car',color:'#3a7bd5'},
+  {id:'food',ic:'🛒',he:'מזון',en:'Food',color:'#1a9e5c'},
+  {id:'clothes',ic:'👔',he:'ביגוד',en:'Clothes',color:'#d4a853'},
+  {id:'health',ic:'💊',he:'בריאות',en:'Health',color:'#e05555'},
+  {id:'fun',ic:'🎭',he:'בידור',en:'Fun',color:'#534AB7'},
+  {id:'edu',ic:'📚',he:'חינוך',en:'Education',color:'#3a7bd5'},
+  {id:'other',ic:'📦',he:'אחר',en:'Other',color:'#888'},
+];
+
+var curExpType = 'var';
+var curInstCount = 4;
+var curAmt = '0';
+var curPeriod = 'month';
+var curExpTab = 'all';
+var curGuideStep = 0;
+
+// ==================== STORAGE ====================
+function saveDB(){try{localStorage.setItem('mn_db',JSON.stringify(DB));}catch(e){}}
+function loadDB(){
+  try{
+    var s=localStorage.getItem('mn_db');
+    if(s){var d=JSON.parse(s);DB=Object.assign({},DB,d);DB.settings=Object.assign({},DB.settings,d.settings);}
+  }catch(e){}
+}
+
+// ==================== INIT ====================
+function init(){
+  loadDB();
+  applyTheme(DB.settings.theme);
+  applyLang(DB.settings.lang);
+  renderCatsGrid();
+  setDefaultDate();
+  updateHomeStats();
+  if(DB.settings.firstTime){
+    showGuide();
+  }else{
+    showScreen('screen-home');
+  }
+}
+
+// ==================== SCREENS ====================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var s=document.getElementById(id);
+  if(s){s.classList.add('active');s.scrollTop=0;}
+  if(id==='screen-reports') renderReports();
+  if(id==='screen-expenses') renderExpenses();
+  if(id==='screen-history') renderHistory();
+  if(id==='screen-receipts') renderReceipts();
+  if(id==='screen-home') updateHomeStats();
+}
+
+// ==================== LANG ====================
+function toggleLang(){
+  DB.settings.lang = DB.settings.lang==='he'?'en':'he';
+  applyLang(DB.settings.lang);
+  saveDB();
+}
+function applyLang(lang){
+  document.body.classList.toggle('lang-en', lang==='en');
+  var el=document.getElementById('lang-display');
+  if(el) el.textContent = lang==='he'?'עברית':'English';
+}
+
+// ==================== THEME ====================
+function setTheme(t){
+  DB.settings.theme=t;
+  applyTheme(t);
+  saveDB();
+}
+function applyTheme(t){
+  document.body.className=document.body.className.replace(/theme-\w+/g,'');
+  if(t!=='green') document.body.classList.add('theme-'+t);
+}
+
+// ==================== ADD EXPENSE ====================
+function pressNum(k){
+  if(k==='del'){curAmt=curAmt.length>1?curAmt.slice(0,-1):'0';}
+  else if(k==='.'){if(!curAmt.includes('.'))curAmt+='.';}
+  else{curAmt=curAmt==='0'?k:curAmt+k;}
+  document.getElementById('amount-display').textContent=curAmt;
+  updateInstSummary();
+}
+
+function selExpType(t){
+  curExpType=t;
+  ['var','fix','inst'].forEach(function(type){
+    var el=document.getElementById('type-'+type);
+    el.className='type-btn'+(t===type?' on-'+type:'');
+  });
+  var box=document.getElementById('amount-box');
+  box.className='amount-box'+(t==='fix'?' fix':t==='inst'?' inst':'');
+  var labels={
+    'var': document.body.classList.contains('lang-en')?'💰 How much did you spend?':'💰 כמה הוצאת?',
+    'fix': document.body.classList.contains('lang-en')?'🔄 Monthly fixed amount?':'🔄 סכום קבוע חודשי?',
+    'inst': document.body.classList.contains('lang-en')?'💰 Total transaction price?':'💰 סה"כ מחיר העסקה?'
+  };
+  document.getElementById('amount-label').textContent=labels[t];
+  document.getElementById('inst-box').className='inst-box'+(t==='inst'?' show':'');
+  document.getElementById('fix-box').className='fix-box'+(t==='fix'?' show':'');
+}
+
+function changeInst(d){
+  curInstCount=Math.max(2,Math.min(36,curInstCount+d));
+  document.getElementById('inst-count').textContent=curInstCount;
+  updateInstSummary();
+}
+
+function updateInstSummary(){
+  var total=parseFloat(curAmt)||0;
+  var monthly=curInstCount?Math.round(total/curInstCount):0;
+  var t=document.getElementById('inst-total');
+  var m=document.getElementById('inst-monthly');
+  if(t) t.textContent='₪'+total.toLocaleString();
+  if(m) m.textContent='₪'+monthly+' × '+curInstCount;
+}
+
+function selRep(el){
+  document.querySelectorAll('.rep-btn').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+}
+
+function renderCatsGrid(){
+  var grid=document.getElementById('cats-grid');
+  if(!grid) return;
+  var html=CATS.map(function(c,i){
+    return '<div class="cat-btn'+(i===7?' sel':'')+'" onclick="selCat(this)" data-id="'+c.id+'">' +
+      '<span class="cat-ic">'+c.ic+'</span>' +
+      '<span class="cat-nm he">'+c.he+'</span>' +
+      '<span class="cat-nm en">'+c.en+'</span>' +
+      '</div>';
+  }).join('');
+  html += '<div class="cat-btn" onclick="openPopup(\'popup-category\')">' +
+    '<span class="cat-ic">➕</span>' +
+    '<span class="cat-nm he">הוסף</span>' +
+    '<span class="cat-nm en">Add</span>' +
+    '</div>';
+  grid.innerHTML = html;
+}
+
+function selCat(el){
+  document.querySelectorAll('.cat-btn').forEach(function(b){b.classList.remove('sel');});
+  el.classList.add('sel');
+}
+
+function selPay(el){
+  document.querySelectorAll('.pay-btn').forEach(function(b){b.classList.remove('sel');});
+  el.classList.add('sel');
+}
+
+function addCustomPayment(){
+  var val=document.getElementById('payment-inp').value.trim();
+  if(!val) return;
+  var row=document.getElementById('pay-row');
+  var otherBtn=document.getElementById('pay-other-btn');
+  var nb=document.createElement('div');
+  nb.className='pay-btn sel';
+  nb.innerHTML='<span class="pay-ic">💸</span>'+val;
+  nb.onclick=function(){selPay(nb);};
+  row.insertBefore(nb,otherBtn);
+  selPay(nb);
+  closePopup('popup-payment');
+  document.getElementById('payment-inp').value='';
+}
+
+function addCustomCategory(){
+  var name=document.getElementById('cat-name-inp').value.trim();
+  var ic=document.getElementById('cat-ic-inp').value.trim()||'📌';
+  if(!name) return;
+  CATS.push({id:'custom_'+Date.now(),ic:ic,he:name,en:name,color:'#888'});
+  renderCatsGrid();
+  closePopup('popup-category');
+  document.getElementById('cat-name-inp').value='';
+  document.getElementById('cat-ic-inp').value='';
+}
+
+function setDefaultDate(){
+  var d=document.getElementById('exp-date');
+  if(d) d.value=new Date().toISOString().split('T')[0];
+}
+
+function getSelectedCat(){
+  var sel=document.querySelector('.cat-btn.sel');
+  return sel?sel.dataset.id:'other';
+}
+
+function getSelectedPay(){
+  var sel=document.querySelector('.pay-btn.sel');
+  return sel?sel.textContent.trim():'אשראי';
+}
+
+function saveExpense(){
+  var amt=parseFloat(curAmt);
+  if(!amt||amt<=0){alert(document.body.classList.contains('lang-en')?'Please enter an amount':'אנא הכנס סכום');return;}
+  var catId=getSelectedCat();
+  var cat=CATS.find(function(c){return c.id===catId;})||CATS[CATS.length-1];
+  var exp={
+    id: Date.now(),
+    type: curExpType,
+    amount: amt,
+    cat: catId,
+    catIc: cat.ic,
+    catName: cat.he,
+    catColor: cat.color,
+    desc: document.getElementById('exp-desc').value||cat.he,
+    date: document.getElementById('exp-date').value||new Date().toISOString().split('T')[0],
+    notes: document.getElementById('exp-notes').value,
+    payment: getSelectedPay(),
+    instCount: curExpType==='inst'?curInstCount:1,
+    instPaid: curExpType==='inst'?1:1,
+    recurrence: curExpType==='fix'?(document.querySelector('.rep-btn.on')||{textContent:'כל חודש'}).textContent.trim():'',
+  };
+  DB.expenses.push(exp);
+  saveDB();
+  // Reset form
+  curAmt='0';
+  document.getElementById('amount-display').textContent='0';
+  document.getElementById('exp-desc').value='';
+  document.getElementById('exp-notes').value='';
+  setDefaultDate();
+  selExpType('var');
+  updateHomeStats();
+  showScreen('screen-home');
+  showToast(document.body.classList.contains('lang-en')?'✅ Expense saved!':'✅ הוצאה נשמרה!');
+}
+
+// ==================== STATS ====================
+function getMonthExpenses(){
+  var now=new Date();
+  var m=now.getMonth(),y=now.getFullYear();
+  return DB.expenses.filter(function(e){
+    var d=new Date(e.date);
+    return d.getMonth()===m&&d.getFullYear()===y;
+  });
+}
+
+function updateHomeStats(){
+  var exps=getMonthExpenses();
+  var total=exps.reduce(function(s,e){return s+e.amount;},0);
+  var budget=DB.settings.budget||6000;
+  var left=budget-total;
+  var t=document.getElementById('home-total');
+  var c=document.getElementById('home-count');
+  var b=document.getElementById('home-budget-left');
+  if(t) t.textContent='₪'+total.toLocaleString();
+  if(c) c.textContent=exps.length;
+  if(b){b.textContent='₪'+Math.max(0,left).toLocaleString();b.style.color=left<0?'var(--red)':'var(--blue)';}
+  var now=new Date();
+  var mn=document.getElementById('home-month');
+  if(mn) mn.textContent=now.toLocaleDateString(document.body.classList.contains('lang-en')?'en-US':'he-IL',{month:'long',year:'numeric'});
+}
+
+// ==================== REPORTS ====================
+function renderReports(){
+  var el=document.getElementById('reports-content');
+  if(!el) return;
+  var exps=getMonthExpenses();
+  var total=exps.reduce(function(s,e){return s+e.amount;},0);
+  var budget=DB.settings.budget||6000;
+  var catTotals={};
+  exps.forEach(function(e){catTotals[e.cat]=(catTotals[e.cat]||0)+e.amount;});
+  var catHtml=CATS.filter(function(c){return catTotals[c.id];}).map(function(c){
+    var amt=catTotals[c.id]||0;
+    var pct=total?Math.round(amt/total*100):0;
+    return '<div class="cat-row">' +
+      '<div class="cat-dot" style="background:'+c.color+';"></div>' +
+      '<div class="cat-name he">'+c.ic+' '+c.he+'</div>' +
+      '<div class="cat-name en" style="display:none;">'+c.ic+' '+c.en+'</div>' +
+      '<div class="cat-bar-bg"><div class="cat-bar-fill" style="width:'+pct+'%;background:'+c.color+';"></div></div>' +
+      '<div class="cat-amt" style="color:'+c.color+';">₪'+amt.toLocaleString()+'</div>' +
+      '<div class="cat-pct">'+pct+'%</div>' +
+      '</div>';
+  }).join('');
+
+  var recentHtml=exps.slice(-5).reverse().map(function(e){
+    return '<div class="exp-row">' +
+      '<div class="exp-ic">'+e.catIc+'</div>' +
+      '<div class="exp-info"><div class="exp-name">'+e.desc+'</div><div class="exp-date">'+e.date+' · '+e.payment+'</div></div>' +
+      '<div class="exp-amt">-₪'+e.amount.toLocaleString()+'</div>' +
+      '</div>';
+  }).join('');
+
+  el.innerHTML=
+    '<div class="stat-grid">' +
+      '<div class="stat-card main"><span class="stat-lbl he">סה"כ הוצאות החודש</span><span class="stat-lbl en" style="display:none;">Total This Month</span><div class="stat-val">₪'+total.toLocaleString()+'</div><div class="stat-sub">'+exps.length+' <span class="he">רשומות</span><span class="en" style="display:none;">records</span></div></div>' +
+      '<div class="stat-card"><span class="stat-lbl he">ממוצע יומי</span><span class="stat-lbl en" style="display:none;">Daily Avg</span><div class="stat-val" style="font-size:16px;">₪'+Math.round(total/30)+'</div></div>' +
+      '<div class="stat-card"><span class="stat-lbl he">תקציב שנותר</span><span class="stat-lbl en" style="display:none;">Budget Left</span><div class="stat-val blue" style="font-size:16px;">₪'+Math.max(0,budget-total).toLocaleString()+'</div></div>' +
+    '</div>' +
+    '<div class="cat-breakdown">' +
+      '<span class="section-label he">📁 פירוט לפי קטגוריה</span>' +
+      '<span class="section-label en" style="display:none;">📁 By Category</span>' +
+      (catHtml||'<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px;" class="he">אין הוצאות עדיין</div><div style="color:var(--muted);font-size:12px;text-align:center;padding:20px;" class="en">No expenses yet</div>') +
+    '</div>' +
+    '<div class="card"><span class="section-label he">🕐 הוצאות אחרונות</span><span class="section-label en" style="display:none;">🕐 Recent</span>' +
+      (recentHtml||'<div style="color:var(--muted);font-size:12px;text-align:center;padding:10px;" class="he">אין הוצאות</div>') +
+    '</div>';
+}
+
+function selPeriod(el,period){
+  curPeriod=period;
+  el.closest('.period-row').querySelectorAll('.period-btn').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+  renderReports();
+}
+
+// ==================== EXPENSES LIST ====================
+function renderExpenses(){
+  var el=document.getElementById('expenses-list');
+  if(!el) return;
+  var filtered=DB.expenses.filter(function(e){
+    if(curExpTab==='all') return true;
+    return e.type===curExpTab;
+  });
+  if(!filtered.length){
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;" class="he">אין הוצאות עדיין<br><br><button class="btn primary" onclick="showScreen(\'screen-add\')">➕ הוסף הוצאה</button></div>' +
+      '<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;" class="en">No expenses yet<br><br><button class="btn primary" onclick="showScreen(\'screen-add\')">➕ Add Expense</button></div>';
+    return;
+  }
+  el.innerHTML=filtered.reverse().map(function(e){
+    var instProg=e.type==='inst'?
+      '<div class="inst-dots">'+Array.from({length:e.instCount},function(_,i){
+        var cls=i<e.instPaid?'done':i===e.instPaid-1?'current':'future';
+        return '<div class="inst-dot '+cls+'"><span class="inst-dot-n">'+(i+1)+'</span><span class="inst-dot-v">'+(i<e.instPaid?'✓':'')+'</span></div>';
+      }).join('')+'</div>':'';
+    var typeBadge=e.type==='fix'?'<span style="font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid var(--blue);color:var(--blue);background:var(--blue-dim);" class="he">קבועה</span><span style="font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid var(--blue);color:var(--blue);background:var(--blue-dim);" class="en">Fixed</span>':
+      e.type==='inst'?'<span style="font-size:9px;padding:2px 7px;border-radius:10px;border:1px solid var(--gold);color:var(--gold);background:var(--gold-dim);">'+e.instPaid+'/'+e.instCount+'</span>':'';
+    return '<div class="card" style="border-color:'+e.catColor+'33;">' +
+      '<div style="display:flex;align-items:center;gap:10px;">' +
+        '<span style="font-size:22px;">'+e.catIc+'</span>' +
+        '<div style="flex:1;">' +
+          '<div style="font-size:13px;font-weight:700;color:var(--text);">'+e.desc+'</div>' +
+          '<div style="font-size:10px;color:var(--muted);margin-top:2px;">'+e.date+' · '+e.payment+' '+typeBadge+'</div>' +
+        '</div>' +
+        '<div style="font-size:15px;font-weight:700;color:var(--red);">-₪'+e.amount.toLocaleString()+'</div>' +
+      '</div>' +
+      instProg +
+    '</div>';
+  }).join('');
+}
+
+function selExpTab(el,tab){
+  curExpTab=tab;
+  document.querySelectorAll('.exp-tab').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+  renderExpenses();
+}
+
+// ==================== HISTORY ====================
+function renderHistory(){
+  var el=document.getElementById('history-list');
+  if(!el) return;
+  if(!DB.expenses.length){
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;" class="he">אין היסטוריה עדיין</div><div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;" class="en">No history yet</div>';
+    return;
+  }
+  el.innerHTML=DB.expenses.slice().reverse().map(function(e){
+    return '<div class="card">' +
+      '<div style="display:flex;align-items:center;gap:10px;">' +
+        '<span style="font-size:22px;">'+e.catIc+'</span>' +
+        '<div style="flex:1;">' +
+          '<div style="font-size:13px;font-weight:700;color:var(--text);">'+e.desc+'</div>' +
+          '<div style="font-size:10px;color:var(--muted);margin-top:2px;">'+e.date+' · '+e.payment+'</div>' +
+        '</div>' +
+        '<div>' +
+          '<div style="font-size:15px;font-weight:700;color:var(--red);">-₪'+e.amount.toLocaleString()+'</div>' +
+          '<button style="font-size:10px;background:none;border:none;color:var(--muted);cursor:pointer;margin-top:3px;" onclick="deleteExpense('+e.id+')">🗑️</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function deleteExpense(id){
+  DB.expenses=DB.expenses.filter(function(e){return e.id!==id;});
+  saveDB();
+  renderHistory();
+  updateHomeStats();
+}
+
+// ==================== RECEIPTS ====================
+function renderReceipts(){
+  var el=document.getElementById('receipts-grid');
+  var cnt=document.getElementById('receipts-count');
+  if(!el) return;
+  if(cnt) cnt.textContent=DB.receipts.length+' '+(document.body.classList.contains('lang-en')?'receipts':'קבלות');
+  var html=DB.receipts.map(function(r){
+    return '<div class="receipt-card">' +
+      '<div class="receipt-thumb"><img src="'+r.data+'" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.innerHTML=\'🧾\'"/></div>' +
+      '<div class="receipt-info"><span class="receipt-name">'+r.name+'</span><span class="receipt-date">'+r.date+'</span></div>' +
+      '</div>';
+  }).join('');
+  html += '<div class="add-receipt-card" onclick="takeReceipt()">' +
+    '<span class="add-receipt-ic">📷</span>' +
+    '<span class="add-receipt-txt he">+ צלם קבלה</span>' +
+    '<span class="add-receipt-txt en">+ Take Photo</span>' +
+    '</div>';
+  el.innerHTML=html;
+}
+
+function takeReceipt(){document.getElementById('receipt-input').click();}
+function uploadReceipt(){document.getElementById('receipt-input').click();}
+function handleReceiptUpload(inp){
+  if(!inp.files||!inp.files[0]) return;
+  var file=inp.files[0];
+  var reader=new FileReader();
+  reader.onload=function(e){
+    DB.receipts.push({id:Date.now(),name:file.name,date:new Date().toLocaleDateString('he-IL'),data:e.target.result});
+    saveDB();
+    if(document.getElementById('screen-receipts').classList.contains('active')) renderReceipts();
+    showToast('📷 קבלה נשמרה!');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ==================== EXPORT ====================
+function exportPDF(){showToast(document.body.classList.contains('lang-en')?'📄 Generating PDF...':'📄 מכין PDF...');}
+function exportExcel(){
+  var csv='תאריך,תיאור,קטגוריה,סכום,אמצעי תשלום\n';
+  DB.expenses.forEach(function(e){csv+=e.date+','+e.desc+','+e.catName+','+e.amount+','+e.payment+'\n';});
+  var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download='moneynest_export.csv';a.click();
+  showToast('📊 CSV הורד!');
+}
+function exportEmail(){window.location.href='mailto:?subject=MoneyNest Export&body='+encodeURIComponent('הוצאות מ-MoneyNest:\n\n'+DB.expenses.map(function(e){return e.date+' - '+e.desc+': ₪'+e.amount;}).join('\n'));}
+function exportDrive(){showToast(document.body.classList.contains('lang-en')?'🔵 Connect Google Drive in settings':'🔵 חבר Google Drive בהגדרות');}
+function exportShare(){
+  var text='הוצאות מ-MoneyNest:\n'+DB.expenses.slice(-5).map(function(e){return e.date+' - '+e.desc+': ₪'+e.amount;}).join('\n');
+  if(navigator.share){navigator.share({title:'MoneyNest',text:text});}
+  else{navigator.clipboard.writeText(text);showToast('📋 הועתק!');}
+}
+
+// ==================== BUDGET ====================
+function saveBudget(){
+  var val=parseFloat(document.getElementById('budget-inp').value);
+  if(val>0){DB.settings.budget=val;saveDB();updateHomeStats();showToast('✅ תקציב נשמר!');}
+}
+
+// ==================== DELETE ALL ====================
+function confirmDelete(){
+  DB.expenses=[];DB.receipts=[];saveDB();
+  closePopup('popup-confirm');
+  updateHomeStats();
+  showToast(document.body.classList.contains('lang-en')?'🗑️ All data deleted':'🗑️ כל הנתונים נמחקו');
+}
+
+// ==================== POPUPS ====================
+function openPopup(id){document.getElementById(id).classList.add('show');}
+function closePopup(id){document.getElementById(id).classList.remove('show');}
+
+// ==================== TOAST ====================
+function showToast(msg){
+  var t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a9e5c;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:1000;white-space:nowrap;animation:fadeIn 0.3s;';
+  document.body.appendChild(t);
+  setTimeout(function(){t.remove();},2500);
+}
+
+// ==================== GUIDE ====================
+var GUIDE_STEPS_HE = [
+  {ic:'💰',title:'ברוך הבא ל-MoneyNest!',desc:'יומן ניהול הוצאות חכם שיעזור לך לשלוט בכסף. בוא נראה כיצד להשתמש בו!'},
+  {ic:'➕',title:'הוסף הוצאה',desc:'לחץ "הוסף הוצאה" כדי לרשום כל הוצאה. בחר סוג: רגילה, קבועה חודשית, או תשלומים.'},
+  {ic:'📊',title:'דוחות וגרפים',desc:'ראה סיכומים חודשיים, גרפים לפי קטגוריה, ועקוב אחרי הרגלי ההוצאות שלך.'},
+  {ic:'📷',title:'צלם קבלות',desc:'צלם קבלות ושמור אותן כדי לתעד את כל הרכישות שלך. הכל נשמר בטלפון.'},
+  {ic:'🎯',title:'הגדר תקציב',desc:'הגדר תקציב חודשי ותקבל התראות כשאתה מתקרב למגבלה. שלוט על הכסף שלך!'},
+];
+var GUIDE_STEPS_EN = [
+  {ic:'💰',title:'Welcome to MoneyNest!',desc:'A smart expense journal to help you control your money. Let\'s see how to use it!'},
+  {ic:'➕',title:'Add Expense',desc:'Tap "Add Expense" to record any expense. Choose type: regular, fixed monthly, or installments.'},
+  {ic:'📊',title:'Reports & Charts',desc:'View monthly summaries, category charts, and track your spending habits.'},
+  {ic:'📷',title:'Capture Receipts',desc:'Photograph receipts and save them to document all your purchases. Everything is stored on your phone.'},
+  {ic:'🎯',title:'Set Budget',desc:'Set a monthly budget and get alerts when you\'re approaching the limit. Control your money!'},
+];
+
+function showGuide(){
+  curGuideStep=0;
+  renderGuideStep();
+  showScreen('screen-welcome');
+}
+
+function renderGuideStep(){
+  var steps=document.body.classList.contains('lang-en')?GUIDE_STEPS_EN:GUIDE_STEPS_HE;
+  var s=steps[curGuideStep];
+  var isLast=curGuideStep===steps.length-1;
+  var dotsHtml=steps.map(function(_,i){
+    return '<div class="gdot'+(i===curGuideStep?' on':'')+'" onclick="goToGuideStep('+i+')"></div>';
+  }).join('');
+  document.getElementById('guide-content').innerHTML=
+    '<div class="guide-step">' +
+      '<span class="guide-ic">'+s.ic+'</span>' +
+      '<div class="guide-title">'+s.title+'</div>' +
+      '<div class="guide-desc">'+s.desc+'</div>' +
+    '</div>' +
+    '<div class="guide-dots">'+dotsHtml+'</div>';
+  var btn=document.getElementById('guide-btn-text');
+  if(btn) btn.textContent=isLast?(document.body.classList.contains('lang-en')?'Start ←':'התחל ←'):(document.body.classList.contains('lang-en')?'Next ←':'הבא ←');
+}
+
+function nextGuideStep(){
+  var steps=document.body.classList.contains('lang-en')?GUIDE_STEPS_EN:GUIDE_STEPS_HE;
+  if(curGuideStep<steps.length-1){curGuideStep++;renderGuideStep();}
+  else{skipGuide();}
+}
+
+function goToGuideStep(i){curGuideStep=i;renderGuideStep();}
+
+function skipGuide(){
+  DB.settings.firstTime=false;
+  saveDB();
+  showScreen('screen-home');
+}
+
+// ==================== START ====================
+init();
+</script>
+</body>
+</html>
