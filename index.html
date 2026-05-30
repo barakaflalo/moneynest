@@ -2,514 +2,252 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1a7a4a">
-<title>MoneyNest — יומן הוצאות</title>
+<meta name="description" content="MoneyNest — יומן ניהול הוצאות חכם">
+<link rel="manifest" href="data:application/json,{%22name%22:%22MoneyNest%22,%22short_name%22:%22MoneyNest%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230d1a12%22,%22theme_color%22:%22%231a7a4a%22}">
+<title>MoneyNest — יומן ניהול הוצאות</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* ===== CSS VARIABLES / THEMES ===== */
 :root {
-  --primary: #1a7a4a;
-  --primary-light: #2ea866;
-  --primary-dark: #0f5233;
-  --accent: #f0c040;
-  --bg: #0d1a12;
-  --bg2: #152318;
-  --bg3: #1c2f1e;
-  --card: #1e3322;
-  --card2: #243d28;
-  --text: #e8f5ed;
-  --text2: #9dbdaa;
-  --text3: #6a8f75;
-  --border: #2a4a30;
-  --danger: #e05555;
-  --success: #44cc77;
-  --warning: #f0a030;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow: 0 4px 20px rgba(0,0,0,0.4);
-  --font: 'Heebo', 'Rubik', sans-serif;
+  --primary:#1a7a4a;--primary-light:#2ea866;--primary-dark:#0f5233;
+  --accent:#f0c040;--bg:#0d1a12;--bg2:#152318;--bg3:#1c2f1e;
+  --card:#1e3322;--card2:#243d28;--text:#e8f5ed;--text2:#9dbdaa;
+  --text3:#6a8f75;--border:#2a4a30;--danger:#e05555;--success:#44cc77;
+  --warning:#f0a030;--radius:16px;--radius-sm:10px;
+  --shadow:0 4px 20px rgba(0,0,0,0.4);--font:'Heebo','Rubik',sans-serif;
 }
-[data-theme="gold"] {
-  --primary: #c9a227;
-  --primary-light: #e5be4a;
-  --primary-dark: #9a7a18;
-  --accent: #ffffff;
-  --bg: #0a0a0a;
-  --bg2: #111111;
-  --bg3: #181818;
-  --card: #1a1a1a;
-  --card2: #222222;
-  --text: #f5e6c0;
-  --text2: #b8a070;
-  --text3: #7a6a40;
-  --border: #2a2510;
-}
-[data-theme="navy"] {
-  --primary: #3a6fc4;
-  --primary-light: #5a8fe8;
-  --primary-dark: #2a4f94;
-  --accent: #64d8f0;
-  --bg: #080e1a;
-  --bg2: #0d1628;
-  --bg3: #121e34;
-  --card: #162040;
-  --card2: #1c2a50;
-  --text: #d0e8f8;
-  --text2: #7090c0;
-  --text3: #405878;
-  --border: #1e2e50;
-}
-[data-theme="light"] {
-  --primary: #7c3aed;
-  --primary-light: #9d5cf0;
-  --primary-dark: #5b1fc8;
-  --accent: #f59e0b;
-  --bg: #f5f0ff;
-  --bg2: #ede5ff;
-  --bg3: #e8dcff;
-  --card: #ffffff;
-  --card2: #f8f4ff;
-  --text: #1e1030;
-  --text2: #5a4080;
-  --text3: #9070c0;
-  --border: #d0b8f0;
-  --shadow: 0 4px 20px rgba(120,60,220,0.12);
-}
+[data-theme="gold"]{--primary:#c9a227;--primary-light:#e5be4a;--primary-dark:#9a7a18;--accent:#fff;--bg:#0a0a0a;--bg2:#111;--bg3:#181818;--card:#1a1a1a;--card2:#222;--text:#f5e6c0;--text2:#b8a070;--text3:#7a6a40;--border:#2a2510;}
+[data-theme="navy"]{--primary:#3a6fc4;--primary-light:#5a8fe8;--primary-dark:#2a4f94;--accent:#64d8f0;--bg:#080e1a;--bg2:#0d1628;--bg3:#121e34;--card:#162040;--card2:#1c2a50;--text:#d0e8f8;--text2:#7090c0;--text3:#405878;--border:#1e2e50;}
+[data-theme="light"]{--primary:#7c3aed;--primary-light:#9d5cf0;--primary-dark:#5b1fc8;--accent:#f59e0b;--bg:#f5f0ff;--bg2:#ede5ff;--bg3:#e8dcff;--card:#fff;--card2:#f8f4ff;--text:#1e1030;--text2:#5a4080;--text3:#9070c0;--border:#d0b8f0;--shadow:0 4px 20px rgba(120,60,220,0.12);}
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font); }
+/* ===== RESET & BASE ===== */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);}
+#app{height:100vh;overflow:hidden;position:relative;}
 
-#app { height: 100vh; overflow: hidden; position: relative; }
+/* ===== SCREENS ===== */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;background:var(--bg);overflow:hidden;animation:fadeIn .22s ease;}
+.screen.active{display:flex;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* ===== SCREEN SYSTEM ===== */
-.screen { 
-  position: absolute; inset: 0; 
-  display: none; flex-direction: column;
-  background: var(--bg); overflow: hidden;
-  animation: fadeIn 0.22s ease;
-}
-.screen.active { display: flex; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
-
-/* ===== TOP BAR ===== */
-.topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 18px 10px;
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-  min-height: 58px;
-}
-.topbar-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
-.topbar-back {
-  background: none; border: none; color: var(--primary-light);
-  font-size: 1rem; cursor: pointer; padding: 6px 10px;
-  border-radius: var(--radius-sm); display: flex; align-items: center; gap: 5px;
-  font-family: var(--font); font-weight: 600;
-}
-.topbar-back:hover { background: var(--card); }
+/* ===== TOPBAR ===== */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;min-height:58px;}
+.topbar-title{font-size:1.1rem;font-weight:700;color:var(--text);}
+.topbar-back{background:none;border:none;color:var(--primary-light);font-size:1rem;cursor:pointer;padding:6px 10px;border-radius:var(--radius-sm);display:flex;align-items:center;gap:5px;font-family:var(--font);font-weight:600;}
+.topbar-actions{display:flex;gap:6px;}
+.topbar-btn{background:var(--card);border:1px solid var(--border);color:var(--text);font-size:.8rem;font-weight:700;padding:6px 10px;border-radius:var(--radius-sm);cursor:pointer;font-family:var(--font);transition:all .18s;}
+.topbar-btn:hover{background:var(--card2);}
 
 /* ===== SCROLL BODY ===== */
-.screen-body {
-  flex: 1; overflow-y: auto; padding: 16px;
-  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-}
-.screen-body::-webkit-scrollbar { width: 4px; }
-.screen-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.screen-body{flex:1;overflow-y:auto;padding:16px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.screen-body::-webkit-scrollbar{width:4px;}
+.screen-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 
 /* ===== CARDS ===== */
-.card {
-  background: var(--card); border-radius: var(--radius);
-  border: 1px solid var(--border); padding: 16px;
-  margin-bottom: 12px;
-}
-.card2 { background: var(--card2); }
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:12px;}
 
 /* ===== BUTTONS ===== */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: 7px; padding: 12px 20px; border-radius: var(--radius-sm);
-  border: none; cursor: pointer; font-family: var(--font);
-  font-size: 0.95rem; font-weight: 600; transition: all 0.18s;
-}
-.btn-primary { background: var(--primary); color: white; }
-.btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); }
-.btn-secondary { background: var(--card2); color: var(--text); border: 1px solid var(--border); }
-.btn-secondary:hover { background: var(--card); }
-.btn-danger { background: rgba(224,85,85,0.15); color: var(--danger); border: 1px solid rgba(224,85,85,0.3); }
-.btn-sm { padding: 7px 13px; font-size: 0.85rem; }
-.btn-block { width: 100%; }
-.btn-icon { padding: 9px; border-radius: 50%; background: var(--card2); border: 1px solid var(--border); color: var(--text); font-size: 1.1rem; cursor: pointer; }
-.btn-icon:hover { background: var(--card); }
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:600;transition:all .18s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-light);transform:translateY(-1px);}
+.btn-secondary{background:var(--card2);color:var(--text);border:1px solid var(--border);}
+.btn-danger{background:rgba(224,85,85,.15);color:var(--danger);border:1px solid rgba(224,85,85,.3);}
+.btn-sm{padding:7px 13px;font-size:.85rem;}
+.btn-block{width:100%;}
 
 /* ===== INPUTS ===== */
-.input-group { margin-bottom: 14px; }
-.input-label { font-size: 0.82rem; color: var(--text2); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
-.input-field {
-  width: 100%; background: var(--card2); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); color: var(--text); font-family: var(--font);
-  font-size: 1rem; padding: 11px 14px; outline: none; transition: border 0.18s;
-}
-.input-field:focus { border-color: var(--primary); }
-.input-field::placeholder { color: var(--text3); }
-select.input-field option { background: var(--bg3); color: var(--text); }
+.input-group{margin-bottom:14px;}
+.input-label{font-size:.82rem;color:var(--text2);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.input-field{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font);font-size:1rem;padding:11px 14px;outline:none;transition:border .18s;}
+.input-field:focus{border-color:var(--primary);}
+.input-field::placeholder{color:var(--text3);}
+select.input-field option{background:var(--bg3);color:var(--text);}
 
 /* ===== TABS ===== */
-.tabs {
-  display: flex; background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto; flex-shrink: 0;
-  scrollbar-width: none;
-}
-.tabs::-webkit-scrollbar { display: none; }
-.tab {
-  flex: 1; min-width: 70px; padding: 11px 8px;
-  font-size: 0.82rem; font-weight: 600; color: var(--text3);
-  background: none; border: none; cursor: pointer;
-  border-bottom: 2px solid transparent; transition: all 0.18s;
-  font-family: var(--font); white-space: nowrap;
-}
-.tab.active { color: var(--primary-light); border-bottom-color: var(--primary-light); }
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:65px;padding:11px 6px;font-size:.8rem;font-weight:600;color:var(--text3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;font-family:var(--font);white-space:nowrap;}
+.tab.active{color:var(--primary-light);border-bottom-color:var(--primary-light);}
 
-/* ===== BADGE AppNest ===== */
-.appnest-badge {
-  text-align: center; padding: 8px; font-size: 0.72rem;
-  color: var(--text3); background: var(--bg2);
-  border-top: 1px solid var(--border); flex-shrink: 0;
-  letter-spacing: 0.02em;
-}
-.appnest-badge span { color: var(--primary-light); font-weight: 700; }
+/* ===== APPNEST BADGE ===== */
+.appnest-badge{text-align:center;padding:8px;font-size:.72rem;color:var(--text3);background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;letter-spacing:.02em;}
+.appnest-badge span{color:var(--primary-light);font-weight:700;}
 
 /* ===== LOGO ===== */
-.logo-wrap { display: flex; align-items: center; gap: 10px; }
-.logo-hex {
-  width: 42px; height: 42px; position: relative;
-  display: flex; align-items: center; justify-content: center;
-}
-.logo-hex svg { width: 42px; height: 42px; }
-.logo-text { font-size: 1.3rem; font-weight: 900; color: var(--text); letter-spacing: -0.02em; }
-.logo-text span { color: var(--primary-light); }
+.logo-wrap{display:flex;align-items:center;gap:10px;}
+.logo-hex{width:42px;height:42px;position:relative;display:flex;align-items:center;justify-content:center;}
+.logo-hex svg{width:42px;height:42px;}
+.logo-text{font-size:1.3rem;font-weight:900;color:var(--text);letter-spacing:-.02em;}
+.logo-text span{color:var(--primary-light);}
 
-/* ===== HOME SCREEN ===== */
-#screen-home .topbar { padding: 12px 18px; }
-
-.home-summary {
-  background: linear-gradient(135deg, var(--primary-dark), var(--bg2));
-  border-radius: var(--radius); border: 1px solid var(--primary);
-  padding: 20px; margin-bottom: 16px;
-  position: relative; overflow: hidden;
-}
-.home-summary::before {
-  content: ''; position: absolute; top: -20px; right: -20px;
-  width: 100px; height: 100px; border-radius: 50%;
-  background: rgba(255,255,255,0.04);
-}
-.summary-month { font-size: 0.8rem; color: var(--text2); margin-bottom: 6px; font-weight: 600; }
-.summary-total { font-size: 2.4rem; font-weight: 900; color: var(--text); line-height: 1; margin-bottom: 14px; }
-.summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-.summary-item { text-align: center; }
-.summary-item .val { font-size: 1rem; font-weight: 700; color: var(--primary-light); }
-.summary-item .lbl { font-size: 0.72rem; color: var(--text3); margin-top: 2px; }
-
-.home-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.home-actions .btn-action-main {
-  grid-column: 1 / -1;
-  background: var(--primary); color: white;
-  border-radius: var(--radius); border: none; cursor: pointer;
-  font-family: var(--font); font-weight: 700; font-size: 1.05rem;
-  padding: 16px; display: flex; align-items: center; justify-content: center;
-  gap: 8px; transition: all 0.18s; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-}
-.btn-nav {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); cursor: pointer; font-family: var(--font);
-  padding: 14px 10px; display: flex; flex-direction: column;
-  align-items: center; gap: 6px; transition: all 0.18s; color: var(--text);
-  font-weight: 600; font-size: 0.85rem;
-}
-.btn-nav:hover { background: var(--card2); border-color: var(--primary); }
-.btn-nav .icon { font-size: 1.5rem; }
-
-.home-row2 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.home-row3 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.home-bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0; }
+/* ===== HOME ===== */
+.home-summary{background:linear-gradient(135deg,var(--primary-dark),var(--bg2));border-radius:var(--radius);border:1px solid var(--primary);padding:20px;margin-bottom:14px;position:relative;overflow:hidden;}
+.home-summary::before{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.04);}
+.summary-month{font-size:.8rem;color:var(--text2);margin-bottom:6px;font-weight:600;}
+.summary-total{font-size:2.4rem;font-weight:900;color:var(--text);line-height:1;margin-bottom:14px;}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.summary-item .val{font-size:1rem;font-weight:700;color:var(--primary-light);}
+.summary-item .lbl{font-size:.72rem;color:var(--text3);margin-top:2px;}
+.home-btn-main{width:100%;background:var(--primary);color:#fff;border-radius:var(--radius);border:none;cursor:pointer;font-family:var(--font);font-weight:700;font-size:1.05rem;padding:16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .18s;margin-bottom:10px;}
+.home-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.home-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+.btn-nav{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-family:var(--font);padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .18s;color:var(--text);font-weight:600;font-size:.83rem;}
+.btn-nav:hover{background:var(--card2);border-color:var(--primary);}
+.btn-nav .icon{font-size:1.5rem;}
 
 /* ===== NUMPAD ===== */
-.numpad {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 10px; padding: 12px;
-  background: var(--bg2); border-top: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.numpad-key {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); color: var(--text);
-  font-size: 1.5rem; font-weight: 600; padding: 16px 8px;
-  cursor: pointer; font-family: var(--font); text-align: center;
-  transition: all 0.12s; user-select: none;
-}
-.numpad-key:active { background: var(--primary); color: white; transform: scale(0.95); }
-.numpad-key.special { background: var(--card2); font-size: 1.1rem; }
-.numpad-key.action { background: var(--primary); color: white; }
-.amount-display {
-  text-align: center; padding: 18px 16px 10px;
-  background: var(--bg2); border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.amount-display .amount-value {
-  font-size: 3rem; font-weight: 900; color: var(--text);
-  letter-spacing: -0.02em; min-height: 3.5rem;
-  display: flex; align-items: center; justify-content: center;
-}
-.amount-display .currency { color: var(--primary-light); margin-inline-end: 5px; }
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 12px;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;}
+.numpad-key{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:1.5rem;font-weight:600;padding:14px 8px;cursor:pointer;font-family:var(--font);text-align:center;transition:all .12s;user-select:none;}
+.numpad-key:active{background:var(--primary);color:#fff;transform:scale(.95);}
+.numpad-key.special{background:var(--card2);font-size:1.1rem;}
+.amount-display{text-align:center;padding:16px 16px 10px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.amount-display .amount-value{font-size:3rem;font-weight:900;color:var(--text);letter-spacing:-.02em;min-height:3.5rem;display:flex;align-items:center;justify-content:center;}
+.amount-display .currency{color:var(--primary-light);margin-inline-end:5px;}
 
-/* ===== EXPENSE TYPES ===== */
-.type-selector { display: flex; gap: 8px; margin-bottom: 14px; }
-.type-btn {
-  flex: 1; padding: 9px 6px; border-radius: var(--radius-sm);
-  border: 1.5px solid var(--border); background: var(--card2);
-  cursor: pointer; font-family: var(--font); font-size: 0.82rem;
-  font-weight: 600; color: var(--text2); text-align: center; transition: all 0.18s;
-}
-.type-btn.active { border-color: var(--primary); background: rgba(26,122,74,0.18); color: var(--primary-light); }
+/* ===== TYPE SELECTOR ===== */
+.type-selector{display:flex;gap:8px;margin-bottom:14px;}
+.type-btn{flex:1;padding:9px 6px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--card2);cursor:pointer;font-family:var(--font);font-size:.82rem;font-weight:600;color:var(--text2);text-align:center;transition:all .18s;}
+.type-btn.active{border-color:var(--primary);background:rgba(26,122,74,.18);color:var(--primary-light);}
 
 /* ===== CATEGORIES ===== */
-.cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
-.cat-btn {
-  padding: 10px 4px; border-radius: var(--radius-sm);
-  border: 1.5px solid var(--border); background: var(--card2);
-  cursor: pointer; text-align: center; transition: all 0.18s;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-}
-.cat-btn.active { border-color: var(--primary); background: rgba(26,122,74,0.15); }
-.cat-btn .cat-icon { font-size: 1.4rem; }
-.cat-btn .cat-name { font-size: 0.7rem; color: var(--text2); font-weight: 600; }
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.cat-btn{padding:10px 4px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--card2);cursor:pointer;text-align:center;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.cat-btn.active{border-color:var(--primary);background:rgba(26,122,74,.15);}
+.cat-btn .cat-icon{font-size:1.4rem;}
+.cat-btn .cat-name{font-size:.7rem;color:var(--text2);font-weight:600;}
 
-/* ===== PAYMENT METHODS ===== */
-.pay-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-.pay-btn {
-  padding: 8px 14px; border-radius: 20px;
-  border: 1.5px solid var(--border); background: var(--card2);
-  cursor: pointer; font-family: var(--font); font-size: 0.82rem;
-  font-weight: 600; color: var(--text2); transition: all 0.18s;
-}
-.pay-btn.active { border-color: var(--accent); background: rgba(240,192,64,0.12); color: var(--accent); }
+/* ===== PAYMENT ===== */
+.pay-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.pay-btn{padding:8px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card2);cursor:pointer;font-family:var(--font);font-size:.82rem;font-weight:600;color:var(--text2);transition:all .18s;}
+.pay-btn.active{border-color:var(--accent);background:rgba(240,192,64,.12);color:var(--accent);}
 
-/* ===== EXPENSE LIST ITEM ===== */
-.expense-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px; background: var(--card);
-  border-radius: var(--radius-sm); border: 1px solid var(--border);
-  margin-bottom: 8px; transition: all 0.18s;
-}
-.expense-item:active { background: var(--card2); }
-.expense-icon {
-  width: 42px; height: 42px; border-radius: 50%;
-  background: var(--card2); display: flex; align-items: center;
-  justify-content: center; font-size: 1.3rem; flex-shrink: 0;
-  border: 1px solid var(--border);
-}
-.expense-info { flex: 1; min-width: 0; }
-.expense-name { font-weight: 600; font-size: 0.95rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.expense-meta { font-size: 0.75rem; color: var(--text3); margin-top: 2px; }
-.expense-amount { font-weight: 800; font-size: 1.05rem; color: var(--text); text-align: end; flex-shrink: 0; }
-.expense-amount.red { color: var(--danger); }
-.edit-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 1rem; padding: 5px; }
+/* ===== EXPENSE ITEM ===== */
+.expense-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:8px;transition:all .18s;}
+.expense-icon{width:42px;height:42px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;border:1px solid var(--border);}
+.expense-info{flex:1;min-width:0;}
+.expense-name{font-weight:600;font-size:.95rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.expense-meta{font-size:.75rem;color:var(--text3);margin-top:2px;}
+.expense-amount{font-weight:800;font-size:1.05rem;color:var(--text);text-align:end;flex-shrink:0;}
+.edit-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:5px;}
 
-/* ===== PROGRESS BAR ===== */
-.progress-bar { height: 8px; background: var(--card2); border-radius: 4px; overflow: hidden; }
-.progress-fill { height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.4s ease; }
-.progress-fill.warn { background: var(--warning); }
-.progress-fill.danger { background: var(--danger); }
+/* ===== INSTALLMENT DOTS ===== */
+.installment-dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
+.inst-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;border:1.5px solid var(--border);}
+.inst-dot.paid{background:var(--success);color:#fff;border-color:var(--success);}
+.inst-dot.current{background:var(--accent);color:#000;border-color:var(--accent);}
+.inst-dot.future{background:var(--card2);color:var(--text3);}
+
+/* ===== PROGRESS ===== */
+.progress-bar{height:8px;background:var(--card2);border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--primary);border-radius:4px;transition:width .4s ease;}
+.progress-fill.warn{background:var(--warning);}
+.progress-fill.danger{background:var(--danger);}
 
 /* ===== MODAL ===== */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-  display: flex; align-items: flex-end; justify-content: center;
-  z-index: 1000; animation: fadeIn 0.18s ease;
-}
-.modal-overlay.center { align-items: center; }
-.modal {
-  background: var(--bg3); border-radius: var(--radius) var(--radius) 0 0;
-  border: 1px solid var(--border); border-bottom: none;
-  width: 100%; max-width: 480px; max-height: 90vh;
-  overflow-y: auto; padding: 20px;
-  animation: slideUp 0.22s ease;
-}
-.modal.center-modal { border-radius: var(--radius); border-bottom: 1px solid var(--border); max-height: 80vh; margin: 16px; width: auto; min-width: 280px; }
-@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-.modal-title { font-size: 1.1rem; font-weight: 700; }
-.modal-close { background: none; border: none; color: var(--text3); font-size: 1.4rem; cursor: pointer; }
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:flex-end;justify-content:center;z-index:1000;animation:fadeIn .18s ease;}
+.modal{background:var(--bg3);border-radius:var(--radius) var(--radius) 0 0;border:1px solid var(--border);border-bottom:none;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;padding:20px;animation:slideUp .22s ease;}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.modal-title{font-size:1.1rem;font-weight:700;}
+.modal-close{background:none;border:none;color:var(--text3);font-size:1.4rem;cursor:pointer;}
 
 /* ===== TOGGLE ===== */
-.toggle-wrap { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
-.toggle-label { font-size: 0.95rem; color: var(--text); }
-.toggle {
-  width: 48px; height: 26px; background: var(--card2);
-  border-radius: 13px; position: relative; cursor: pointer;
-  border: 1px solid var(--border); transition: background 0.2s;
-}
-.toggle.on { background: var(--primary); border-color: var(--primary); }
-.toggle::after {
-  content: ''; position: absolute; width: 20px; height: 20px;
-  background: white; border-radius: 50%; top: 2px; inset-inline-start: 2px;
-  transition: transform 0.2s;
-}
-.toggle.on::after { transform: translateX(22px); }
-[dir="rtl"] .toggle.on::after { transform: translateX(-22px); }
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:10px 0;}
+.toggle-label{font-size:.95rem;color:var(--text);}
+.toggle{width:48px;height:26px;background:var(--card2);border-radius:13px;position:relative;cursor:pointer;border:1px solid var(--border);transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--primary);border-color:var(--primary);}
+.toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:2px;inset-inline-start:2px;transition:transform .2s;}
+.toggle.on::after{transform:translateX(22px);}
+[dir="rtl"] .toggle.on::after{transform:translateX(-22px);}
 
 /* ===== REPORTS ===== */
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-.stat-item { background: var(--card); border-radius: var(--radius-sm); padding: 14px; border: 1px solid var(--border); }
-.stat-val { font-size: 1.5rem; font-weight: 800; color: var(--primary-light); }
-.stat-lbl { font-size: 0.75rem; color: var(--text3); margin-top: 3px; }
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.stat-item{background:var(--card);border-radius:var(--radius-sm);padding:14px;border:1px solid var(--border);}
+.stat-val{font-size:1.4rem;font-weight:800;color:var(--primary-light);}
+.stat-lbl{font-size:.75rem;color:var(--text3);margin-top:3px;}
+.cat-report-item{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.cat-report-icon{font-size:1.3rem;width:32px;text-align:center;flex-shrink:0;}
+.cat-report-info{flex:1;}
+.cat-report-name{font-size:.88rem;font-weight:600;margin-bottom:4px;display:flex;justify-content:space-between;}
+.cat-report-pct{font-size:.75rem;color:var(--text3);margin-top:3px;}
 
-.cat-report-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.cat-report-item .cat-icon2 { font-size: 1.3rem; width: 32px; text-align: center; flex-shrink: 0; }
-.cat-report-info { flex: 1; }
-.cat-report-name { font-size: 0.88rem; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; }
-.cat-report-pct { font-size: 0.75rem; color: var(--text3); margin-top: 3px; }
+/* ===== RECEIPTS ===== */
+.receipts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.receipt-thumb{aspect-ratio:3/4;border-radius:var(--radius-sm);background:var(--card2);border:1px solid var(--border);overflow:hidden;cursor:pointer;position:relative;}
+.receipt-thumb img{width:100%;height:100%;object-fit:cover;}
+.receipt-date{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:#fff;font-size:.7rem;padding:4px 6px;text-align:center;}
 
-/* ===== INSTALLMENTS ===== */
-.installment-dots { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
-.inst-dot {
-  width: 22px; height: 22px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.7rem; font-weight: 700; border: 1.5px solid var(--border);
-}
-.inst-dot.paid { background: var(--success); color: white; border-color: var(--success); }
-.inst-dot.current { background: var(--accent); color: #000; border-color: var(--accent); }
-.inst-dot.future { background: var(--card2); color: var(--text3); }
+/* ===== SETTINGS ===== */
+.setting-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--card);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border);cursor:pointer;transition:background .18s;}
+.setting-item:hover{background:var(--card2);}
+.setting-left{display:flex;align-items:center;gap:12px;}
+.setting-icon{font-size:1.3rem;width:28px;text-align:center;}
+.setting-name{font-size:.95rem;font-weight:600;color:var(--text);}
+.setting-arrow{color:var(--text3);}
 
-/* ===== RECEIPTS GRID ===== */
-.receipts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.receipt-thumb {
-  aspect-ratio: 3/4; border-radius: var(--radius-sm);
-  background: var(--card2); border: 1px solid var(--border);
-  overflow: hidden; cursor: pointer; position: relative;
-}
-.receipt-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.receipt-thumb .receipt-date { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: white; font-size: 0.7rem; padding: 4px 6px; text-align: center; }
+/* ===== INCOME SOURCE ===== */
+.income-source{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;}
+.income-source .src-info{flex:1;}
+.income-source .src-name{font-size:.9rem;font-weight:600;}
+.income-source .src-amount{font-size:.82rem;color:var(--primary-light);}
+.income-source .del-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1.1rem;padding:4px;}
+
+/* ===== EXPORT ===== */
+.export-option{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;margin-bottom:10px;transition:all .18s;}
+.export-option:hover{background:var(--card2);border-color:var(--primary);}
+.export-icon{font-size:2rem;width:44px;text-align:center;}
+.export-info .export-title{font-size:.95rem;font-weight:700;}
+.export-info .export-desc{font-size:.8rem;color:var(--text3);margin-top:3px;}
+
+/* ===== THEME GRID ===== */
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.theme-card{border-radius:var(--radius);border:2px solid transparent;padding:16px;cursor:pointer;transition:all .18s;position:relative;}
+.theme-card.active{border-color:var(--primary-light);}
+.theme-card .tc-dot{width:24px;height:24px;border-radius:50%;margin-bottom:8px;}
+.theme-card .tc-name{font-size:.85rem;font-weight:700;}
+.theme-card .tc-check{position:absolute;top:8px;right:8px;}
+
+/* ===== MISC ===== */
+.section-title{font-size:.8rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;margin-top:16px;}
+.section-title:first-child{margin-top:0;}
+.divider{height:1px;background:var(--border);margin:14px 0;}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:.72rem;font-weight:600;border:1px solid var(--border);background:var(--card2);color:var(--text2);}
+.chip.yellow{background:rgba(240,192,64,.12);color:var(--accent);border-color:rgba(240,192,64,.3);}
+.chip.blue{background:rgba(58,111,196,.15);color:#5a8fe8;border-color:rgba(58,111,196,.3);}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);}
+.empty-state .empty-icon{font-size:3rem;margin-bottom:12px;}
+.empty-state p{font-size:.9rem;}
 
 /* ===== WELCOME GUIDE ===== */
-.guide-screen {
-  position: fixed; inset: 0; z-index: 2000;
-  background: var(--bg); display: flex; flex-direction: column;
-  align-items: center; justify-content: center; padding: 24px;
-}
-.guide-step { display: none; text-align: center; max-width: 340px; width: 100%; }
-.guide-step.active { display: flex; flex-direction: column; align-items: center; gap: 16px; animation: fadeIn 0.3s ease; }
-.guide-icon { font-size: 4rem; }
-.guide-title { font-size: 1.5rem; font-weight: 800; color: var(--text); }
-.guide-desc { font-size: 0.95rem; color: var(--text2); line-height: 1.6; }
-.guide-dots { display: flex; gap: 8px; margin-top: 16px; }
-.guide-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
-.guide-dot.active { background: var(--primary-light); }
-.guide-actions { display: flex; gap: 10px; margin-top: 20px; width: 100%; }
+.guide-screen{position:fixed;inset:0;z-index:2000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.guide-step{display:none;text-align:center;max-width:340px;width:100%;flex-direction:column;align-items:center;gap:16px;}
+.guide-step.active{display:flex;animation:fadeIn .3s ease;}
+.guide-icon{font-size:4rem;}
+.guide-title{font-size:1.5rem;font-weight:800;color:var(--text);}
+.guide-desc{font-size:.95rem;color:var(--text2);line-height:1.7;}
+.guide-dots{display:flex;gap:8px;margin-top:16px;}
+.guide-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:background .2s;}
+.guide-dot.active{background:var(--primary-light);}
 
-/* ===== SETTINGS ITEMS ===== */
-.setting-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px; background: var(--card);
-  border-radius: var(--radius-sm); margin-bottom: 8px;
-  border: 1px solid var(--border); cursor: pointer;
-  transition: background 0.18s;
-}
-.setting-item:hover { background: var(--card2); }
-.setting-left { display: flex; align-items: center; gap: 12px; }
-.setting-icon { font-size: 1.3rem; width: 28px; text-align: center; }
-.setting-name { font-size: 0.95rem; font-weight: 600; color: var(--text); }
-.setting-val { font-size: 0.82rem; color: var(--text3); margin-top: 2px; }
-.setting-arrow { color: var(--text3); font-size: 1rem; }
-
-/* ===== EMPTY STATE ===== */
-.empty-state { text-align: center; padding: 40px 20px; color: var(--text3); }
-.empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; }
-.empty-state p { font-size: 0.9rem; }
-
-/* ===== SECTION TITLE ===== */
-.section-title { font-size: 0.8rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; margin-top: 16px; }
-.section-title:first-child { margin-top: 0; }
-
-/* ===== HEADER TOPBAR LANG/THEME ===== */
-.topbar-actions { display: flex; gap: 6px; }
-.topbar-btn {
-  background: var(--card); border: 1px solid var(--border);
-  color: var(--text); font-size: 0.8rem; font-weight: 700;
-  padding: 6px 10px; border-radius: var(--radius-sm);
-  cursor: pointer; font-family: var(--font);
-  transition: all 0.18s;
-}
-.topbar-btn:hover { background: var(--card2); }
-
-/* ===== CHIP ===== */
-.chip {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 4px 10px; border-radius: 20px;
-  font-size: 0.75rem; font-weight: 600; border: 1px solid var(--border);
-  background: var(--card2); color: var(--text2);
-}
-.chip.green { background: rgba(68,204,119,0.12); color: var(--success); border-color: rgba(68,204,119,0.3); }
-.chip.red { background: rgba(224,85,85,0.12); color: var(--danger); border-color: rgba(224,85,85,0.3); }
-.chip.yellow { background: rgba(240,192,64,0.12); color: var(--accent); border-color: rgba(240,192,64,0.3); }
-
-/* ===== DIVIDER ===== */
-.divider { height: 1px; background: var(--border); margin: 14px 0; }
+/* ===== FULL GUIDE (help screen) ===== */
+.help-section{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:12px;}
+.help-section h3{font-size:1rem;font-weight:700;color:var(--primary-light);margin-bottom:10px;}
+.help-item{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;}
+.help-item-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px;}
+.help-item-text{font-size:.88rem;color:var(--text2);line-height:1.5;}
+.help-item-text strong{color:var(--text);}
 
 /* ===== ABOUT ===== */
-.about-logo { text-align: center; padding: 30px 0 20px; }
-.about-logo .logo-hex { margin: 0 auto 12px; width: 72px; height: 72px; }
-.about-logo .logo-hex svg { width: 72px; height: 72px; }
-.about-logo h1 { font-size: 2rem; font-weight: 900; }
-.about-logo .version { font-size: 0.85rem; color: var(--text3); margin-top: 5px; }
-
-/* ===== BUDGET SOURCES ===== */
-.income-source {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 12px; margin-bottom: 8px;
-}
-.income-source .src-info { flex: 1; }
-.income-source .src-name { font-size: 0.9rem; font-weight: 600; }
-.income-source .src-amount { font-size: 0.82rem; color: var(--primary-light); }
-.income-source .del-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 1.1rem; padding: 4px; }
-
-/* EXPORT */
-.export-option {
-  display: flex; align-items: center; gap: 14px;
-  padding: 16px; background: var(--card);
-  border-radius: var(--radius); border: 1px solid var(--border);
-  cursor: pointer; margin-bottom: 10px; transition: all 0.18s;
-}
-.export-option:hover { background: var(--card2); border-color: var(--primary); }
-.export-icon { font-size: 2rem; width: 44px; text-align: center; }
-.export-info .export-title { font-size: 0.95rem; font-weight: 700; color: var(--text); }
-.export-info .export-desc { font-size: 0.8rem; color: var(--text3); margin-top: 3px; }
-
-/* Theme swatches */
-.theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-.theme-card {
-  border-radius: var(--radius); border: 2px solid transparent;
-  padding: 16px; cursor: pointer; transition: all 0.18s; position: relative;
-}
-.theme-card.active { border-color: var(--primary-light); }
-.theme-card .tc-dot { width: 24px; height: 24px; border-radius: 50%; margin-bottom: 8px; }
-.theme-card .tc-name { font-size: 0.85rem; font-weight: 700; }
-.theme-card .tc-check { position: absolute; top: 8px; right: 8px; font-size: 1rem; }
-
-/* ===== NOTIFICATIONS badge ===== */
-.notif-badge {
-  background: var(--danger); color: white;
-  border-radius: 50%; width: 18px; height: 18px;
-  font-size: 0.65rem; font-weight: 800;
-  display: inline-flex; align-items: center; justify-content: center;
-  position: absolute; top: -5px; right: -5px;
-}
-
-[dir="ltr"] .logo-wrap, [dir="ltr"] .topbar-actions { flex-direction: row; }
+.about-logo{text-align:center;padding:30px 0 20px;}
+.about-logo .big-hex{width:80px;height:80px;margin:0 auto 14px;}
+.about-logo .big-hex svg{width:80px;height:80px;}
+.about-logo h1{font-size:2rem;font-weight:900;}
+.about-logo .version{font-size:.85rem;color:var(--text3);margin-top:6px;}
 </style>
 </head>
 <body>
@@ -517,43 +255,22 @@ select.input-field option { background: var(--bg3); color: var(--text); }
 
 <!-- ===== WELCOME GUIDE ===== -->
 <div class="guide-screen" id="guideScreen">
-  <div class="guide-step active" id="gs0">
-    <div class="guide-icon">🏠</div>
-    <div id="gt0" class="guide-title">ברוך הבא ל-MoneyNest</div>
-    <div id="gd0" class="guide-desc">הדרך החכמה לנהל את ההוצאות שלך. פשוט, מהיר, ובפרטיות מלאה.</div>
+  <div style="position:absolute;top:16px;right:16px;">
+    <button class="topbar-btn" onclick="skipGuide()" id="guideSkipBtn">דלג</button>
   </div>
-  <div class="guide-step" id="gs1">
-    <div class="guide-icon">➕</div>
-    <div id="gt1" class="guide-title">הוסף הוצאות בקלות</div>
-    <div id="gd1" class="guide-desc">הוסף הוצאה רגילה, קבועה חודשית, או תשלומים מפוצלים — בשלושה לחיצות.</div>
-  </div>
-  <div class="guide-step" id="gs2">
-    <div class="guide-icon">📊</div>
-    <div id="gt2" class="guide-title">דוחות חכמים</div>
-    <div id="gd2" class="guide-desc">ראה לאן הולך הכסף שלך — לפי קטגוריה, זמן, ומול התקציב שהגדרת.</div>
-  </div>
-  <div class="guide-step" id="gs3">
-    <div class="guide-icon">💰</div>
-    <div id="gt3" class="guide-title">הגדר תקציב</div>
-    <div id="gd3" class="guide-desc">קבע תקציב חודשי ומקורות הכנסה. הדוחות יראו לך כמה נותר.</div>
-  </div>
-  <div class="guide-step" id="gs4">
-    <div class="guide-icon">📷</div>
-    <div id="gt4" class="guide-title">שמור קבלות</div>
-    <div id="gd4" class="guide-desc">צלם קבלות ישירות מהאפליקציה ושמור אותן מסודרות לכל הוצאה.</div>
-  </div>
-  <div class="guide-step" id="gs5">
-    <div class="guide-icon">🎉</div>
-    <div id="gt5" class="guide-title">הכל מוכן!</div>
-    <div id="gd5" class="guide-desc">MoneyNest שומר את הנתונים שלך על המכשיר בלבד. פרטי ומאובטח.</div>
-  </div>
-  <div class="guide-dots">
+  <div class="guide-step active" id="gs0"><div class="guide-icon">🏠</div><div class="guide-title" id="gt0">ברוך הבא ל-MoneyNest</div><div class="guide-desc" id="gd0">הדרך החכמה לנהל את ההוצאות שלך. פשוט, מהיר, ובפרטיות מלאה על המכשיר שלך.</div></div>
+  <div class="guide-step" id="gs1"><div class="guide-icon">➕</div><div class="guide-title" id="gt1">הוסף הוצאות</div><div class="guide-desc" id="gd1">3 סוגים: רגילה, קבועה חודשית, או תשלומים מפוצלים. מקלדת נוחה + 8 קטגוריות.</div></div>
+  <div class="guide-step" id="gs2"><div class="guide-icon">📊</div><div class="guide-title" id="gt2">דוחות חכמים</div><div class="guide-desc" id="gd2">ראה לאן הולך הכסף שלך לפי קטגוריה וזמן. גרפים ברורים מול התקציב שהגדרת.</div></div>
+  <div class="guide-step" id="gs3"><div class="guide-icon">💰</div><div class="guide-title" id="gt3">תקציב והכנסות</div><div class="guide-desc" id="gd3">הגדר תקציב חודשי ומקורות הכנסה. הדוחות יראו מאזן מלא — בפרטיות מוחלטת.</div></div>
+  <div class="guide-step" id="gs4"><div class="guide-icon">📷</div><div class="guide-title" id="gt4">צלם קבלות</div><div class="guide-desc" id="gd4">צלם קבלות ישירות מהאפליקציה. הן נשמרות מסודרות ואפשר לייצא אותן.</div></div>
+  <div class="guide-step" id="gs5"><div class="guide-icon">🎉</div><div class="guide-title" id="gt5">הכל מוכן!</div><div class="guide-desc" id="gd5">הנתונים נשמרים על המכשיר בלבד. ניתן לייצא ל-PDF, Excel, מייל ושיתוף.</div></div>
+  <div class="guide-dots" id="guideDots">
     <div class="guide-dot active"></div><div class="guide-dot"></div><div class="guide-dot"></div>
     <div class="guide-dot"></div><div class="guide-dot"></div><div class="guide-dot"></div>
   </div>
-  <div class="guide-actions" style="margin-top:24px;">
-    <button class="btn btn-secondary" id="guideSkip">דלג</button>
-    <button class="btn btn-primary" style="flex:1" id="guideNext">הבא ←</button>
+  <div style="display:flex;gap:10px;margin-top:24px;width:100%;max-width:340px;">
+    <button class="btn btn-secondary" onclick="prevGuide()" id="guidePrevBtn" style="display:none;">→</button>
+    <button class="btn btn-primary" style="flex:1;" onclick="nextGuide()" id="guideNextBtn">הבא ←</button>
   </div>
 </div>
 
@@ -561,50 +278,41 @@ select.input-field option { background: var(--bg3); color: var(--text); }
 <div class="screen active" id="screen-home">
   <div class="topbar">
     <div class="logo-wrap">
-      <div class="logo-hex">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="50,5 93,27.5 93,72.5 50,95 7,72.5 7,27.5" fill="#1a7a4a" stroke="#2ea866" stroke-width="3"/>
-          <text x="50" y="42" text-anchor="middle" fill="white" font-size="22" font-weight="900">🦅</text>
-          <text x="34" y="68" fill="#f0c040" font-size="14" font-weight="900">₪</text>
-          <text x="46" y="72" fill="#f0c040" font-size="16" font-weight="900">₪</text>
-          <text x="60" y="68" fill="#f0c040" font-size="14" font-weight="900">₪</text>
-        </svg>
-      </div>
+      <div class="logo-hex"><svg viewBox="0 0 100 100"><polygon points="50,5 93,27.5 93,72.5 50,95 7,72.5 7,27.5" fill="var(--primary)" stroke="var(--primary-light)" stroke-width="3"/>
+      <text x="50" y="44" text-anchor="middle" fill="white" font-size="26" font-weight="900">🦅</text>
+      <text x="33" y="70" fill="#f0c040" font-size="15" font-weight="900">₪</text>
+      <text x="46" y="74" fill="#f0c040" font-size="17" font-weight="900">₪</text>
+      <text x="61" y="70" fill="#f0c040" font-size="15" font-weight="900">₪</text></svg></div>
       <div class="logo-text">Money<span>Nest</span></div>
     </div>
     <div class="topbar-actions">
-      <button class="topbar-btn" onclick="cycleLang()">🌐 <span id="langBtnLabel">EN</span></button>
-      <button class="topbar-btn" onclick="navigateTo('screen-design')">🎨</button>
+      <button class="topbar-btn" onclick="cycleLang()">🌐 <span id="langLabel">EN</span></button>
+      <button class="topbar-btn" onclick="go('screen-design')">🎨</button>
     </div>
   </div>
   <div class="screen-body">
     <div class="home-summary">
-      <div class="summary-month" id="homeMonth">מאי 2025</div>
-      <div class="summary-total"><span id="homeTotalAmount">₪0</span></div>
+      <div class="summary-month" id="homeMonth"></div>
+      <div class="summary-total">₪<span id="homeTotal">0</span></div>
       <div class="summary-grid">
-        <div class="summary-item"><div class="val" id="homeRecords">0</div><div class="lbl" id="lblRecords">רשומות</div></div>
-        <div class="summary-item"><div class="val" id="homeBudgetLeft" style="color:var(--accent)">—</div><div class="lbl" id="lblBudgetLeft">נותר</div></div>
-        <div class="summary-item"><div class="val" id="homeAvgDay">₪0</div><div class="lbl" id="lblAvgDay">ממוצע/יום</div></div>
+        <div class="summary-item"><div class="val" id="homeCount">0</div><div class="lbl" id="lblRecords">רשומות</div></div>
+        <div class="summary-item"><div class="val" id="homeLeft" style="color:var(--accent)">—</div><div class="lbl" id="lblRemaining">נותר</div></div>
+        <div class="summary-item"><div class="val" id="homeAvg">₪0</div><div class="lbl" id="lblAvgDay">ממוצע/יום</div></div>
       </div>
     </div>
-    <div class="home-actions">
-      <button class="btn-action-main" onclick="navigateTo('screen-add')">
-        <span style="font-size:1.4rem">➕</span>
-        <span id="btnAddExpense">הוסף הוצאה</span>
-      </button>
+    <button class="home-btn-main" onclick="go('screen-add')"><span style="font-size:1.4rem">➕</span><span id="btnAddExp">הוסף הוצאה</span></button>
+    <div class="home-grid3">
+      <button class="btn-nav" onclick="go('screen-expenses')"><div class="icon">📋</div><span id="hn1">הוצאות</span></button>
+      <button class="btn-nav" onclick="go('screen-reports')"><div class="icon">📊</div><span id="hn2">דוחות</span></button>
+      <button class="btn-nav" onclick="go('screen-history')"><div class="icon">🕐</div><span id="hn3">היסטוריה</span></button>
     </div>
-    <div class="home-row2">
-      <button class="btn-nav" onclick="navigateTo('screen-expenses')"><div class="icon">📋</div><div id="nav1">הוצאות</div></button>
-      <button class="btn-nav" onclick="navigateTo('screen-reports')"><div class="icon">📊</div><div id="nav2">דוחות</div></button>
-      <button class="btn-nav" onclick="navigateTo('screen-history')"><div class="icon">🕐</div><div id="nav3">היסטוריה</div></button>
+    <div class="home-grid2">
+      <button class="btn-nav" onclick="go('screen-receipts')"><div class="icon">📷</div><span id="hn4">קבלות</span></button>
+      <button class="btn-nav" onclick="go('screen-export')"><div class="icon">📤</div><span id="hn5">ייצוא</span></button>
     </div>
-    <div class="home-row3">
-      <button class="btn-nav" onclick="navigateTo('screen-receipts')"><div class="icon">📷</div><div id="nav4">קבלות</div></button>
-      <button class="btn-nav" onclick="navigateTo('screen-export')"><div class="icon">📤</div><div id="nav5">ייצוא</div></button>
-    </div>
-    <div class="home-bottom-row" style="margin-top:10px;">
-      <button class="btn-nav" onclick="navigateTo('screen-budget')"><div class="icon">💰</div><div id="nav6">תקציב</div></button>
-      <button class="btn-nav" onclick="navigateTo('screen-settings')"><div class="icon">⚙️</div><div id="nav7">הגדרות</div></button>
+    <div class="home-grid2">
+      <button class="btn-nav" onclick="go('screen-budget')"><div class="icon">💰</div><span id="hn6">תקציב</span></button>
+      <button class="btn-nav" onclick="go('screen-settings')"><div class="icon">⚙️</div><span id="hn7">הגדרות</span></button>
     </div>
   </div>
   <div class="appnest-badge">Powered by <span>AppNest</span> • כל הזכויות שמורות</div>
@@ -613,67 +321,67 @@ select.input-field option { background: var(--bg3); color: var(--text); }
 <!-- ===== ADD EXPENSE ===== -->
 <div class="screen" id="screen-add">
   <div class="topbar">
-    <button class="topbar-back" onclick="navigateTo('screen-home')">← <span id="backHome">בית</span></button>
-    <div class="topbar-title" id="ttlAddExp">הוסף הוצאה</div>
+    <button class="topbar-back" onclick="go('screen-home')">← <span id="addBackLbl">בית</span></button>
+    <div class="topbar-title" id="addTitle">הוסף הוצאה</div>
     <div style="width:60px"></div>
   </div>
   <div class="amount-display">
-    <div class="amount-value"><span class="currency">₪</span><span id="addAmountDisplay">0</span></div>
+    <div class="amount-value"><span class="currency">₪</span><span id="addAmtDisp">0</span></div>
   </div>
-  <div style="flex:1; overflow-y:auto; padding:14px;">
-    <div class="type-selector" id="expTypeSelector">
-      <button class="type-btn active" data-type="regular" id="typeRegular" onclick="setExpType('regular',this)">רגילה</button>
-      <button class="type-btn" data-type="fixed" id="typeFixed" onclick="setExpType('fixed',this)">קבועה</button>
-      <button class="type-btn" data-type="installments" id="typeInst" onclick="setExpType('installments',this)">תשלומים</button>
+  <div style="flex:1;overflow-y:auto;padding:14px;">
+    <div class="type-selector">
+      <button class="type-btn active" data-type="regular" onclick="setType('regular',this)" id="typeRegBtn">רגילה</button>
+      <button class="type-btn" data-type="fixed" onclick="setType('fixed',this)" id="typeFixBtn">קבועה</button>
+      <button class="type-btn" data-type="installments" onclick="setType('installments',this)" id="typeInstBtn">תשלומים</button>
     </div>
-    <div class="cat-grid" id="catGrid"></div>
-    <div id="installmentFields" style="display:none;">
+    <div class="cat-grid" id="addCatGrid"></div>
+    <div id="instFields" style="display:none;">
       <div class="input-group">
-        <div class="input-label" id="lblInstCount">מספר תשלומים</div>
-        <input type="number" class="input-field" id="instCount" min="2" max="60" value="12" placeholder="12" oninput="updateInstSummary()">
+        <div class="input-label" id="instCountLbl">מספר תשלומים</div>
+        <input type="number" class="input-field" id="instCount" min="2" max="60" value="12" oninput="updateInstSummary()">
       </div>
-      <div class="card" style="margin-bottom:14px;text-align:center;" id="instSummaryCard">
-        <div id="instSummaryText" style="color:var(--text2);font-size:0.9rem;"></div>
+      <div id="instSummaryCard" class="card" style="text-align:center;margin-bottom:14px;">
+        <div id="instSummaryTxt" style="color:var(--text2);font-size:.9rem;"></div>
       </div>
     </div>
     <div class="input-group">
-      <div class="input-label" id="lblDesc">תיאור</div>
+      <div class="input-label" id="descLbl">תיאור</div>
       <input type="text" class="input-field" id="addDesc" placeholder="תיאור הוצאה...">
     </div>
     <div class="input-group">
-      <div class="input-label" id="lblDate">תאריך</div>
+      <div class="input-label" id="dateLbl">תאריך</div>
       <input type="date" class="input-field" id="addDate">
     </div>
     <div class="input-group">
-      <div class="input-label" id="lblNotes">הערות</div>
+      <div class="input-label" id="notesLbl">הערות</div>
       <input type="text" class="input-field" id="addNotes" placeholder="הערות אופציונליות...">
     </div>
     <div class="input-group">
-      <div class="input-label" id="lblPayMethod">אמצעי תשלום</div>
-      <div class="pay-grid" id="payGrid"></div>
+      <div class="input-label" id="payLbl">אמצעי תשלום</div>
+      <div class="pay-grid" id="addPayGrid"></div>
     </div>
     <div style="display:flex;gap:10px;margin-bottom:14px;">
-      <button class="btn btn-secondary btn-sm" onclick="captureReceipt()" style="flex:1;">📷 <span id="btnCamera">צלם קבלה</span></button>
-      <input type="file" id="receiptCamInput" accept="image/*" capture="environment" style="display:none;" onchange="handleReceiptCapture(event)">
+      <button class="btn btn-secondary btn-sm" onclick="openCamera()" style="flex:1;">📷 <span id="camBtn">צלם קבלה</span></button>
+      <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none;" onchange="handleReceipt(event)">
     </div>
-    <div id="receiptPreview" style="display:none;margin-bottom:14px;"></div>
+    <div id="addReceiptPrev" style="display:none;margin-bottom:14px;"></div>
   </div>
   <div class="numpad">
-    <button class="numpad-key" onclick="numpadPress('7')">7</button>
-    <button class="numpad-key" onclick="numpadPress('8')">8</button>
-    <button class="numpad-key" onclick="numpadPress('9')">9</button>
-    <button class="numpad-key" onclick="numpadPress('4')">4</button>
-    <button class="numpad-key" onclick="numpadPress('5')">5</button>
-    <button class="numpad-key" onclick="numpadPress('6')">6</button>
-    <button class="numpad-key" onclick="numpadPress('1')">1</button>
-    <button class="numpad-key" onclick="numpadPress('2')">2</button>
-    <button class="numpad-key" onclick="numpadPress('3')">3</button>
-    <button class="numpad-key special" onclick="numpadPress('.')">.</button>
-    <button class="numpad-key" onclick="numpadPress('0')">0</button>
-    <button class="numpad-key special" onclick="numpadPress('del')">⌫</button>
+    <button class="numpad-key" onclick="np('7')">7</button>
+    <button class="numpad-key" onclick="np('8')">8</button>
+    <button class="numpad-key" onclick="np('9')">9</button>
+    <button class="numpad-key" onclick="np('4')">4</button>
+    <button class="numpad-key" onclick="np('5')">5</button>
+    <button class="numpad-key" onclick="np('6')">6</button>
+    <button class="numpad-key" onclick="np('1')">1</button>
+    <button class="numpad-key" onclick="np('2')">2</button>
+    <button class="numpad-key" onclick="np('3')">3</button>
+    <button class="numpad-key special" onclick="np('.')">.</button>
+    <button class="numpad-key" onclick="np('0')">0</button>
+    <button class="numpad-key special" onclick="np('del')">⌫</button>
   </div>
   <div style="padding:10px 14px;background:var(--bg2);border-top:1px solid var(--border);">
-    <button class="btn btn-primary btn-block" id="btnSaveExpense" onclick="saveExpense()">💾 <span id="lblSaveExpense">שמור הוצאה</span></button>
+    <button class="btn btn-primary btn-block" onclick="saveExpense()">💾 <span id="saveExpLbl">שמור הוצאה</span></button>
   </div>
   <div class="appnest-badge">Powered by <span>AppNest</span></div>
 </div>
@@ -681,81 +389,81 @@ select.input-field option { background: var(--bg3); color: var(--text); }
 <!-- ===== EXPENSES LIST ===== -->
 <div class="screen" id="screen-expenses">
   <div class="topbar">
-    <button class="topbar-back" onclick="navigateTo('screen-home')">← <span id="backHome2">בית</span></button>
-    <div class="topbar-title" id="ttlExpenses">הוצאות</div>
+    <button class="topbar-back" onclick="go('screen-home')">← <span id="expBackLbl">בית</span></button>
+    <div class="topbar-title" id="expTitle">הוצאות</div>
     <div style="width:60px"></div>
   </div>
-  <div class="tabs" id="expTabs">
-    <button class="tab active" data-filter="all" onclick="filterExpenses('all',this)" id="tabAll">הכל</button>
-    <button class="tab" data-filter="regular" onclick="filterExpenses('regular',this)" id="tabRegular">רגיל</button>
-    <button class="tab" data-filter="fixed" onclick="filterExpenses('fixed',this)" id="tabFixed">קבוע</button>
-    <button class="tab" data-filter="installments" onclick="filterExpenses('installments',this)" id="tabInst">תשלומים</button>
+  <div class="tabs" id="expTabsBar">
+    <button class="tab active" onclick="filterExp('all',this)" id="expTabAll">הכל</button>
+    <button class="tab" onclick="filterExp('regular',this)" id="expTabReg">רגיל</button>
+    <button class="tab" onclick="filterExp('fixed',this)" id="expTabFix">קבוע</button>
+    <button class="tab" onclick="filterExp('installments',this)" id="expTabInst">תשלומים</button>
   </div>
-  <div class="screen-body" id="expensesList"></div>
+  <div class="screen-body" id="expList"></div>
   <div class="appnest-badge">Powered by <span>AppNest</span></div>
 </div>
 
 <!-- ===== HISTORY ===== -->
 <div class="screen" id="screen-history">
   <div class="topbar">
-    <button class="topbar-back" onclick="navigateTo('screen-home')">← <span id="backHome3">בית</span></button>
-    <div class="topbar-title" id="ttlHistory">היסטוריה</div>
+    <button class="topbar-back" onclick="go('screen-home')">← <span id="histBackLbl">בית</span></button>
+    <div class="topbar-title" id="histTitle">היסטוריה</div>
     <div style="width:60px"></div>
   </div>
   <div class="tabs">
-    <button class="tab active" onclick="filterHistory('all',this)" id="histAll">הכל</button>
-    <button class="tab" onclick="filterHistory('today',this)" id="histToday">היום</button>
-    <button class="tab" onclick="filterHistory('week',this)" id="histWeek">שבוע</button>
-    <button class="tab" onclick="filterHistory('month',this)" id="histMonth">חודש</button>
-    <button class="tab" onclick="filterHistory('3months',this)" id="hist3M">3 חודשים</button>
+    <button class="tab active" onclick="filterHist('all',this)" id="histTabAll">הכל</button>
+    <button class="tab" onclick="filterHist('today',this)" id="histTabToday">היום</button>
+    <button class="tab" onclick="filterHist('week',this)" id="histTabWeek">שבוע</button>
+    <button class="tab" onclick="filterHist('month',this)" id="histTabMonth">חודש</button>
+    <button class="tab" onclick="filterHist('3months',this)" id="histTab3M">3 חודשים</button>
   </div>
-  <div class="screen-body" id="historyList"></div>
+  <div class="screen-body" id="histList"></div>
   <div class="appnest-badge">Powered by <span>AppNest</span></div>
 </div>
 
 <!-- ===== REPORTS ===== -->
 <div class="screen" id="screen-reports">
   <div class="topbar">
-    <button class="topbar-back" onclick="navigateTo('screen-home')">← <span id="backHome4">בית</span></button>
-    <div class="topbar-title" id="ttlReports">דוחות</div>
+    <button class="topbar-back" onclick="go('screen-home')">← <span id="rptBackLbl">בית</span></button>
+    <div class="topbar-title" id="rptTitle">דוחות</div>
     <div style="width:60px"></div>
   </div>
   <div class="tabs">
-    <button class="tab active" onclick="filterReports('week',this)" id="rptWeek">שבוע</button>
-    <button class="tab" onclick="filterReports('month',this)" id="rptMonth">חודש</button>
-    <button class="tab" onclick="filterReports('3months',this)" id="rpt3M">3 חודשים</button>
-    <button class="tab" onclick="filterReports('year',this)" id="rptYear">שנה</button>
-    <button class="tab" onclick="filterReports('all',this)" id="rptAll">הכל</button>
+    <button class="tab active" onclick="filterRpt('week',this)" id="rptTabW">שבוע</button>
+    <button class="tab" onclick="filterRpt('month',this)" id="rptTabM">חודש</button>
+    <button class="tab" onclick="filterRpt('3months',this)" id="rptTab3M">3 חודשים</button>
+    <button class="tab" onclick="filterRpt('year',this)" id="rptTabY">שנה</button>
+    <button class="tab" onclick="filterRpt('all',this)" id="rptTabA">הכל</button>
   </div>
-  <div class="screen-body" id="reportsBody"></div>
+  <div class="screen-body" id="rptBody"></div>
   <div class="appnest-badge">Powered by <span>AppNest</span></div>
 </div>
 
 <!-- ===== BUDGET ===== -->
 <div class="screen" id="screen-budget">
   <div class="topbar">
-    <button class="topbar-back" onclick="navigateTo('screen-home')">← <span id="backHome5">בית</span></button>
-    <div class="topbar-title" id="ttlBudget">תקציב</div>
+    <button class="topbar-back" onclick="go('screen-home')">← <span id="budBackLbl">בית</span></button>
+    <div class="topbar-title" id="budTitle">תקציב</div>
     <div style="width:60px"></div>
   </div>
-  <div class="screen-body" id="budgetBody"></div>
+  <div class="screen-body" id="budBody"></div>
   <div class="appnest-badge">Powered by <span>AppNest</span></div>
 </div>
 
 <!-- ===== RECEIPTS ===== -->
 <div class="screen" id="screen-receipts">
   <div class="topbar">
-    <button class="topbar-back" onclick="navigateTo('screen-home')">← <span id="backHome6">בית</span></button>
-    <div class="topbar-title" id="ttlReceipts">קבלות</div>
+    <button class="topbar-back" onclick="go('screen-home')">← <span id="recBackLbl">בית</span></button>
+    <div class="topbar-title" id="recTitle">קבלות</div>
     <div style="width:60px"></div>
   </div>
   <div class="screen-body">
     <div style="display:flex;gap:10px;margin-bottom:14px;">
-      <button class="btn btn-primary" style="flex:1;" onclick="captureReceiptPage()">📷 <span id="btnCamPage">צלם קבלה</span></button>
-      <button class="btn btn-secondary" style="flex:1;" onclick="uploadReceiptPage()">🖼️ <span id="btnUpload">העלה מגלריה</span></button>
-      <input type="file" id="receiptPageInput" accept="image/*" capture="environment" style="display:none;" onchange="handlePageReceipt(event,false)">
-      <input type="file" id="receiptGalleryInput" accept="image/*" style="display:none;" onchange="handlePageReceipt(event,true)">
+      <button class="btn btn-primary" style="flex:1;" onclick="document.getElementById('recCamInput').click()">📷 <span id="recCamBtn">צלם קבלה</span></button>
+      <button class="btn btn-secondary" style="flex:1;" onclick="document.getElementById('recGalInput').click()">🖼️ <span id="recGalBtn">מגלריה</span></button>
     </div>
+    <input type="file" id="recCamInput" accept="image/*" capture="environment" style="display:none;" onchange="handlePageReceipt(event)">
+    <input type="file" id="recGalInput" accept="image/*" style="display:none;" onchange="handlePageReceipt(event)">
     <div class="receipts-grid" id="receiptsGrid"></div>
   </div>
   <div class="appnest-badge">Powered by <span>AppNest</span></div>
@@ -764,50 +472,38 @@ select.input-field option { background: var(--bg3); color: var(--text); }
 <!-- ===== EXPORT ===== -->
 <div class="screen" id="screen-export">
   <div class="topbar">
-    <button class="topbar-back" onclick="navigateTo('screen-home')">← <span id="backHome7">בית</span></button>
-    <div class="topbar-title" id="ttlExport">ייצוא</div>
+    <button class="topbar-back" onclick="go('screen-home')">← <span id="expBackLbl2">בית</span></button>
+    <div class="topbar-title" id="exportTitle">ייצוא</div>
     <div style="width:60px"></div>
   </div>
   <div class="screen-body">
     <div class="input-group">
-      <div class="input-label" id="lblExportRange">טווח זמן</div>
-      <select class="input-field" id="exportRange" onchange="updateExportPreview()">
-        <option value="month" id="expRangeMonth">חודש נוכחי</option>
-        <option value="3months" id="expRange3M">3 חודשים</option>
-        <option value="year" id="expRangeYear">שנה</option>
-        <option value="all" id="expRangeAll">הכל</option>
+      <div class="input-label" id="exportRangeLbl">טווח זמן</div>
+      <select class="input-field" id="exportRange" onchange="updateExportPrev()">
+        <option value="month" id="expOptM">חודש נוכחי</option>
+        <option value="3months" id="expOpt3M">3 חודשים</option>
+        <option value="year" id="expOptY">שנה</option>
+        <option value="all" id="expOptA">הכל</option>
       </select>
     </div>
-    <div class="card" id="exportPreview" style="margin-bottom:16px;text-align:center;">
-      <div id="exportPreviewText" style="color:var(--text2);font-size:0.9rem;"></div>
+    <div class="card" style="text-align:center;margin-bottom:16px;">
+      <div id="exportPrevTxt" style="color:var(--text2);font-size:.9rem;"></div>
     </div>
-    <div class="export-option" onclick="exportPDF()">
+    <div class="export-option" onclick="doPDF()">
       <div class="export-icon">📄</div>
-      <div class="export-info">
-        <div class="export-title" id="expPDFTitle">PDF</div>
-        <div class="export-desc" id="expPDFDesc">פותח חלון הדפסה — שמור או הדפס</div>
-      </div>
+      <div class="export-info"><div class="export-title">PDF</div><div class="export-desc" id="pdfDesc">פותח חלון הדפסה — שמור או הדפס</div></div>
     </div>
-    <div class="export-option" onclick="exportCSV()">
+    <div class="export-option" onclick="doCSV()">
       <div class="export-icon">📊</div>
-      <div class="export-info">
-        <div class="export-title" id="expCSVTitle">CSV / Excel</div>
-        <div class="export-desc" id="expCSVDesc">מוריד קובץ שניתן לפתוח ב-Excel</div>
-      </div>
+      <div class="export-info"><div class="export-title">CSV / Excel</div><div class="export-desc" id="csvDesc">מוריד קובץ שניתן לפתוח ב-Excel</div></div>
     </div>
-    <div class="export-option" onclick="exportEmail()">
+    <div class="export-option" onclick="doEmail()">
       <div class="export-icon">✉️</div>
-      <div class="export-info">
-        <div class="export-title" id="expEmailTitle">מייל</div>
-        <div class="export-desc" id="expEmailDesc">שלח סיכום למייל שלך</div>
-      </div>
+      <div class="export-info"><div class="export-title" id="emailExpTitle">מייל</div><div class="export-desc" id="emailDesc">שלח סיכום למייל שלך</div></div>
     </div>
-    <div class="export-option" onclick="exportShare()">
+    <div class="export-option" onclick="doShare()">
       <div class="export-icon">🔗</div>
-      <div class="export-info">
-        <div class="export-title" id="expShareTitle">שתף</div>
-        <div class="export-desc" id="expShareDesc">WhatsApp, Telegram ועוד</div>
-      </div>
+      <div class="export-info"><div class="export-title" id="shareExpTitle">שתף</div><div class="export-desc" id="shareDesc">WhatsApp, Telegram ועוד</div></div>
     </div>
   </div>
   <div class="appnest-badge">Powered by <span>AppNest</span></div>
@@ -816,38 +512,38 @@ select.input-field option { background: var(--bg3); color: var(--text); }
 <!-- ===== DESIGN ===== -->
 <div class="screen" id="screen-design">
   <div class="topbar">
-    <button class="topbar-back" onclick="navigateTo('screen-home')">← <span id="backHome8">בית</span></button>
-    <div class="topbar-title" id="ttlDesign">עיצוב</div>
+    <button class="topbar-back" onclick="go('screen-home')">← <span id="desBackLbl">בית</span></button>
+    <div class="topbar-title" id="desTitle">עיצוב</div>
     <div style="width:60px"></div>
   </div>
   <div class="screen-body">
-    <div class="section-title" id="lblThemeTitle">ערכת צבעים</div>
+    <div class="section-title" id="desThemeLbl">ערכת צבעים</div>
     <div class="theme-grid">
-      <div class="theme-card active" style="background:#1e3322;" onclick="applyTheme('green',this)" id="themeGreen">
+      <div class="theme-card active" style="background:#1e3322;" onclick="setTheme('green',this)" id="tcGreen">
         <div class="tc-dot" style="background:linear-gradient(135deg,#1a7a4a,#0d1a12);"></div>
-        <div class="tc-name" style="color:#e8f5ed;" id="thGreen">🌿 ירוק</div>
-        <div class="tc-check" id="tchGreen">✓</div>
+        <div class="tc-name" style="color:#e8f5ed;">🌿 ירוק</div>
+        <div class="tc-check" id="tckGreen">✓</div>
       </div>
-      <div class="theme-card" style="background:#1a1a1a;" onclick="applyTheme('gold',this)" id="themeGold">
+      <div class="theme-card" style="background:#1a1a1a;" onclick="setTheme('gold',this)" id="tcGold">
         <div class="tc-dot" style="background:linear-gradient(135deg,#c9a227,#0a0a0a);"></div>
-        <div class="tc-name" style="color:#f5e6c0;" id="thGold">✨ שחור+זהב</div>
-        <div class="tc-check" id="tchGold" style="display:none">✓</div>
+        <div class="tc-name" style="color:#f5e6c0;">✨ שחור+זהב</div>
+        <div class="tc-check" id="tckGold" style="display:none;">✓</div>
       </div>
-      <div class="theme-card" style="background:#162040;" onclick="applyTheme('navy',this)" id="themeNavy">
+      <div class="theme-card" style="background:#162040;" onclick="setTheme('navy',this)" id="tcNavy">
         <div class="tc-dot" style="background:linear-gradient(135deg,#3a6fc4,#080e1a);"></div>
-        <div class="tc-name" style="color:#d0e8f8;" id="thNavy">🌊 כחול כהה</div>
-        <div class="tc-check" id="tchNavy" style="display:none">✓</div>
+        <div class="tc-name" style="color:#d0e8f8;">🌊 כחול כהה</div>
+        <div class="tc-check" id="tckNavy" style="display:none;">✓</div>
       </div>
-      <div class="theme-card" style="background:#f5f0ff;" onclick="applyTheme('light',this)" id="themeLight">
+      <div class="theme-card" style="background:#f5f0ff;" onclick="setTheme('light',this)" id="tcLight">
         <div class="tc-dot" style="background:linear-gradient(135deg,#7c3aed,#f5f0ff);"></div>
-        <div class="tc-name" style="color:#1e1030;" id="thLight">💜 בהיר+סגול</div>
-        <div class="tc-check" id="tchLight" style="display:none">✓</div>
+        <div class="tc-name" style="color:#1e1030;">💜 בהיר+סגול</div>
+        <div class="tc-check" id="tckLight" style="display:none;">✓</div>
       </div>
     </div>
-    <div class="section-title" id="lblLangTitle">שפה</div>
+    <div class="section-title" id="desLangLbl">שפה</div>
     <div style="display:flex;gap:10px;">
-      <button class="btn btn-primary" style="flex:1;" id="langHe" onclick="setLang('he')">🇮🇱 עברית</button>
-      <button class="btn btn-secondary" style="flex:1;" id="langEn" onclick="setLang('en')">🇬🇧 English</button>
+      <button class="btn btn-primary" id="desLangHe" onclick="setLang('he')" style="flex:1;">🇮🇱 עברית</button>
+      <button class="btn btn-secondary" id="desLangEn" onclick="setLang('en')" style="flex:1;">🇬🇧 English</button>
     </div>
   </div>
   <div class="appnest-badge">Powered by <span>AppNest</span></div>
@@ -856,1126 +552,970 @@ select.input-field option { background: var(--bg3); color: var(--text); }
 <!-- ===== SETTINGS ===== -->
 <div class="screen" id="screen-settings">
   <div class="topbar">
-    <button class="topbar-back" onclick="navigateTo('screen-home')">← <span id="backHome9">בית</span></button>
-    <div class="topbar-title" id="ttlSettings">הגדרות</div>
+    <button class="topbar-back" onclick="go('screen-home')">← <span id="setBackLbl">בית</span></button>
+    <div class="topbar-title" id="setTitle">הגדרות</div>
     <div style="width:60px"></div>
   </div>
-  <div class="screen-body" id="settingsBody"></div>
+  <div class="screen-body" id="setBody"></div>
+  <div class="appnest-badge">Powered by <span>AppNest</span></div>
+</div>
+
+<!-- ===== HELP / FULL GUIDE ===== -->
+<div class="screen" id="screen-help">
+  <div class="topbar">
+    <button class="topbar-back" onclick="go('screen-settings')">← <span id="helpBackLbl">הגדרות</span></button>
+    <div class="topbar-title" id="helpTitle">מדריך שימוש</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="screen-body" id="helpBody"></div>
   <div class="appnest-badge">Powered by <span>AppNest</span></div>
 </div>
 
 <!-- ===== ABOUT ===== -->
 <div class="screen" id="screen-about">
   <div class="topbar">
-    <button class="topbar-back" onclick="navigateTo('screen-settings')">← <span id="backSettings">הגדרות</span></button>
-    <div class="topbar-title" id="ttlAbout">אודות</div>
+    <button class="topbar-back" onclick="go('screen-settings')">← <span id="abBackLbl">הגדרות</span></button>
+    <div class="topbar-title" id="abTitle">אודות</div>
     <div style="width:60px"></div>
   </div>
   <div class="screen-body">
     <div class="about-logo">
-      <div class="logo-hex">
-        <svg viewBox="0 0 100 100"><polygon points="50,5 93,27.5 93,72.5 50,95 7,72.5 7,27.5" fill="#1a7a4a" stroke="#2ea866" stroke-width="3"/>
-        <text x="50" y="42" text-anchor="middle" fill="white" font-size="22" font-weight="900">🦅</text>
-        <text x="34" y="68" fill="#f0c040" font-size="14" font-weight="900">₪</text>
-        <text x="46" y="72" fill="#f0c040" font-size="16" font-weight="900">₪</text>
-        <text x="60" y="68" fill="#f0c040" font-size="14" font-weight="900">₪</text></svg>
-      </div>
+      <div class="big-hex"><svg viewBox="0 0 100 100"><polygon points="50,5 93,27.5 93,72.5 50,95 7,72.5 7,27.5" fill="var(--primary)" stroke="var(--primary-light)" stroke-width="3"/>
+      <text x="50" y="44" text-anchor="middle" fill="white" font-size="26" font-weight="900">🦅</text>
+      <text x="33" y="70" fill="#f0c040" font-size="15" font-weight="900">₪</text>
+      <text x="46" y="74" fill="#f0c040" font-size="17" font-weight="900">₪</text>
+      <text x="61" y="70" fill="#f0c040" font-size="15" font-weight="900">₪</text></svg></div>
       <h1>Money<span style="color:var(--primary-light)">Nest</span></h1>
-      <div class="version" id="appVersion">גרסה 1.0.0 • פותח ע"י AppNest</div>
+      <div style="font-size:.82rem;color:var(--text3);margin-top:4px;" id="abSub">יומן ניהול הוצאות</div>
+      <div class="version" id="abVer">גרסה 2.0.0 • פותח ע"י AppNest</div>
     </div>
-    <div class="card">
-      <p style="font-size:0.9rem;color:var(--text2);line-height:1.7;" id="aboutDesc">MoneyNest הוא יומן ניהול הוצאות שנשמר לחלוטין על המכשיר שלך. אין שרתים, אין ענן, הנתונים שלך — שלך בלבד.</p>
-    </div>
-    <div class="card" style="text-align:center;margin-top:10px;">
-      <a href="#" style="color:var(--primary-light);font-weight:700;font-size:0.95rem;" id="appnestLink">🌐 AppNest</a>
-      <div style="font-size:0.8rem;color:var(--text3);margin-top:6px;">© 2025 AppNest. כל הזכויות שמורות.</div>
+    <div class="card"><p style="font-size:.9rem;color:var(--text2);line-height:1.7;" id="abDesc">MoneyNest הוא יומן ניהול הוצאות שנשמר לחלוטין על המכשיר שלך. אין שרתים, אין ענן — הנתונים שלך שמורים בפרטיות מוחלטת.</p></div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:1.3rem;font-weight:800;color:var(--primary-light);margin-bottom:6px;">🌐 AppNest</div>
+      <a href="https://barakaflalo.github.io/appnest" style="color:var(--primary-light);font-size:.9rem;">barakaflalo.github.io/appnest</a>
+      <div class="divider"></div>
+      <div style="font-size:.8rem;color:var(--text3);">© 2025 AppNest. כל הזכויות שמורות.</div>
     </div>
   </div>
   <div class="appnest-badge">Powered by <span>AppNest</span></div>
 </div>
 
-<!-- ===== EDIT EXPENSE MODAL ===== -->
-<div class="modal-overlay" id="editModal" style="display:none;" onclick="closeEditModal(event)">
-  <div class="modal" onclick="e=>e.stopPropagation()">
+<!-- ===== EDIT MODAL ===== -->
+<div class="modal-overlay" id="editModal" style="display:none;" onclick="closeEdit(event)">
+  <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title" id="editModalTitle">עריכת הוצאה</div>
-      <button class="modal-close" onclick="closeEditModal()">✕</button>
+      <button class="modal-close" onclick="closeEdit()">✕</button>
     </div>
-    <div class="input-group">
-      <div class="input-label" id="editLblAmount">סכום</div>
-      <input type="number" class="input-field" id="editAmount" placeholder="0.00">
-    </div>
-    <div class="input-group">
-      <div class="input-label" id="editLblDesc">תיאור</div>
-      <input type="text" class="input-field" id="editDesc">
-    </div>
-    <div class="input-group">
-      <div class="input-label" id="editLblDate">תאריך</div>
-      <input type="date" class="input-field" id="editDate">
-    </div>
-    <div class="input-group">
-      <div class="input-label" id="editLblType">סוג</div>
-      <select class="input-field" id="editType">
+    <div class="input-group"><div class="input-label" id="editAmtLbl">סכום</div><input type="number" class="input-field" id="editAmt" step="0.01"></div>
+    <div class="input-group"><div class="input-label" id="editDescLbl">תיאור</div><input type="text" class="input-field" id="editDescVal"></div>
+    <div class="input-group"><div class="input-label" id="editDateLbl">תאריך</div><input type="date" class="input-field" id="editDateVal"></div>
+    <div class="input-group"><div class="input-label" id="editTypeLbl">סוג</div>
+      <select class="input-field" id="editTypeVal">
         <option value="regular" id="editTypeReg">רגילה</option>
-        <option value="fixed" id="editTypeFixed">קבועה</option>
+        <option value="fixed" id="editTypeFix">קבועה</option>
         <option value="installments" id="editTypeInst">תשלומים</option>
       </select>
     </div>
-    <div class="input-group">
-      <div class="input-label" id="editLblPay">אמצעי תשלום</div>
-      <select class="input-field" id="editPayMethod">
-        <option value="credit">אשראי</option><option value="cash">מזומן</option><option value="bit">Bit</option><option value="paybox">PayBox</option><option value="other">אחר</option>
+    <div class="input-group"><div class="input-label" id="editPayLbl">אמצעי תשלום</div>
+      <select class="input-field" id="editPayVal">
+        <option value="credit">אשראי</option><option value="cash">מזומן</option>
+        <option value="bit">Bit</option><option value="paybox">PayBox</option><option value="other">אחר</option>
       </select>
     </div>
     <div style="display:flex;gap:10px;margin-top:14px;">
-      <button class="btn btn-danger" onclick="deleteExpense()" style="flex:1;">🗑️ <span id="editLblDelete">מחק</span></button>
-      <button class="btn btn-primary" onclick="saveEditExpense()" style="flex:1;">💾 <span id="editLblSave">שמור</span></button>
+      <button class="btn btn-danger" onclick="doDeleteExpense()" style="flex:1;">🗑️ <span id="editDelLbl">מחק</span></button>
+      <button class="btn btn-primary" onclick="doSaveEdit()" style="flex:1;">💾 <span id="editSaveLbl">שמור</span></button>
     </div>
   </div>
 </div>
 
-<!-- ===== ADD PAYMENT METHOD MODAL ===== -->
-<div class="modal-overlay" id="addPayModal" style="display:none;">
-  <div class="modal center-modal" style="border-radius:var(--radius);border-bottom:1px solid var(--border);">
-    <div class="modal-header">
-      <div class="modal-title" id="addPayTitle">הוסף אמצעי תשלום</div>
-      <button class="modal-close" onclick="closeModal('addPayModal')">✕</button>
-    </div>
-    <div class="input-group">
-      <input type="text" class="input-field" id="newPayName" placeholder="Bit, PayBox, העברה...">
-    </div>
+<!-- ===== ADD PAY MODAL ===== -->
+<div class="modal-overlay" id="addPayModal" style="display:none;" onclick="this.style.display='none'">
+  <div class="modal" onclick="event.stopPropagation()" style="border-radius:var(--radius);border-bottom:1px solid var(--border);">
+    <div class="modal-header"><div class="modal-title" id="addPayTitle">הוסף אמצעי תשלום</div><button class="modal-close" onclick="document.getElementById('addPayModal').style.display='none'">✕</button></div>
+    <div class="input-group"><input type="text" class="input-field" id="newPayName" placeholder="Bit, PayBox, העברה..."></div>
     <button class="btn btn-primary btn-block" onclick="addCustomPay()">הוסף</button>
   </div>
 </div>
 
-<!-- ===== ADD CATEGORY MODAL ===== -->
-<div class="modal-overlay" id="addCatModal" style="display:none;">
-  <div class="modal center-modal" style="border-radius:var(--radius);border-bottom:1px solid var(--border);">
-    <div class="modal-header">
-      <div class="modal-title" id="addCatTitle">הוסף קטגוריה</div>
-      <button class="modal-close" onclick="closeModal('addCatModal')">✕</button>
-    </div>
-    <div class="input-group">
-      <div class="input-label">אמוג'י</div>
-      <input type="text" class="input-field" id="newCatIcon" placeholder="🛍️" maxlength="2">
-    </div>
-    <div class="input-group">
-      <div class="input-label" id="newCatLblName">שם</div>
-      <input type="text" class="input-field" id="newCatName" placeholder="שם קטגוריה...">
-    </div>
+<!-- ===== ADD CAT MODAL ===== -->
+<div class="modal-overlay" id="addCatModal" style="display:none;" onclick="this.style.display='none'">
+  <div class="modal" onclick="event.stopPropagation()" style="border-radius:var(--radius);border-bottom:1px solid var(--border);">
+    <div class="modal-header"><div class="modal-title" id="addCatTitle">הוסף קטגוריה</div><button class="modal-close" onclick="document.getElementById('addCatModal').style.display='none'">✕</button></div>
+    <div class="input-group"><div class="input-label">אמוג'י</div><input type="text" class="input-field" id="newCatIcon" placeholder="🛍️" maxlength="2"></div>
+    <div class="input-group"><div class="input-label" id="newCatNameLbl">שם קטגוריה</div><input type="text" class="input-field" id="newCatName" placeholder="שם..."></div>
     <button class="btn btn-primary btn-block" onclick="addCustomCat()">הוסף</button>
   </div>
 </div>
 
 </div><!-- #app -->
-
 <script>
-// ===== STATE =====
-let state = {
+// ===================== STATE =====================
+let S = {
   expenses: [],
   budget: { monthly: 0, incomes: [], showInReports: false },
   settings: { username: '', lang: 'he', theme: 'green', notifyBudget: false, notifyDaily: false },
-  payMethods: ['credit','cash','bit','paybox','other'],
   customPays: [],
-  categories: [],
+  customCats: [],
   receipts: [],
   firstRun: true
 };
-
-let addState = {
-  amount: '',
-  type: 'regular',
-  category: '',
-  desc: '',
-  date: '',
-  notes: '',
-  payMethod: 'credit',
-  receipt: null,
-  instCount: 12
-};
-
-let editingId = null;
-let currentHistoryFilter = 'all';
-let currentExpFilter = 'all';
-let currentRptFilter = 'month';
+let addS = { amt:'', type:'regular', cat:'', desc:'', date:'', notes:'', pay:'credit', receipt:null, instCount:12 };
+let editId = null;
+let curExpFilter = 'all', curHistFilter = 'all', curRptFilter = 'month';
 let guideStep = 0;
 
-const CATEGORIES_HE = [
-  {id:'food',icon:'🍔',name:'אוכל'},
-  {id:'transport',icon:'🚗',name:'תחבורה'},
-  {id:'shopping',icon:'🛍️',name:'קניות'},
-  {id:'health',icon:'💊',name:'בריאות'},
-  {id:'bills',icon:'🏠',name:'חשבונות'},
-  {id:'entertainment',icon:'🎮',name:'בידור'},
-  {id:'education',icon:'📚',name:'חינוך'},
-  {id:'other',icon:'📦',name:'אחר'}
+// ===================== BASE DATA =====================
+const CATS_HE = [
+  {id:'food',icon:'🍔',name:'אוכל'},{id:'transport',icon:'🚗',name:'תחבורה'},
+  {id:'shopping',icon:'🛍️',name:'קניות'},{id:'health',icon:'💊',name:'בריאות'},
+  {id:'bills',icon:'🏠',name:'חשבונות'},{id:'entertainment',icon:'🎮',name:'בידור'},
+  {id:'education',icon:'📚',name:'חינוך'},{id:'other',icon:'📦',name:'אחר'}
 ];
-const CATEGORIES_EN = [
-  {id:'food',icon:'🍔',name:'Food'},
-  {id:'transport',icon:'🚗',name:'Transport'},
-  {id:'shopping',icon:'🛍️',name:'Shopping'},
-  {id:'health',icon:'💊',name:'Health'},
-  {id:'bills',icon:'🏠',name:'Bills'},
-  {id:'entertainment',icon:'🎮',name:'Fun'},
-  {id:'education',icon:'📚',name:'Education'},
-  {id:'other',icon:'📦',name:'Other'}
+const CATS_EN = [
+  {id:'food',icon:'🍔',name:'Food'},{id:'transport',icon:'🚗',name:'Transport'},
+  {id:'shopping',icon:'🛍️',name:'Shopping'},{id:'health',icon:'💊',name:'Health'},
+  {id:'bills',icon:'🏠',name:'Bills'},{id:'entertainment',icon:'🎮',name:'Fun'},
+  {id:'education',icon:'📚',name:'Education'},{id:'other',icon:'📦',name:'Other'}
 ];
+const PAY_HE = {credit:'אשראי',cash:'מזומן',bit:'Bit',paybox:'PayBox',other:'אחר'};
+const PAY_EN = {credit:'Credit',cash:'Cash',bit:'Bit',paybox:'PayBox',other:'Other'};
 
-const PAY_LABELS_HE = {credit:'אשראי',cash:'מזומן',bit:'Bit',paybox:'PayBox',other:'אחר'};
-const PAY_LABELS_EN = {credit:'Credit',cash:'Cash',bit:'Bit',paybox:'PayBox',other:'Other'};
+const MONTHS_HE = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const MONTHS_EN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-const STRINGS = {
-  he: {
-    month: ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'],
-    records:'רשומות', remaining:'נותר', avgDay:'ממוצע/יום',
-    addExpense:'הוסף הוצאה', home:'בית', expenses:'הוצאות', reports:'דוחות',
-    history:'היסטוריה', receipts:'קבלות', export:'ייצוא', budget:'תקציב',
-    settings:'הגדרות', design:'עיצוב', about:'אודות',
-    regular:'רגילה', fixed:'קבועה', installments:'תשלומים',
-    save:'שמור הוצאה', camera:'צלם קבלה', upload:'העלה מגלריה',
-    instCount:'מספר תשלומים', desc:'תיאור', date:'תאריך', notes:'הערות', payMethod:'אמצעי תשלום',
-    all:'הכל', today:'היום', week:'שבוע', month2:'חודש', months3:'3 חודשים', year:'שנה',
-    noExpenses:'אין הוצאות', addFirst:'הוסף את הראשונה ↑',
-    totalSpent:'סה"כ הוצאות', dailyAvg:'ממוצע יומי', budgetLeft:'נותר בתקציב', income:'הכנסות', balance:'מאזן',
-    byCategory:'לפי קטגוריה', recent5:'5 הוצאות אחרונות',
-    budgetMonthly:'תקציב חודשי',incomeMonthly:'הכנסות חודשיות',showInReports:'הצג בדוחות',
-    addIncome:'הוסף מקור הכנסה', incomeName:'שם מקור', incomeAmount:'סכום',
-    username:'שם משתמש', language:'שפה', notifications:'התראות',
-    notifyBudget:'התראה על חריגה', notifyDaily:'תזכורת יומית',
-    guide:'מדריך ראשוני', clearData:'מחק את כל הנתונים',
-    confirmClear:'האם אתה בטוח? כל הנתונים יימחקו!',
-    version:'גרסה', by:'פותח ע"י',
-    exportRange:'טווח זמן', currentMonth:'חודש נוכחי',
-    editExpense:'עריכת הוצאה', delete:'מחק', amount:'סכום', type:'סוג',
-    payMethodEdit:'אמצעי תשלום',
-    addCat:'הוסף קטגוריה', addPay:'הוסף אמצעי תשלום',
-    instSummary: (n,total,per) => `${n} תשלומים × ₪${per} = סה"כ ₪${total}`,
-    exportItems: (n) => `${n} רשומות לייצוא`,
-    noReceipts:'אין קבלות שמורות', addReceiptFirst:'צלם קבלה ראשונה ↑',
-    themeTitle:'ערכת צבעים', langTitle:'שפה',
-  },
-  en: {
-    month: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-    records:'Records', remaining:'Remaining', avgDay:'Daily Avg',
-    addExpense:'Add Expense', home:'Home', expenses:'Expenses', reports:'Reports',
-    history:'History', receipts:'Receipts', export:'Export', budget:'Budget',
-    settings:'Settings', design:'Design', about:'About',
-    regular:'Regular', fixed:'Fixed', installments:'Payments',
-    save:'Save Expense', camera:'Take Photo', upload:'Upload from Gallery',
-    instCount:'Number of Payments', desc:'Description', date:'Date', notes:'Notes', payMethod:'Payment Method',
-    all:'All', today:'Today', week:'Week', month2:'Month', months3:'3 Months', year:'Year',
-    noExpenses:'No expenses', addFirst:'Add your first one ↑',
-    totalSpent:'Total Spent', dailyAvg:'Daily Avg', budgetLeft:'Budget Left', income:'Income', balance:'Balance',
-    byCategory:'By Category', recent5:'Last 5 Expenses',
-    budgetMonthly:'Monthly Budget',incomeMonthly:'Monthly Income',showInReports:'Show in Reports',
-    addIncome:'Add Income Source', incomeName:'Source Name', incomeAmount:'Amount',
-    username:'Username', language:'Language', notifications:'Notifications',
-    notifyBudget:'Budget Alert', notifyDaily:'Daily Reminder',
-    guide:'Welcome Guide', clearData:'Delete All Data',
-    confirmClear:'Are you sure? All data will be deleted!',
-    version:'Version', by:'Built by',
-    exportRange:'Time Range', currentMonth:'Current Month',
-    editExpense:'Edit Expense', delete:'Delete', amount:'Amount', type:'Type',
-    payMethodEdit:'Payment Method',
-    addCat:'Add Category', addPay:'Add Payment Method',
-    instSummary: (n,total,per) => `${n} payments × ₪${per} = Total ₪${total}`,
-    exportItems: (n) => `${n} records to export`,
-    noReceipts:'No saved receipts', addReceiptFirst:'Take your first receipt ↑',
-    themeTitle:'Color Theme', langTitle:'Language',
-  }
-};
-
-// ===== LOAD/SAVE =====
-function loadState() {
-  try {
-    const s = localStorage.getItem('moneynest_v1');
-    if (s) { const d = JSON.parse(s); Object.assign(state, d); }
-  } catch(e){}
+// ===================== PERSIST =====================
+function load() {
+  try { const d = localStorage.getItem('mn_v2'); if(d) Object.assign(S,JSON.parse(d)); } catch(e){}
 }
-function saveState() {
-  try { localStorage.setItem('moneynest_v1', JSON.stringify(state)); } catch(e){}
+function save() {
+  try { localStorage.setItem('mn_v2',JSON.stringify(S)); } catch(e){}
 }
 
-// ===== LANG =====
-function t(key, ...args) {
-  const lang = state.settings.lang;
-  const v = STRINGS[lang][key];
-  if (typeof v === 'function') return v(...args);
-  return v || key;
-}
-
-function cycleLang() {
-  setLang(state.settings.lang === 'he' ? 'en' : 'he');
-}
-function setLang(lang) {
-  state.settings.lang = lang;
-  saveState();
-  const dir = lang === 'he' ? 'rtl' : 'ltr';
-  document.documentElement.dir = dir;
-  document.documentElement.lang = lang;
-  document.getElementById('langBtnLabel').textContent = lang === 'he' ? 'EN' : 'עב';
-  document.getElementById('langHe').style.background = lang === 'he' ? 'var(--primary)' : 'var(--card2)';
-  document.getElementById('langHe').style.color = lang === 'he' ? 'white' : 'var(--text)';
-  document.getElementById('langEn').style.background = lang !== 'he' ? 'var(--primary)' : 'var(--card2)';
-  document.getElementById('langEn').style.color = lang !== 'he' ? 'white' : 'var(--text)';
-  refreshAll();
-}
-
-// ===== THEME =====
-function applyTheme(name, el) {
-  document.documentElement.setAttribute('data-theme', name);
-  state.settings.theme = name;
-  saveState();
-  // update hex logo color
-  document.querySelectorAll('.logo-hex polygon').forEach(p => {
-    const colors = {green:'#1a7a4a',gold:'#c9a227',navy:'#3a6fc4',light:'#7c3aed'};
-    p.setAttribute('fill', colors[name] || '#1a7a4a');
-  });
-  // update checks
-  ['green','gold','navy','light'].forEach(t => {
-    const check = document.getElementById('tch'+t.charAt(0).toUpperCase()+t.slice(1));
-    const card = document.getElementById('theme'+t.charAt(0).toUpperCase()+t.slice(1));
-    if (check) check.style.display = t === name ? 'block' : 'none';
-    if (card) card.classList.toggle('active', t === name);
-  });
-}
-
-// ===== NAVIGATION =====
-function navigateTo(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+// ===================== NAVIGATE =====================
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const sc = document.getElementById(id);
-  if (sc) { sc.classList.add('active'); refreshScreen(id); }
+  if(sc){ sc.classList.add('active'); onScreen(id); }
+}
+function onScreen(id){
+  if(id==='screen-home') renderHome();
+  else if(id==='screen-add') initAdd();
+  else if(id==='screen-expenses') renderExp(curExpFilter);
+  else if(id==='screen-history') renderHist(curHistFilter);
+  else if(id==='screen-reports') renderRpt(curRptFilter);
+  else if(id==='screen-budget') renderBudget();
+  else if(id==='screen-receipts') renderReceipts();
+  else if(id==='screen-export') updateExportPrev();
+  else if(id==='screen-settings') renderSettings();
+  else if(id==='screen-help') renderHelp();
 }
 
-function refreshScreen(id) {
-  if (id === 'screen-home') refreshHome();
-  else if (id === 'screen-add') initAddScreen();
-  else if (id === 'screen-expenses') renderExpenses(currentExpFilter);
-  else if (id === 'screen-history') renderHistory(currentHistoryFilter);
-  else if (id === 'screen-reports') renderReports(currentRptFilter);
-  else if (id === 'screen-budget') renderBudget();
-  else if (id === 'screen-receipts') renderReceipts();
-  else if (id === 'screen-settings') renderSettings();
-  else if (id === 'screen-export') updateExportPreview();
-}
-
-function refreshAll() {
-  updateStaticLabels();
+// ===================== LANG & THEME =====================
+function cycleLang(){ setLang(S.settings.lang==='he'?'en':'he'); }
+function setLang(lang){
+  S.settings.lang = lang;
+  save();
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang==='he'?'rtl':'ltr';
+  document.getElementById('langLabel').textContent = lang==='he'?'EN':'עב';
+  // design screen lang buttons
+  const bHe = document.getElementById('desLangHe');
+  const bEn = document.getElementById('desLangEn');
+  if(bHe) bHe.className = 'btn '+(lang==='he'?'btn-primary':'btn-secondary');
+  if(bEn) bEn.className = 'btn '+(lang!=='he'?'btn-primary':'btn-secondary');
+  applyLabels();
   const active = document.querySelector('.screen.active');
-  if (active) refreshScreen(active.id);
+  if(active) onScreen(active.id);
 }
-
-// ===== STATIC LABELS =====
-function updateStaticLabels() {
-  const L = state.settings.lang;
-  const S = STRINGS[L];
-  // topbar titles
-  setText('ttlAddExp', S.addExpense);
-  setText('ttlExpenses', S.expenses);
-  setText('ttlHistory', S.history);
-  setText('ttlReports', S.reports);
-  setText('ttlBudget', S.budget);
-  setText('ttlReceipts', S.receipts);
-  setText('ttlExport', S.export);
-  setText('ttlDesign', S.design);
-  setText('ttlSettings', S.settings);
-  setText('ttlAbout', S.about);
-  // home
-  setText('btnAddExpense', S.addExpense);
-  setText('nav1', S.expenses); setText('nav2', S.reports); setText('nav3', S.history);
-  setText('nav4', S.receipts); setText('nav5', S.export); setText('nav6', S.budget); setText('nav7', S.settings);
-  setText('lblRecords', S.records); setText('lblBudgetLeft', S.remaining); setText('lblAvgDay', S.avgDay);
-  // add screen
-  setText('typeRegular', S.regular); setText('typeFixed', S.fixed); setText('typeInst', S.installments);
-  setText('lblInstCount', S.instCount); setText('lblDesc', S.desc); setText('lblDate', S.date);
-  setText('lblNotes', S.notes); setText('lblPayMethod', S.payMethod);
-  setText('btnCamera', S.camera); setText('lblSaveExpense', S.save);
-  // tabs
-  setText('tabAll', S.all); setText('tabRegular', S.regular); setText('tabFixed', S.fixed); setText('tabInst', S.installments);
-  setText('histAll', S.all); setText('histToday', S.today); setText('histWeek', S.week); setText('histMonth', S.month2); setText('hist3M', S.months3);
-  setText('rptWeek', S.week); setText('rptMonth', S.month2); setText('rpt3M', S.months3); setText('rptYear', S.year); setText('rptAll', S.all);
-  // export
-  setText('expRangeMonth', S.currentMonth); setText('expRange3M', S.months3); setText('expRangeYear', S.year); setText('expRangeAll', S.all);
-  setText('expPDFTitle','PDF'); setText('expCSVTitle','CSV / Excel');
-  // edit modal
-  setText('editModalTitle', S.editExpense); setText('editLblAmount', S.amount); setText('editLblDesc', S.desc);
-  setText('editLblDate', S.date); setText('editLblType', S.type); setText('editLblPay', S.payMethodEdit);
-  setText('editLblDelete', S.delete); setText('editLblSave', S.save);
-  setText('editTypeReg', S.regular); setText('editTypeFixed', S.fixed); setText('editTypeInst', S.installments);
-  // design screen
-  setText('lblThemeTitle', S.themeTitle); setText('lblLangTitle', S.langTitle);
-  // about
-  setText('appVersion', `${S.version} 1.0.0 • ${S.by} AppNest`);
-  // back buttons
-  ['backHome','backHome2','backHome3','backHome4','backHome5','backHome6','backHome7','backHome8','backHome9'].forEach(id=>setText(id,S.home));
-  setText('backSettings', S.settings);
-  // upload btn
-  setText('btnUpload', S.upload);
-  setText('btnCamPage', S.camera);
-  // add modals
-  setText('addCatTitle', S.addCat); setText('addPayTitle', S.addPay);
-  setText('newCatLblName', S.incomeName ? 'שם' : 'Name');
-  // guide
-  updateGuideText();
-}
-
-function setText(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = val;
-}
-
-// ===== HOME =====
-function refreshHome() {
-  const now = new Date();
-  const S = STRINGS[state.settings.lang];
-  document.getElementById('homeMonth').textContent = S.month[now.getMonth()] + ' ' + now.getFullYear();
-  const thisMonth = getMonthExpenses();
-  const total = thisMonth.reduce((s,e) => s + getMonthlyAmount(e), 0);
-  document.getElementById('homeTotalAmount').textContent = '₪' + fmt(total);
-  document.getElementById('homeRecords').textContent = thisMonth.length;
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-  const daysPassed = Math.max(1, now.getDate());
-  document.getElementById('homeAvgDay').textContent = '₪' + fmt(total / daysPassed);
-  if (state.budget.monthly > 0) {
-    const left = state.budget.monthly - total;
-    const el = document.getElementById('homeBudgetLeft');
-    el.textContent = '₪' + fmt(Math.abs(left));
-    el.style.color = left < 0 ? 'var(--danger)' : 'var(--success)';
-  } else {
-    document.getElementById('homeBudgetLeft').textContent = '—';
-  }
-}
-
-function getMonthExpenses() {
-  const now = new Date();
-  return state.expenses.filter(e => {
-    const d = new Date(e.date);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+function setTheme(t,el){
+  S.settings.theme = t;
+  save();
+  document.documentElement.setAttribute('data-theme',t);
+  ['green','gold','navy','light'].forEach(x=>{
+    const c = document.getElementById('tc'+cap(x));
+    const k = document.getElementById('tck'+cap(x));
+    if(c) c.classList.toggle('active',x===t);
+    if(k) k.style.display = x===t?'block':'none';
   });
 }
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
-function getMonthlyAmount(e) {
-  if (e.type === 'installments') return e.amount / e.instCount;
-  return e.amount;
+// ===================== LABELS =====================
+function t(he,en){ return S.settings.lang==='he'?he:en; }
+function applyLabels(){
+  const is_he = S.settings.lang==='he';
+  // back buttons
+  ['addBackLbl','expBackLbl','histBackLbl','rptBackLbl','budBackLbl','recBackLbl','expBackLbl2','desBackLbl','setBackLbl','abBackLbl'].forEach(id=>setText(id,t('בית','Home')));
+  setText('helpBackLbl',t('הגדרות','Settings'));
+  // titles
+  setText('addTitle',t('הוסף הוצאה','Add Expense'));
+  setText('expTitle',t('הוצאות','Expenses'));
+  setText('histTitle',t('היסטוריה','History'));
+  setText('rptTitle',t('דוחות','Reports'));
+  setText('budTitle',t('תקציב','Budget'));
+  setText('recTitle',t('קבלות','Receipts'));
+  setText('exportTitle',t('ייצוא','Export'));
+  setText('desTitle',t('עיצוב','Design'));
+  setText('setTitle',t('הגדרות','Settings'));
+  setText('helpTitle',t('מדריך שימוש','User Guide'));
+  setText('abTitle',t('אודות','About'));
+  // home
+  setText('btnAddExp',t('הוסף הוצאה','Add Expense'));
+  setText('hn1',t('הוצאות','Expenses')); setText('hn2',t('דוחות','Reports')); setText('hn3',t('היסטוריה','History'));
+  setText('hn4',t('קבלות','Receipts')); setText('hn5',t('ייצוא','Export')); setText('hn6',t('תקציב','Budget')); setText('hn7',t('הגדרות','Settings'));
+  setText('lblRecords',t('רשומות','Records')); setText('lblRemaining',t('נותר','Left')); setText('lblAvgDay',t('ממוצע/יום','Daily Avg'));
+  // add
+  setText('typeRegBtn',t('רגילה','Regular')); setText('typeFixBtn',t('קבועה','Fixed')); setText('typeInstBtn',t('תשלומים','Payments'));
+  setText('instCountLbl',t('מספר תשלומים','Number of Payments'));
+  setText('descLbl',t('תיאור','Description')); setText('dateLbl',t('תאריך','Date'));
+  setText('notesLbl',t('הערות','Notes')); setText('payLbl',t('אמצעי תשלום','Payment Method'));
+  setText('camBtn',t('צלם קבלה','Take Photo')); setText('saveExpLbl',t('שמור הוצאה','Save Expense'));
+  // tabs
+  setText('expTabAll',t('הכל','All')); setText('expTabReg',t('רגיל','Regular')); setText('expTabFix',t('קבוע','Fixed')); setText('expTabInst',t('תשלומים','Payments'));
+  setText('histTabAll',t('הכל','All')); setText('histTabToday',t('היום','Today')); setText('histTabWeek',t('שבוע','Week')); setText('histTabMonth',t('חודש','Month')); setText('histTab3M',t('3 חודשים','3 Months'));
+  setText('rptTabW',t('שבוע','Week')); setText('rptTabM',t('חודש','Month')); setText('rptTab3M',t('3 חודשים','3 Months')); setText('rptTabY',t('שנה','Year')); setText('rptTabA',t('הכל','All'));
+  // export
+  setText('exportRangeLbl',t('טווח זמן','Time Range'));
+  setText('expOptM',t('חודש נוכחי','Current Month')); setText('expOpt3M',t('3 חודשים','3 Months')); setText('expOptY',t('שנה','Year')); setText('expOptA',t('הכל','All'));
+  setText('pdfDesc',t('פותח חלון הדפסה — שמור או הדפס','Opens print dialog — save or print'));
+  setText('csvDesc',t('מוריד קובץ שניתן לפתוח ב-Excel','Downloads file openable in Excel'));
+  setText('emailExpTitle',t('מייל','Email')); setText('emailDesc',t('שלח סיכום למייל שלך','Send summary to your email'));
+  setText('shareExpTitle',t('שתף','Share')); setText('shareDesc',t('WhatsApp, Telegram ועוד','WhatsApp, Telegram & more'));
+  // edit modal
+  setText('editModalTitle',t('עריכת הוצאה','Edit Expense'));
+  setText('editAmtLbl',t('סכום','Amount')); setText('editDescLbl',t('תיאור','Description'));
+  setText('editDateLbl',t('תאריך','Date')); setText('editTypeLbl',t('סוג','Type')); setText('editPayLbl',t('אמצעי תשלום','Payment'));
+  setText('editTypeReg',t('רגילה','Regular')); setText('editTypeFix',t('קבועה','Fixed')); setText('editTypeInst',t('תשלומים','Payments'));
+  setText('editDelLbl',t('מחק','Delete')); setText('editSaveLbl',t('שמור','Save'));
+  // design
+  setText('desThemeLbl',t('ערכת צבעים','Color Theme')); setText('desLangLbl',t('שפה','Language'));
+  // modals
+  setText('addPayTitle',t('הוסף אמצעי תשלום','Add Payment Method'));
+  setText('addCatTitle',t('הוסף קטגוריה','Add Category'));
+  setText('newCatNameLbl',t('שם קטגוריה','Category Name'));
+  // receipts
+  setText('recCamBtn',t('צלם קבלה','Take Photo'));
+  setText('recGalBtn',t('מגלריה','Gallery'));
+  // guide
+  updateGuideLabels();
+  // about
+  setText('abSub',t('יומן ניהול הוצאות','Expense Journal'));
+  setText('abVer',t('גרסה 2.0.0 • פותח ע"י AppNest','Version 2.0.0 • Built by AppNest'));
+  setText('abDesc',t('MoneyNest הוא יומן ניהול הוצאות שנשמר לחלוטין על המכשיר שלך. אין שרתים, אין ענן — הנתונים שלך שמורים בפרטיות מוחלטת.',
+    'MoneyNest is an expense journal saved entirely on your device. No servers, no cloud — your data stays completely private.'));
+  // settings skip btn
+  setText('guideSkipBtn',t('דלג','Skip'));
+}
+function setText(id,v){ const el=document.getElementById(id); if(el) el.textContent=v; }
+
+// ===================== HOME =====================
+function renderHome(){
+  const now = new Date();
+  const months = S.settings.lang==='he'?MONTHS_HE:MONTHS_EN;
+  document.getElementById('homeMonth').textContent = months[now.getMonth()]+' '+now.getFullYear();
+  const thisMonth = S.expenses.filter(e=>{
+    const d=new Date(e.date);
+    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  });
+  const total = thisMonth.reduce((s,e)=>s+e.amount,0);
+  document.getElementById('homeTotal').textContent = fmt(total);
+  document.getElementById('homeCount').textContent = thisMonth.length;
+  const daysPassed = Math.max(1,now.getDate());
+  document.getElementById('homeAvg').textContent = '₪'+fmt(total/daysPassed);
+  if(S.budget.monthly>0){
+    const left = S.budget.monthly - total;
+    const el = document.getElementById('homeLeft');
+    el.textContent = '₪'+fmt(Math.abs(left));
+    el.style.color = left<0?'var(--danger)':'var(--success)';
+  } else {
+    document.getElementById('homeLeft').textContent='—';
+    document.getElementById('homeLeft').style.color='var(--accent)';
+  }
 }
 
-function fmt(n) {
-  if (!n || isNaN(n)) return '0';
-  return parseFloat(n.toFixed(2)).toLocaleString('he-IL');
-}
-
-// ===== ADD EXPENSE =====
-function initAddScreen() {
-  addState = { amount: '', type: 'regular', category: '', date: '', desc: '', notes: '', payMethod: 'credit', receipt: null, instCount: 12 };
-  document.getElementById('addAmountDisplay').textContent = '0';
-  document.getElementById('addDesc').value = '';
-  document.getElementById('addNotes').value = '';
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('addDate').value = today;
-  addState.date = today;
-  renderCatGrid();
-  renderPayGrid();
-  document.getElementById('installmentFields').style.display = 'none';
-  document.getElementById('receiptPreview').style.display = 'none';
-  // reset type
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+// ===================== ADD EXPENSE =====================
+function initAdd(){
+  addS = {amt:'',type:'regular',cat:'',desc:'',date:new Date().toISOString().split('T')[0],notes:'',pay:'credit',receipt:null,instCount:12};
+  document.getElementById('addAmtDisp').textContent='0';
+  document.getElementById('addDesc').value='';
+  document.getElementById('addNotes').value='';
+  document.getElementById('addDate').value=addS.date;
+  document.getElementById('instFields').style.display='none';
+  document.getElementById('addReceiptPrev').style.display='none';
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector('.type-btn[data-type="regular"]').classList.add('active');
+  renderAddCats(); renderAddPays();
+}
+function np(k){
+  if(k==='del') addS.amt=addS.amt.slice(0,-1);
+  else if(k==='.'){ if(!addS.amt.includes('.')) addS.amt+='.'; }
+  else { if(addS.amt.length>=8) return; addS.amt+=k; }
+  document.getElementById('addAmtDisp').textContent=addS.amt||'0';
   updateInstSummary();
 }
-
-function numpadPress(key) {
-  if (key === 'del') {
-    addState.amount = addState.amount.slice(0,-1);
-  } else if (key === '.') {
-    if (!addState.amount.includes('.')) addState.amount += '.';
-  } else {
-    if (addState.amount.length >= 8) return;
-    addState.amount += key;
-  }
-  document.getElementById('addAmountDisplay').textContent = addState.amount || '0';
-  updateInstSummary();
-}
-
-function setExpType(type, el) {
-  addState.type = type;
-  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+function setType(type,el){
+  addS.type=type;
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('installmentFields').style.display = type === 'installments' ? 'block' : 'none';
+  document.getElementById('instFields').style.display=type==='installments'?'block':'none';
 }
-
-function updateInstSummary() {
-  const n = parseInt(document.getElementById('instCount')?.value) || 12;
-  addState.instCount = n;
-  const amt = parseFloat(addState.amount) || 0;
-  if (amt > 0 && n > 1) {
-    const per = (amt / n).toFixed(2);
-    document.getElementById('instSummaryText').textContent = t('instSummary', n, fmt(amt), fmt(per));
-  } else {
-    document.getElementById('instSummaryText').textContent = '';
-  }
+function updateInstSummary(){
+  const n=parseInt(document.getElementById('instCount')?.value)||12;
+  addS.instCount=n;
+  const a=parseFloat(addS.amt)||0;
+  const card=document.getElementById('instSummaryTxt');
+  if(card&&a>0&&n>1){
+    const per=(a/n).toFixed(2);
+    card.textContent=t(`${n} תשלומים × ₪${per} = סה"כ ₪${fmt(a)}`,`${n} payments × ₪${per} = Total ₪${fmt(a)}`);
+  } else if(card) card.textContent='';
 }
-
-function renderCatGrid() {
-  const cats = getCats();
-  const grid = document.getElementById('catGrid');
-  grid.innerHTML = '';
-  cats.forEach(c => {
-    const btn = document.createElement('button');
-    btn.className = 'cat-btn' + (addState.category === c.id ? ' active' : '');
-    btn.innerHTML = `<div class="cat-icon">${c.icon}</div><div class="cat-name">${c.name}</div>`;
-    btn.onclick = () => { addState.category = c.id; renderCatGrid(); };
+function renderAddCats(){
+  const cats=getAllCats();
+  const grid=document.getElementById('addCatGrid');
+  grid.innerHTML='';
+  cats.forEach(c=>{
+    const btn=document.createElement('button');
+    btn.className='cat-btn'+(addS.cat===c.id?' active':'');
+    btn.innerHTML=`<div class="cat-icon">${c.icon}</div><div class="cat-name">${c.name}</div>`;
+    btn.onclick=()=>{addS.cat=c.id;renderAddCats();};
     grid.appendChild(btn);
   });
-  // add custom
-  const addBtn = document.createElement('button');
-  addBtn.className = 'cat-btn';
-  addBtn.innerHTML = `<div class="cat-icon">➕</div><div class="cat-name">${t('addCat')}</div>`;
-  addBtn.onclick = () => { openModal('addCatModal'); };
-  grid.appendChild(addBtn);
+  const ab=document.createElement('button');
+  ab.className='cat-btn';
+  ab.innerHTML=`<div class="cat-icon">➕</div><div class="cat-name">${t('הוסף','Add')}</div>`;
+  ab.onclick=()=>document.getElementById('addCatModal').style.display='flex';
+  grid.appendChild(ab);
 }
-
-function getCats() {
-  const base = state.settings.lang === 'he' ? CATEGORIES_HE : CATEGORIES_EN;
-  return [...base, ...state.categories];
-}
-
-function renderPayGrid() {
-  const allMethods = ['credit','cash',...state.customPays,'other'];
-  const payGrid = document.getElementById('payGrid');
-  payGrid.innerHTML = '';
-  allMethods.forEach(m => {
-    const labels = state.settings.lang === 'he' ? PAY_LABELS_HE : PAY_LABELS_EN;
-    const btn = document.createElement('button');
-    btn.className = 'pay-btn' + (addState.payMethod === m ? ' active' : '');
-    btn.textContent = labels[m] || m;
-    btn.onclick = () => { addState.payMethod = m; renderPayGrid(); };
-    payGrid.appendChild(btn);
+function renderAddPays(){
+  const methods=['credit','cash',...S.customPays,'other'];
+  const labels=S.settings.lang==='he'?PAY_HE:PAY_EN;
+  const grid=document.getElementById('addPayGrid');
+  grid.innerHTML='';
+  methods.forEach(m=>{
+    const btn=document.createElement('button');
+    btn.className='pay-btn'+(addS.pay===m?' active':'');
+    btn.textContent=labels[m]||m;
+    btn.onclick=()=>{addS.pay=m;renderAddPays();};
+    grid.appendChild(btn);
   });
-  const addBtn = document.createElement('button');
-  addBtn.className = 'pay-btn';
-  addBtn.innerHTML = '+ ' + (state.settings.lang === 'he' ? 'הוסף' : 'Add');
-  addBtn.onclick = () => openModal('addPayModal');
-  payGrid.appendChild(addBtn);
+  const ab=document.createElement('button');
+  ab.className='pay-btn';
+  ab.textContent='+ '+t('הוסף','Add');
+  ab.onclick=()=>document.getElementById('addPayModal').style.display='flex';
+  grid.appendChild(ab);
 }
-
-function addCustomPay() {
-  const name = document.getElementById('newPayName').value.trim();
-  if (!name) return;
-  if (!state.customPays.includes(name)) state.customPays.push(name);
-  PAY_LABELS_HE[name] = name; PAY_LABELS_EN[name] = name;
-  saveState();
-  closeModal('addPayModal');
-  renderPayGrid();
+function addCustomPay(){
+  const name=document.getElementById('newPayName').value.trim();
+  if(!name) return;
+  if(!S.customPays.includes(name)) S.customPays.push(name);
+  PAY_HE[name]=name; PAY_EN[name]=name;
+  save(); document.getElementById('addPayModal').style.display='none';
+  renderAddPays();
 }
-
-function addCustomCat() {
-  const icon = document.getElementById('newCatIcon').value.trim() || '📌';
-  const name = document.getElementById('newCatName').value.trim();
-  if (!name) return;
-  const id = 'custom_' + Date.now();
-  state.categories.push({id, icon, name});
-  saveState();
-  closeModal('addCatModal');
-  renderCatGrid();
+function addCustomCat(){
+  const icon=document.getElementById('newCatIcon').value.trim()||'📌';
+  const name=document.getElementById('newCatName').value.trim();
+  if(!name) return;
+  S.customCats.push({id:'cc_'+Date.now(),icon,name});
+  save(); document.getElementById('addCatModal').style.display='none';
+  renderAddCats();
 }
-
-function captureReceipt() {
-  document.getElementById('receiptCamInput').click();
+function getAllCats(){
+  return [...(S.settings.lang==='he'?CATS_HE:CATS_EN), ...S.customCats];
 }
-function handleReceiptCapture(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    addState.receipt = e.target.result;
-    const prev = document.getElementById('receiptPreview');
-    prev.style.display = 'block';
-    prev.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:var(--radius-sm);max-height:160px;object-fit:cover;">`;
+function getCatById(id){
+  return getAllCats().find(c=>c.id===id)||{icon:'📦',name:id};
+}
+function openCamera(){ document.getElementById('camInput').click(); }
+function handleReceipt(ev){
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    addS.receipt=e.target.result;
+    const prev=document.getElementById('addReceiptPrev');
+    prev.style.display='block';
+    prev.innerHTML=`<img src="${e.target.result}" style="width:100%;border-radius:var(--radius-sm);max-height:160px;object-fit:cover;">`;
   };
-  reader.readAsDataURL(file);
+  r.readAsDataURL(f);
 }
-
-function saveExpense() {
-  const amt = parseFloat(addState.amount);
-  if (!amt || amt <= 0) { showToast(state.settings.lang === 'he' ? 'הזן סכום' : 'Enter amount'); return; }
-  const desc = document.getElementById('addDesc').value.trim() || (state.settings.lang === 'he' ? 'הוצאה' : 'Expense');
-  const date = document.getElementById('addDate').value || new Date().toISOString().split('T')[0];
-  const notes = document.getElementById('addNotes').value.trim();
-  const cat = addState.category || 'other';
-  const instCount = addState.type === 'installments' ? (parseInt(document.getElementById('instCount').value) || 12) : 1;
-  const expense = {
-    id: Date.now().toString(),
-    amount: amt, type: addState.type, category: cat,
-    desc, date, notes, payMethod: addState.payMethod,
-    receipt: addState.receipt, instCount,
-    createdAt: new Date().toISOString()
+function saveExpense(){
+  const amt=parseFloat(addS.amt);
+  if(!amt||amt<=0){toast(t('הזן סכום','Enter amount'));return;}
+  const desc=document.getElementById('addDesc').value.trim()||t('הוצאה','Expense');
+  const date=document.getElementById('addDate').value||new Date().toISOString().split('T')[0];
+  const notes=document.getElementById('addNotes').value.trim();
+  const instCount=addS.type==='installments'?(parseInt(document.getElementById('instCount').value)||12):1;
+  const exp={
+    id:Date.now().toString(),amount:amt,type:addS.type,category:addS.cat||'other',
+    desc,date,notes,pay:addS.pay,receipt:addS.receipt,instCount,
+    createdAt:new Date().toISOString()
   };
-  state.expenses.unshift(expense);
-  if (addState.receipt) {
-    state.receipts.push({ id: Date.now().toString(), data: addState.receipt, date: date, desc });
+  S.expenses.unshift(exp);
+  if(addS.receipt) S.receipts.push({id:Date.now().toString(),data:addS.receipt,date,desc});
+  save();
+  if(S.settings.notifyBudget&&S.budget.monthly>0){
+    const now=new Date();
+    const tot=S.expenses.filter(e=>{const d=new Date(e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).reduce((s,e)=>s+e.amount,0);
+    if(tot>S.budget.monthly) toast(t('⚠️ חרגת מהתקציב החודשי!','⚠️ Monthly budget exceeded!'));
   }
-  saveState();
-  checkBudgetAlert(amt);
-  navigateTo('screen-home');
-  showToast(state.settings.lang === 'he' ? '✓ הוצאה נשמרה' : '✓ Expense saved');
+  go('screen-home');
+  toast(t('✓ הוצאה נשמרה','✓ Expense saved'));
 }
 
-// ===== RENDER EXPENSES =====
-function filterExpenses(filter, el) {
-  currentExpFilter = filter;
-  document.querySelectorAll('#expTabs .tab').forEach(t => t.classList.remove('active'));
+// ===================== EXPENSE LIST =====================
+function filterExp(f,el){
+  curExpFilter=f;
+  document.querySelectorAll('#expTabsBar .tab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
-  renderExpenses(filter);
+  renderExp(f);
 }
-
-function renderExpenses(filter) {
-  const list = document.getElementById('expensesList');
-  let expenses = [...state.expenses];
-  if (filter !== 'all') expenses = expenses.filter(e => e.type === filter);
-  if (expenses.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>${t('noExpenses')}</p><p style="margin-top:6px;font-size:0.8rem;">${t('addFirst')}</p></div>`;
+function renderExp(filter){
+  let exps=[...S.expenses];
+  if(filter!=='all') exps=exps.filter(e=>e.type===filter);
+  const list=document.getElementById('expList');
+  if(!exps.length){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><p>${t('אין הוצאות','No expenses')}</p><p style="margin-top:6px;font-size:.8rem;">${t('הוסף את הראשונה ↑','Add your first one ↑')}</p></div>`;
     return;
   }
-  list.innerHTML = expenses.map(e => renderExpItem(e, true)).join('');
+  list.innerHTML=exps.map(e=>expItemHTML(e,true)).join('');
 }
 
-function renderExpItem(e, showEdit) {
-  const cat = getCats().find(c => c.id === e.category) || {icon:'📦',name:e.category};
-  const labels = state.settings.lang === 'he' ? PAY_LABELS_HE : PAY_LABELS_EN;
-  let instDots = '';
-  if (e.type === 'installments' && e.instCount > 1) {
-    const paidCount = getPaidInstallments(e);
-    instDots = `<div class="installment-dots">` + Array.from({length:e.instCount},(_,i) => {
-      let cls = i < paidCount ? 'paid' : (i === paidCount ? 'current' : 'future');
-      let sym = i < paidCount ? '✓' : (i === paidCount ? '●' : '');
-      return `<div class="inst-dot ${cls}">${sym}</div>`;
-    }).join('') + `</div>`;
+// ===================== EXPENSE ITEM HTML =====================
+function expItemHTML(e,showEdit){
+  const cat=getCatById(e.category);
+  const labels=S.settings.lang==='he'?PAY_HE:PAY_EN;
+  let chips='';
+  if(e.type==='fixed') chips+=`<span class="chip blue">🔄 ${t('קבוע','Fixed')}</span> `;
+  if(e.type==='installments'){
+    const paid=paidInst(e);
+    chips+=`<span class="chip yellow">💳 ${paid+1}/${e.instCount}</span> `;
   }
-  const typeChip = e.type === 'fixed' ? `<span class="chip yellow" style="margin-left:5px;">🔄 ${state.settings.lang === 'he' ? 'קבוע' : 'Fixed'}</span>` :
-    e.type === 'installments' ? `<span class="chip" style="margin-left:5px;">💳 ${state.settings.lang === 'he' ? 'תשלום' : 'Install.'} ${getPaidInstallments(e)+1}/${e.instCount}</span>` : '';
-  return `<div class="expense-item" ${showEdit ? `oncontextmenu="event.preventDefault();openEdit('${e.id}')" ontouchstart="touchStart('${e.id}')" ontouchend="touchEnd()"` : ''}>
+  let dots='';
+  if(e.type==='installments'&&e.instCount>1){
+    const paid=paidInst(e);
+    dots='<div class="installment-dots">'+Array.from({length:e.instCount},(_,i)=>{
+      const cls=i<paid?'paid':(i===paid?'current':'future');
+      const sym=i<paid?'✓':(i===paid?'●':'');
+      return `<div class="inst-dot ${cls}">${sym}</div>`;
+    }).join('')+'</div>';
+  }
+  const editAttr=showEdit?`onclick="openEdit('${e.id}')"`:'' ;
+  const longPress=showEdit?`ontouchstart="ts('${e.id}')" ontouchend="te()" oncontextmenu="event.preventDefault();openEdit('${e.id}')"`:'' ;
+  return `<div class="expense-item" ${longPress}>
     <div class="expense-icon">${cat.icon}</div>
     <div class="expense-info">
       <div class="expense-name">${e.desc}</div>
-      <div class="expense-meta">${formatDate(e.date)} • ${labels[e.payMethod] || e.payMethod} ${typeChip}</div>
-      ${instDots}
+      <div class="expense-meta">${fmtDate(e.date)} • ${labels[e.pay]||e.pay} ${chips}</div>
+      ${dots}
     </div>
-    <div style="display:flex;align-items:center;gap:6px;">
+    <div style="display:flex;align-items:center;gap:5px;">
       <div class="expense-amount">₪${fmt(e.amount)}</div>
-      ${showEdit ? `<button class="edit-btn" onclick="openEdit('${e.id}')">✏️</button>` : ''}
+      ${showEdit?`<button class="edit-btn" ${editAttr}>✏️</button>`:''}
     </div>
   </div>`;
 }
+function paidInst(e){
+  const now=new Date(), start=new Date(e.date);
+  const months=(now.getFullYear()-start.getFullYear())*12+now.getMonth()-start.getMonth();
+  return Math.min(Math.max(0,months),e.instCount);
+}
+let touchTmr;
+function ts(id){touchTmr=setTimeout(()=>openEdit(id),600);}
+function te(){clearTimeout(touchTmr);}
 
-let touchTimer;
-function touchStart(id) { touchTimer = setTimeout(() => openEdit(id), 600); }
-function touchEnd() { clearTimeout(touchTimer); }
-
-function getPaidInstallments(e) {
-  const now = new Date();
-  const start = new Date(e.date);
-  const months = (now.getFullYear() - start.getFullYear())*12 + now.getMonth() - start.getMonth();
-  return Math.min(Math.max(0, months), e.instCount);
-}
-
-// ===== EDIT =====
-function openEdit(id) {
-  const e = state.expenses.find(x => x.id === id);
-  if (!e) return;
-  editingId = id;
-  document.getElementById('editAmount').value = e.amount;
-  document.getElementById('editDesc').value = e.desc;
-  document.getElementById('editDate').value = e.date;
-  document.getElementById('editType').value = e.type;
-  document.getElementById('editPayMethod').value = e.payMethod || 'credit';
-  document.getElementById('editModal').style.display = 'flex';
-}
-function closeEditModal(e) {
-  if (!e || e.target === document.getElementById('editModal')) {
-    document.getElementById('editModal').style.display = 'none';
-    editingId = null;
-  }
-}
-function saveEditExpense() {
-  const idx = state.expenses.findIndex(x => x.id === editingId);
-  if (idx === -1) return;
-  state.expenses[idx] = {
-    ...state.expenses[idx],
-    amount: parseFloat(document.getElementById('editAmount').value) || state.expenses[idx].amount,
-    desc: document.getElementById('editDesc').value.trim() || state.expenses[idx].desc,
-    date: document.getElementById('editDate').value || state.expenses[idx].date,
-    type: document.getElementById('editType').value,
-    payMethod: document.getElementById('editPayMethod').value,
-  };
-  saveState();
-  document.getElementById('editModal').style.display = 'none';
-  editingId = null;
-  const active = document.querySelector('.screen.active');
-  if (active) refreshScreen(active.id);
-  showToast(state.settings.lang === 'he' ? '✓ עודכן' : '✓ Updated');
-}
-function deleteExpense() {
-  if (!editingId) return;
-  if (!confirm(state.settings.lang === 'he' ? 'למחוק הוצאה זו?' : 'Delete this expense?')) return;
-  state.expenses = state.expenses.filter(x => x.id !== editingId);
-  saveState();
-  document.getElementById('editModal').style.display = 'none';
-  editingId = null;
-  const active = document.querySelector('.screen.active');
-  if (active) refreshScreen(active.id);
-  showToast(state.settings.lang === 'he' ? '🗑️ נמחק' : '🗑️ Deleted');
-}
-
-// ===== HISTORY =====
-function filterHistory(f, el) {
-  currentHistoryFilter = f;
-  document.querySelectorAll('#screen-history .tab').forEach(t => t.classList.remove('active'));
+// ===================== HISTORY =====================
+function filterHist(f,el){
+  curHistFilter=f;
+  document.querySelectorAll('#screen-history .tab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
-  renderHistory(f);
+  renderHist(f);
 }
-function renderHistory(filter) {
-  const list = document.getElementById('historyList');
-  const now = new Date();
-  let expenses = state.expenses.filter(e => {
-    const d = new Date(e.date);
-    if (filter === 'today') return d.toDateString() === now.toDateString();
-    if (filter === 'week') { const w = new Date(now); w.setDate(w.getDate()-7); return d >= w; }
-    if (filter === 'month') { return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear(); }
-    if (filter === '3months') { const m = new Date(now); m.setMonth(m.getMonth()-3); return d >= m; }
+function renderHist(filter){
+  const now=new Date();
+  let exps=S.expenses.filter(e=>{
+    const d=new Date(e.date);
+    if(filter==='today') return d.toDateString()===now.toDateString();
+    if(filter==='week'){const w=new Date(now);w.setDate(w.getDate()-7);return d>=w;}
+    if(filter==='month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    if(filter==='3months'){const m=new Date(now);m.setMonth(m.getMonth()-3);return d>=m;}
     return true;
   });
-  if (expenses.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🕐</div><p>${t('noExpenses')}</p></div>`;
+  const list=document.getElementById('histList');
+  if(!exps.length){
+    list.innerHTML=`<div class="empty-state"><div class="empty-icon">🕐</div><p>${t('אין הוצאות','No expenses')}</p></div>`;
     return;
   }
-  // group by date
-  const groups = {};
-  expenses.forEach(e => {
-    const dk = e.date;
-    if (!groups[dk]) groups[dk] = [];
-    groups[dk].push(e);
-  });
-  const sortedDates = Object.keys(groups).sort((a,b) => b.localeCompare(a));
-  list.innerHTML = sortedDates.map(d => `
-    <div class="section-title">${formatDate(d)}</div>
-    ${groups[d].map(e => renderExpItem(e, true)).join('')}
+  const groups={};
+  exps.forEach(e=>{if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e);});
+  const dates=Object.keys(groups).sort((a,b)=>b.localeCompare(a));
+  list.innerHTML=dates.map(d=>`
+    <div class="section-title">${fmtDate(d)}</div>
+    ${groups[d].map(e=>expItemHTML(e,true)).join('')}
   `).join('');
 }
 
-// ===== REPORTS =====
-function filterReports(f, el) {
-  currentRptFilter = f;
-  document.querySelectorAll('#screen-reports .tab').forEach(t => t.classList.remove('active'));
+// ===================== REPORTS =====================
+function filterRpt(f,el){
+  curRptFilter=f;
+  document.querySelectorAll('#screen-reports .tab').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
-  renderReports(f);
+  renderRpt(f);
 }
-function renderReports(filter) {
-  const body = document.getElementById('reportsBody');
-  const now = new Date();
-  let expenses = state.expenses.filter(e => {
-    const d = new Date(e.date);
-    if (filter === 'week') { const w = new Date(now); w.setDate(w.getDate()-7); return d >= w; }
-    if (filter === 'month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-    if (filter === '3months') { const m = new Date(now); m.setMonth(m.getMonth()-3); return d >= m; }
-    if (filter === 'year') return d.getFullYear()===now.getFullYear();
+function renderRpt(filter){
+  const now=new Date();
+  let exps=S.expenses.filter(e=>{
+    const d=new Date(e.date);
+    if(filter==='week'){const w=new Date(now);w.setDate(w.getDate()-7);return d>=w;}
+    if(filter==='month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    if(filter==='3months'){const m=new Date(now);m.setMonth(m.getMonth()-3);return d>=m;}
+    if(filter==='year') return d.getFullYear()===now.getFullYear();
     return true;
   });
-  const total = expenses.reduce((s,e) => s + e.amount, 0);
-  // days range
-  let days = 7;
-  if (filter==='month') days = now.getDate();
-  else if (filter==='3months') days = 90;
-  else if (filter==='year') days = Math.ceil((now - new Date(now.getFullYear(),0,1))/86400000);
-  else if (filter==='all' && expenses.length) {
-    const oldest = new Date(expenses[expenses.length-1].date);
-    days = Math.max(1, Math.ceil((now - oldest)/86400000));
-  }
-  const daily = total / Math.max(1, days);
+  const total=exps.reduce((s,e)=>s+e.amount,0);
+  let days=7;
+  if(filter==='month') days=now.getDate();
+  else if(filter==='3months') days=90;
+  else if(filter==='year') days=Math.ceil((now-new Date(now.getFullYear(),0,1))/86400000);
+  else if(filter==='all'&&exps.length){const old=new Date(exps[exps.length-1].date);days=Math.max(1,Math.ceil((now-old)/86400000));}
+  const daily=total/Math.max(1,days);
   // by category
-  const byCat = {};
-  expenses.forEach(e => {
-    byCat[e.category] = (byCat[e.category]||0) + e.amount;
-  });
-  const catSorted = Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
-  const S = STRINGS[state.settings.lang];
-  let incomeHTML = '';
-  if (state.budget.showInReports) {
-    const totalIncome = state.budget.incomes.reduce((s,i)=>s+i.amount,0);
-    const balance = totalIncome - total;
-    incomeHTML = `
-      <div class="stat-grid" style="margin-top:0;">
-        <div class="stat-item"><div class="stat-val" style="color:var(--success);">₪${fmt(totalIncome)}</div><div class="stat-lbl">${S.income}</div></div>
-        <div class="stat-item"><div class="stat-val" style="color:${balance>=0?'var(--success)':'var(--danger)'};">₪${fmt(Math.abs(balance))}</div><div class="stat-lbl">${S.balance}</div></div>
-      </div>`;
+  const byCat={};
+  exps.forEach(e=>{byCat[e.category]=(byCat[e.category]||0)+e.amount;});
+  const catSorted=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  // income
+  let incHtml='';
+  if(S.budget.showInReports){
+    const totInc=S.budget.incomes.reduce((s,i)=>s+i.amount,0);
+    const bal=totInc-total;
+    incHtml=`<div class="stat-grid">
+      <div class="stat-item"><div class="stat-val" style="color:var(--success);">₪${fmt(totInc)}</div><div class="stat-lbl">${t('הכנסות','Income')}</div></div>
+      <div class="stat-item"><div class="stat-val" style="color:${bal>=0?'var(--success)':'var(--danger)'};">₪${fmt(Math.abs(bal))}</div><div class="stat-lbl">${t('מאזן','Balance')}</div></div>
+    </div>`;
   }
-  const budgetLeft = state.budget.monthly > 0 ? state.budget.monthly - total : null;
-  const pct = state.budget.monthly > 0 ? Math.min(100, (total/state.budget.monthly)*100) : 0;
-  const last5 = expenses.slice(0,5);
-  body.innerHTML = `
+  const budLeft=S.budget.monthly>0?S.budget.monthly-total:null;
+  const pct=S.budget.monthly>0?Math.min(100,(total/S.budget.monthly)*100):0;
+  const last5=exps.slice(0,5);
+  document.getElementById('rptBody').innerHTML=`
     <div class="stat-grid">
-      <div class="stat-item"><div class="stat-val">₪${fmt(total)}</div><div class="stat-lbl">${S.totalSpent}</div></div>
-      <div class="stat-item"><div class="stat-val">₪${fmt(daily)}</div><div class="stat-lbl">${S.dailyAvg}</div></div>
-      ${budgetLeft !== null ? `<div class="stat-item"><div class="stat-val" style="color:${budgetLeft>=0?'var(--success)':'var(--danger)'};">₪${fmt(Math.abs(budgetLeft))}</div><div class="stat-lbl">${S.budgetLeft}</div></div>` : ''}
+      <div class="stat-item"><div class="stat-val">₪${fmt(total)}</div><div class="stat-lbl">${t('סה"כ הוצאות','Total Spent')}</div></div>
+      <div class="stat-item"><div class="stat-val">₪${fmt(daily)}</div><div class="stat-lbl">${t('ממוצע יומי','Daily Avg')}</div></div>
+      ${budLeft!==null?`<div class="stat-item"><div class="stat-val" style="color:${budLeft>=0?'var(--success)':'var(--danger)'};">₪${fmt(Math.abs(budLeft))}</div><div class="stat-lbl">${t('נותר בתקציב','Budget Left')}</div></div>`:''}
     </div>
-    ${incomeHTML}
-    ${state.budget.monthly > 0 ? `<div class="card" style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:8px;"><span>${S.totalSpent}</span><span>₪${fmt(total)} / ₪${fmt(state.budget.monthly)}</span></div><div class="progress-bar"><div class="progress-fill ${pct>100?'danger':pct>80?'warn':''}" style="width:${Math.min(100,pct)}%"></div></div></div>` : ''}
-    <div class="section-title">${S.byCategory}</div>
-    ${catSorted.length === 0 ? `<div class="empty-state" style="padding:20px;"><p>${S.noExpenses}</p></div>` :
-      catSorted.map(([catId, amt]) => {
-        const c = getCats().find(x => x.id === catId) || {icon:'📦',name:catId};
-        const pct2 = total > 0 ? (amt/total*100) : 0;
+    ${incHtml}
+    ${S.budget.monthly>0?`<div class="card">
+      <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:8px;">
+        <span>${t('ניצול תקציב','Budget Usage')}</span><span>₪${fmt(total)} / ₪${fmt(S.budget.monthly)}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill ${pct>100?'danger':pct>80?'warn':''}" style="width:${Math.min(100,pct)}%"></div></div>
+    </div>`:''}
+    <div class="section-title">${t('לפי קטגוריה','By Category')}</div>
+    ${catSorted.length===0?`<div class="empty-state" style="padding:20px;"><p>${t('אין נתונים','No data')}</p></div>`:
+      catSorted.map(([cid,amt])=>{
+        const c=getCatById(cid);
+        const p=total>0?(amt/total*100):0;
         return `<div class="cat-report-item">
-          <div class="cat-icon2">${c.icon}</div>
+          <div class="cat-report-icon">${c.icon}</div>
           <div class="cat-report-info">
             <div class="cat-report-name"><span>${c.name}</span><span>₪${fmt(amt)}</span></div>
-            <div class="progress-bar" style="height:6px;"><div class="progress-fill" style="width:${pct2}%"></div></div>
-            <div class="cat-report-pct">${pct2.toFixed(1)}%</div>
+            <div class="progress-bar" style="height:6px;"><div class="progress-fill" style="width:${p}%"></div></div>
+            <div class="cat-report-pct">${p.toFixed(1)}%</div>
           </div>
         </div>`;
       }).join('')}
-    <div class="section-title" style="margin-top:20px;">${S.recent5}</div>
-    ${last5.length === 0 ? `<div class="empty-state" style="padding:16px;"><p>${S.noExpenses}</p></div>` :
-      last5.map(e => renderExpItem(e, false)).join('')}
+    <div class="section-title" style="margin-top:20px;">${t('5 הוצאות אחרונות','Last 5 Expenses')}</div>
+    ${last5.length===0?`<div class="empty-state" style="padding:16px;"><p>${t('אין הוצאות','No expenses')}</p></div>`:
+      last5.map(e=>expItemHTML(e,false)).join('')}
   `;
 }
 
-// ===== BUDGET =====
-function renderBudget() {
-  const S = STRINGS[state.settings.lang];
-  const body = document.getElementById('budgetBody');
-  const totalIncome = state.budget.incomes.reduce((s,i)=>s+i.amount,0);
-  body.innerHTML = `
-    <div class="section-title">${S.budgetMonthly}</div>
+// ===================== BUDGET =====================
+function renderBudget(){
+  document.getElementById('budBody').innerHTML=`
+    <div class="section-title">${t('תקציב חודשי','Monthly Budget')}</div>
     <div class="input-group">
-      <input type="number" class="input-field" id="budgetInput" value="${state.budget.monthly||''}" placeholder="0" oninput="saveBudgetField()">
+      <input type="number" class="input-field" id="budInput" value="${S.budget.monthly||''}" placeholder="0" oninput="S.budget.monthly=parseFloat(this.value)||0;save();">
     </div>
-    <div class="section-title">${S.incomeMonthly}</div>
-    <div id="incomeSources"></div>
-    <button class="btn btn-secondary btn-block" onclick="openAddIncome()">+ ${S.addIncome}</button>
+    <div class="section-title">${t('הכנסות חודשיות','Monthly Income')}</div>
+    <div id="incomeSrcList"></div>
+    <button class="btn btn-secondary btn-block" style="margin-bottom:14px;" onclick="addIncomeSrc()">+ ${t('הוסף מקור הכנסה','Add Income Source')}</button>
     <div class="divider"></div>
     <div class="toggle-wrap">
       <div>
-        <div class="toggle-label">${S.showInReports}</div>
-        <div style="font-size:0.78rem;color:var(--text3);">${state.settings.lang==='he'?'פרטיות — כבוי כברירת מחדל':'Privacy — off by default'}</div>
+        <div class="toggle-label">${t('הצג הכנסות בדוחות','Show Income in Reports')}</div>
+        <div style="font-size:.78rem;color:var(--text3);">${t('פרטיות — כבוי כברירת מחדל','Privacy — off by default')}</div>
       </div>
-      <div class="toggle ${state.budget.showInReports?'on':''}" onclick="toggleShowIncome(this)"></div>
+      <div class="toggle ${S.budget.showInReports?'on':''}" onclick="this.classList.toggle('on');S.budget.showInReports=this.classList.contains('on');save();"></div>
     </div>
-    ${totalIncome > 0 ? `<div class="card" style="margin-top:10px;text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:var(--success);">₪${fmt(totalIncome)}</div><div style="font-size:0.8rem;color:var(--text3);margin-top:4px;">${S.incomeMonthly}</div></div>` : ''}
+    ${S.budget.incomes.length>0?`<div class="card" style="text-align:center;margin-top:12px;">
+      <div style="font-size:1.5rem;font-weight:800;color:var(--success);">₪${fmt(S.budget.incomes.reduce((s,i)=>s+i.amount,0))}</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:4px;">${t('סה"כ הכנסות חודשיות','Total Monthly Income')}</div>
+    </div>`:''}
   `;
-  renderIncomeSources();
+  renderIncomeSrcs();
 }
-function renderIncomeSources() {
-  const cont = document.getElementById('incomeSources');
-  if (!cont) return;
-  if (state.budget.incomes.length === 0) { cont.innerHTML = ''; return; }
-  cont.innerHTML = state.budget.incomes.map((inc,i) => `
+function renderIncomeSrcs(){
+  const el=document.getElementById('incomeSrcList'); if(!el) return;
+  el.innerHTML=S.budget.incomes.map((inc,i)=>`
     <div class="income-source">
       <div class="src-info">
         <div class="src-name">${inc.name}</div>
         <div class="src-amount">₪${fmt(inc.amount)}</div>
       </div>
-      <button class="del-btn" onclick="deleteIncome(${i})">✕</button>
+      <button class="del-btn" onclick="S.budget.incomes.splice(${i},1);save();renderBudget();">✕</button>
     </div>
   `).join('');
 }
-function saveBudgetField() {
-  state.budget.monthly = parseFloat(document.getElementById('budgetInput').value) || 0;
-  saveState();
-}
-function toggleShowIncome(el) {
-  el.classList.toggle('on');
-  state.budget.showInReports = el.classList.contains('on');
-  saveState();
-}
-function deleteIncome(i) {
-  state.budget.incomes.splice(i,1);
-  saveState();
-  renderBudget();
-}
-function openAddIncome() {
-  const S = STRINGS[state.settings.lang];
-  const name = prompt(S.incomeName + ':');
-  if (!name) return;
-  const amt = parseFloat(prompt(S.incomeAmount + ':'));
-  if (!amt || isNaN(amt)) return;
-  state.budget.incomes.push({name, amount: amt});
-  saveState();
-  renderBudget();
+function addIncomeSrc(){
+  const name=prompt(t('שם מקור הכנסה:','Income source name:'));
+  if(!name) return;
+  const amt=parseFloat(prompt(t('סכום חודשי:','Monthly amount:')));
+  if(!amt||isNaN(amt)) return;
+  S.budget.incomes.push({name,amount:amt});
+  save(); renderBudget();
 }
 
-// ===== RECEIPTS =====
-function captureReceiptPage() { document.getElementById('receiptPageInput').click(); }
-function uploadReceiptPage() { document.getElementById('receiptGalleryInput').click(); }
-function handlePageReceipt(event, gallery) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    state.receipts.push({ id: Date.now().toString(), data: e.target.result, date: new Date().toISOString().split('T')[0], desc: '' });
-    saveState();
-    renderReceipts();
+// ===================== RECEIPTS =====================
+function handlePageReceipt(ev){
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{
+    S.receipts.push({id:Date.now().toString(),data:e.target.result,date:new Date().toISOString().split('T')[0],desc:''});
+    save(); renderReceipts();
   };
-  reader.readAsDataURL(file);
-  event.target.value = '';
+  r.readAsDataURL(f);
+  ev.target.value='';
 }
-function renderReceipts() {
-  const grid = document.getElementById('receiptsGrid');
-  if (state.receipts.length === 0) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">📷</div><p>${t('noReceipts')}</p><p style="margin-top:6px;font-size:0.8rem;">${t('addReceiptFirst')}</p></div>`;
+function renderReceipts(){
+  const grid=document.getElementById('receiptsGrid');
+  if(!S.receipts.length){
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">📷</div><p>${t('אין קבלות שמורות','No saved receipts')}</p><p style="margin-top:6px;font-size:.8rem;">${t('צלם קבלה ראשונה ↑','Take your first receipt ↑')}</p></div>`;
     return;
   }
-  grid.innerHTML = state.receipts.map((r,i) => `
+  grid.innerHTML=S.receipts.map((r,i)=>`
     <div class="receipt-thumb" onclick="viewReceipt(${i})">
-      <img src="${r.data}" loading="lazy" alt="receipt">
-      <div class="receipt-date">${formatDate(r.date)}</div>
+      <img src="${r.data}" loading="lazy">
+      <div class="receipt-date">${fmtDate(r.date)}</div>
     </div>
   `).join('');
 }
-function viewReceipt(i) {
-  const r = state.receipts[i];
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-  overlay.style.cssText = 'z-index:3000;';
-  overlay.innerHTML = `<div style="max-width:480px;width:95%;background:var(--bg3);border-radius:var(--radius);padding:16px;position:relative;">
-    <button onclick="this.closest('.modal-overlay').remove()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.5);color:white;border:none;border-radius:50%;width:30px;height:30px;font-size:1.1rem;cursor:pointer;">✕</button>
+function viewReceipt(i){
+  const r=S.receipts[i];
+  const ov=document.createElement('div');
+  ov.className='modal-overlay';
+  ov.style.zIndex='3000';
+  ov.innerHTML=`<div style="max-width:480px;width:95%;background:var(--bg3);border-radius:var(--radius);padding:16px;position:relative;">
+    <button onclick="this.closest('.modal-overlay').remove()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:1.1rem;">✕</button>
     <img src="${r.data}" style="width:100%;border-radius:var(--radius-sm);">
-    <div style="margin-top:10px;display:flex;gap:10px;">
-      <button class="btn btn-danger btn-sm" onclick="deleteReceipt(${i});this.closest('.modal-overlay').remove()">🗑️</button>
+    <div style="margin-top:10px;">
+      <button class="btn btn-danger btn-sm" onclick="S.receipts.splice(${i},1);save();renderReceipts();this.closest('.modal-overlay').remove();">🗑️ ${t('מחק','Delete')}</button>
     </div>
   </div>`;
-  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
-  document.body.appendChild(overlay);
-}
-function deleteReceipt(i) {
-  state.receipts.splice(i,1);
-  saveState();
-  renderReceipts();
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  document.body.appendChild(ov);
 }
 
-// ===== EXPORT =====
-function getExportExpenses() {
-  const range = document.getElementById('exportRange')?.value || 'month';
-  const now = new Date();
-  return state.expenses.filter(e => {
-    const d = new Date(e.date);
-    if (range==='month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-    if (range==='3months') { const m=new Date(now);m.setMonth(m.getMonth()-3);return d>=m; }
-    if (range==='year') return d.getFullYear()===now.getFullYear();
+// ===================== EXPORT =====================
+function getExportExps(){
+  const range=document.getElementById('exportRange')?.value||'month';
+  const now=new Date();
+  return S.expenses.filter(e=>{
+    const d=new Date(e.date);
+    if(range==='month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    if(range==='3months'){const m=new Date(now);m.setMonth(m.getMonth()-3);return d>=m;}
+    if(range==='year') return d.getFullYear()===now.getFullYear();
     return true;
   });
 }
-function updateExportPreview() {
-  const n = getExportExpenses().length;
-  document.getElementById('exportPreviewText').textContent = t('exportItems', n);
+function updateExportPrev(){
+  const n=getExportExps().length;
+  document.getElementById('exportPrevTxt').textContent=t(`${n} רשומות לייצוא`,`${n} records to export`);
 }
-function exportPDF() {
-  const exps = getExportExpenses();
-  const user = state.settings.username || 'MoneyNest';
-  const total = exps.reduce((s,e)=>s+e.amount,0);
-  const w = window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>MoneyNest Report</title>
-  <style>body{font-family:Arial,sans-serif;padding:30px;direction:rtl;}h1{color:#1a7a4a;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{border:1px solid #ccc;padding:8px;text-align:right;}th{background:#1a7a4a;color:white;}tr:nth-child(even){background:#f5f5f5;}.total{font-weight:bold;font-size:1.2em;margin-top:20px;}</style>
-  </head><body><h1>📊 MoneyNest — דוח הוצאות</h1><p>משתמש: ${user} | תאריך: ${new Date().toLocaleDateString('he-IL')}</p>
-  <table><tr><th>תיאור</th><th>קטגוריה</th><th>סוג</th><th>תאריך</th><th>סכום</th></tr>
-  ${exps.map(e=>{const c=getCats().find(x=>x.id===e.category)||{icon:'📦',name:e.category};return`<tr><td>${e.desc}</td><td>${c.icon} ${c.name}</td><td>${e.type}</td><td>${formatDate(e.date)}</td><td>₪${fmt(e.amount)}</td></tr>`}).join('')}
-  </table><div class="total">סה"כ: ₪${fmt(total)}</div></body></html>`);
+function doPDF(){
+  const exps=getExportExps();
+  const user=S.settings.username||'MoneyNest';
+  const total=exps.reduce((s,e)=>s+e.amount,0);
+  const w=window.open('','_blank');
+  if(!w){toast(t('אפשר חלונות קופצים בדפדפן','Allow popups in browser'));return;}
+  w.document.write(`<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8"><title>MoneyNest</title>
+  <style>body{font-family:Arial,sans-serif;padding:30px;direction:rtl;color:#222;}
+  h1{color:#1a7a4a;margin-bottom:4px;}h2{color:#555;font-size:1rem;font-weight:400;margin-bottom:20px;}
+  table{width:100%;border-collapse:collapse;margin-top:20px;}
+  th,td{border:1px solid #ddd;padding:9px 12px;text-align:right;}
+  th{background:#1a7a4a;color:#fff;}tr:nth-child(even){background:#f9f9f9;}
+  .total{font-size:1.2rem;font-weight:700;margin-top:20px;color:#1a7a4a;}
+  .footer{margin-top:30px;font-size:.8rem;color:#999;}</style>
+  </head><body>
+  <h1>📊 MoneyNest — יומן ניהול הוצאות</h1>
+  <h2>${user} | ${new Date().toLocaleDateString('he-IL')}</h2>
+  <table><tr><th>תיאור</th><th>קטגוריה</th><th>סוג</th><th>אמצעי תשלום</th><th>תאריך</th><th>סכום</th></tr>
+  ${exps.map(e=>{
+    const c=getCatById(e.category);
+    const labels=PAY_HE;
+    const types={regular:'רגילה',fixed:'קבועה',installments:'תשלומים'};
+    return `<tr><td>${e.desc}</td><td>${c.icon} ${c.name}</td><td>${types[e.type]||e.type}</td><td>${labels[e.pay]||e.pay}</td><td>${fmtDate(e.date)}</td><td>₪${fmt(e.amount)}</td></tr>`;
+  }).join('')}
+  </table>
+  <div class="total">סה"כ: ₪${fmt(total)}</div>
+  <div class="footer">הופק ע"י MoneyNest • AppNest © 2025</div>
+  </body></html>`);
   w.document.close();
-  setTimeout(()=>w.print(),500);
+  setTimeout(()=>w.print(),600);
 }
-function exportCSV() {
-  const exps = getExportExpenses();
-  const rows = [['תיאור','קטגוריה','סוג','תאריך','סכום','אמצעי תשלום']];
-  exps.forEach(e => {
-    const c = getCats().find(x=>x.id===e.category)||{name:e.category};
-    rows.push([e.desc, c.name, e.type, e.date, e.amount, e.payMethod]);
-  });
-  const csv = rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
-  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `moneynest_${new Date().toISOString().split('T')[0]}.csv`;
+function doCSV(){
+  const exps=getExportExps();
+  const labels=S.settings.lang==='he'?PAY_HE:PAY_EN;
+  const header=[t('תיאור','Description'),t('קטגוריה','Category'),t('סוג','Type'),t('אמצעי תשלום','Payment'),t('תאריך','Date'),t('סכום','Amount')];
+  const rows=[header,...exps.map(e=>{
+    const c=getCatById(e.category);
+    const types={regular:t('רגילה','Regular'),fixed:t('קבועה','Fixed'),installments:t('תשלומים','Payments')};
+    return [e.desc,c.name,types[e.type]||e.type,labels[e.pay]||e.pay,e.date,e.amount];
+  })];
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`moneynest_${new Date().toISOString().split('T')[0]}.csv`;
   a.click();
 }
-function exportEmail() {
-  const exps = getExportExpenses();
-  const user = state.settings.username || 'MoneyNest User';
-  const total = exps.reduce((s,e)=>s+e.amount,0);
-  let body = `דוח הוצאות - ${user}\n\n`;
-  exps.forEach(e => { body += `${formatDate(e.date)} | ${e.desc} | ₪${fmt(e.amount)}\n`; });
-  body += `\nסה"כ: ₪${fmt(total)}`;
-  window.location.href = `mailto:?subject=MoneyNest Report - ${user}&body=${encodeURIComponent(body)}`;
+function doEmail(){
+  const exps=getExportExps();
+  const user=S.settings.username||'MoneyNest User';
+  const total=exps.reduce((s,e)=>s+e.amount,0);
+  let body=`${t('דוח הוצאות','Expense Report')} - ${user}\n\n`;
+  exps.forEach(e=>{body+=`${fmtDate(e.date)} | ${e.desc} | ₪${fmt(e.amount)}\n`;});
+  body+=`\n${t('סה"כ','Total')}: ₪${fmt(total)}\n\n${t('הופק ע"י MoneyNest • AppNest','Generated by MoneyNest • AppNest')}`;
+  window.location.href=`mailto:?subject=MoneyNest - ${user}&body=${encodeURIComponent(body)}`;
 }
-function exportShare() {
-  const exps = getExportExpenses();
-  const user = state.settings.username || 'MoneyNest User';
-  const total = exps.reduce((s,e)=>s+e.amount,0);
-  let text = `📊 MoneyNest — ${user}\n\n`;
-  exps.slice(0,10).forEach(e => { text += `${formatDate(e.date)} • ${e.desc} • ₪${fmt(e.amount)}\n`; });
-  if (exps.length > 10) text += `...\n`;
-  text += `\n💰 סה"כ: ₪${fmt(total)}`;
-  if (navigator.share) {
-    navigator.share({ title: 'MoneyNest Report', text });
-  } else {
-    navigator.clipboard.writeText(text).then(() => showToast(state.settings.lang==='he'?'הועתק ללוח':'Copied to clipboard'));
-  }
+function doShare(){
+  const exps=getExportExps();
+  const user=S.settings.username||'MoneyNest';
+  const total=exps.reduce((s,e)=>s+e.amount,0);
+  let text=`📊 MoneyNest — ${user}\n\n`;
+  exps.slice(0,10).forEach(e=>{text+=`${fmtDate(e.date)} • ${e.desc} • ₪${fmt(e.amount)}\n`;});
+  if(exps.length>10) text+=`...(${exps.length-10} ${t('נוספות','more')})\n`;
+  text+=`\n💰 ${t('סה"כ','Total')}: ₪${fmt(total)}`;
+  if(navigator.share) navigator.share({title:'MoneyNest',text});
+  else navigator.clipboard.writeText(text).then(()=>toast(t('הועתק ללוח','Copied to clipboard')));
 }
 
-// ===== SETTINGS =====
-function renderSettings() {
-  const S = STRINGS[state.settings.lang];
-  const body = document.getElementById('settingsBody');
-  body.innerHTML = `
-    <div class="section-title">${S.username}</div>
+// ===================== EDIT MODAL =====================
+function openEdit(id){
+  const e=S.expenses.find(x=>x.id===id); if(!e) return;
+  editId=id;
+  document.getElementById('editAmt').value=e.amount;
+  document.getElementById('editDescVal').value=e.desc;
+  document.getElementById('editDateVal').value=e.date;
+  document.getElementById('editTypeVal').value=e.type;
+  document.getElementById('editPayVal').value=e.pay||'credit';
+  document.getElementById('editModal').style.display='flex';
+}
+function closeEdit(ev){
+  if(!ev||ev.target===document.getElementById('editModal')){
+    document.getElementById('editModal').style.display='none'; editId=null;
+  }
+}
+function doSaveEdit(){
+  const idx=S.expenses.findIndex(x=>x.id===editId); if(idx===-1) return;
+  S.expenses[idx]={
+    ...S.expenses[idx],
+    amount:parseFloat(document.getElementById('editAmt').value)||S.expenses[idx].amount,
+    desc:document.getElementById('editDescVal').value.trim()||S.expenses[idx].desc,
+    date:document.getElementById('editDateVal').value||S.expenses[idx].date,
+    type:document.getElementById('editTypeVal').value,
+    pay:document.getElementById('editPayVal').value,
+  };
+  save();
+  document.getElementById('editModal').style.display='none'; editId=null;
+  const a=document.querySelector('.screen.active'); if(a) onScreen(a.id);
+  toast(t('✓ עודכן','✓ Updated'));
+}
+function doDeleteExpense(){
+  if(!editId) return;
+  if(!confirm(t('למחוק הוצאה זו?','Delete this expense?'))) return;
+  S.expenses=S.expenses.filter(x=>x.id!==editId);
+  save();
+  document.getElementById('editModal').style.display='none'; editId=null;
+  const a=document.querySelector('.screen.active'); if(a) onScreen(a.id);
+  toast(t('🗑️ נמחק','🗑️ Deleted'));
+}
+
+// ===================== SETTINGS =====================
+function renderSettings(){
+  document.getElementById('setBody').innerHTML=`
+    <div class="section-title">${t('שם משתמש','Username')}</div>
     <div class="input-group">
-      <input type="text" class="input-field" id="usernameInput" value="${state.settings.username||''}" placeholder="${S.username}..." oninput="saveUsername()">
+      <input type="text" class="input-field" id="usernameInp" value="${S.settings.username||''}"
+        placeholder="${t('שמך או שם המשפחה...','Your name or family name...')}"
+        oninput="S.settings.username=this.value;save();">
     </div>
-    <div class="section-title">${S.language}</div>
+    <div class="section-title">${t('שפה','Language')}</div>
     <div style="display:flex;gap:10px;margin-bottom:14px;">
-      <button class="btn ${state.settings.lang==='he'?'btn-primary':'btn-secondary'}" style="flex:1;" onclick="setLang('he')">🇮🇱 עברית</button>
-      <button class="btn ${state.settings.lang==='en'?'btn-primary':'btn-secondary'}" style="flex:1;" onclick="setLang('en')">🇬🇧 English</button>
+      <button class="btn ${S.settings.lang==='he'?'btn-primary':'btn-secondary'}" style="flex:1;" onclick="setLang('he')">🇮🇱 עברית</button>
+      <button class="btn ${S.settings.lang==='en'?'btn-primary':'btn-secondary'}" style="flex:1;" onclick="setLang('en')">🇬🇧 English</button>
     </div>
-    <div class="section-title">${S.notifications}</div>
-    <div class="card">
+    <div class="section-title">${t('התראות','Notifications')}</div>
+    <div class="card" style="margin-bottom:14px;">
       <div class="toggle-wrap">
-        <div class="toggle-label">${S.notifyBudget}</div>
-        <div class="toggle ${state.settings.notifyBudget?'on':''}" onclick="this.classList.toggle('on');state.settings.notifyBudget=this.classList.contains('on');saveState();"></div>
+        <div class="toggle-label">${t('התראה על חריגה מתקציב','Budget Exceeded Alert')}</div>
+        <div class="toggle ${S.settings.notifyBudget?'on':''}" onclick="this.classList.toggle('on');S.settings.notifyBudget=this.classList.contains('on');save();"></div>
       </div>
       <div class="divider" style="margin:6px 0;"></div>
       <div class="toggle-wrap">
-        <div class="toggle-label">${S.notifyDaily}</div>
-        <div class="toggle ${state.settings.notifyDaily?'on':''}" onclick="this.classList.toggle('on');state.settings.notifyDaily=this.classList.contains('on');saveState();"></div>
+        <div class="toggle-label">${t('תזכורת יומית','Daily Reminder')}</div>
+        <div class="toggle ${S.settings.notifyDaily?'on':''}" onclick="this.classList.toggle('on');S.settings.notifyDaily=this.classList.contains('on');save();"></div>
       </div>
     </div>
-    <div class="section-title" style="margin-top:16px;"></div>
-    <div class="setting-item" onclick="showGuide()">
-      <div class="setting-left"><div class="setting-icon">📖</div><div><div class="setting-name">${S.guide}</div></div></div>
+    <div class="section-title"></div>
+    <div class="setting-item" onclick="go('screen-help')">
+      <div class="setting-left"><div class="setting-icon">📖</div><div class="setting-name">${t('מדריך שימוש מלא','Full User Guide')}</div></div>
       <div class="setting-arrow">›</div>
     </div>
-    <div class="setting-item" onclick="navigateTo('screen-about')">
-      <div class="setting-left"><div class="setting-icon">ℹ️</div><div><div class="setting-name">${S.about}</div></div></div>
+    <div class="setting-item" onclick="go('screen-about')">
+      <div class="setting-left"><div class="setting-icon">ℹ️</div><div class="setting-name">${t('אודות','About')}</div></div>
+      <div class="setting-arrow">›</div>
+    </div>
+    <div class="setting-item" onclick="showGuide()">
+      <div class="setting-left"><div class="setting-icon">🎓</div><div class="setting-name">${t('מדריך ראשוני (הפעל מחדש)','Welcome Guide (Replay)')}</div></div>
       <div class="setting-arrow">›</div>
     </div>
     <div style="margin-top:20px;">
-      <button class="btn btn-danger btn-block" onclick="clearAllData()">🗑️ ${S.clearData}</button>
+      <button class="btn btn-danger btn-block" onclick="clearAll()">🗑️ ${t('מחק את כל הנתונים','Delete All Data')}</button>
     </div>
   `;
 }
-function saveUsername() {
-  state.settings.username = document.getElementById('usernameInput').value;
-  saveState();
-}
-function clearAllData() {
-  if (!confirm(t('confirmClear'))) return;
-  state = { expenses:[], budget:{monthly:0,incomes:[],showInReports:false}, settings:{username:'',lang:state.settings.lang,theme:state.settings.theme,notifyBudget:false,notifyDaily:false}, payMethods:['credit','cash','bit','paybox','other'], customPays:[], categories:[], receipts:[], firstRun:false };
-  saveState();
-  navigateTo('screen-home');
-  showToast(state.settings.lang==='he'?'🗑️ כל הנתונים נמחקו':'🗑️ All data deleted');
+function clearAll(){
+  if(!confirm(t('האם אתה בטוח? כל הנתונים יימחקו לצמיתות!','Are you sure? All data will be permanently deleted!'))) return;
+  S={expenses:[],budget:{monthly:0,incomes:[],showInReports:false},settings:{...S.settings},customPays:[],customCats:[],receipts:[],firstRun:false};
+  save(); go('screen-home'); toast(t('🗑️ כל הנתונים נמחקו','🗑️ All data deleted'));
 }
 
-// ===== GUIDE =====
-const GUIDE_DATA = {
-  he: [
-    {title:'ברוך הבא ל-MoneyNest',desc:'הדרך החכמה לנהל את ההוצאות שלך. פשוט, מהיר, ובפרטיות מלאה.'},
-    {title:'הוסף הוצאות בקלות',desc:'הוסף הוצאה רגילה, קבועה חודשית, או תשלומים מפוצלים — בשלושה לחיצות.'},
-    {title:'דוחות חכמים',desc:'ראה לאן הולך הכסף שלך — לפי קטגוריה, זמן, ומול התקציב שהגדרת.'},
-    {title:'הגדר תקציב',desc:'קבע תקציב חודשי ומקורות הכנסה. הדוחות יראו לך כמה נותר.'},
-    {title:'שמור קבלות',desc:'צלם קבלות ישירות מהאפליקציה ושמור אותן מסודרות לכל הוצאה.'},
-    {title:'הכל מוכן!',desc:'MoneyNest שומר את הנתונים שלך על המכשיר בלבד. פרטי ומאובטח.'},
-  ],
-  en: [
-    {title:'Welcome to MoneyNest',desc:'The smart way to manage your expenses. Simple, fast, and completely private.'},
-    {title:'Add Expenses Easily',desc:'Add a regular, fixed monthly, or split payment expense — in three taps.'},
-    {title:'Smart Reports',desc:'See where your money goes — by category, time, and against your budget.'},
-    {title:'Set a Budget',desc:'Define a monthly budget and income sources. Reports will show how much remains.'},
-    {title:'Save Receipts',desc:'Take photos of receipts directly in the app and keep them organized.'},
-    {title:'All Set!',desc:'MoneyNest saves your data on your device only. Private and secure.'},
-  ]
-};
-function updateGuideText() {
-  const lang = state.settings.lang;
-  GUIDE_DATA[lang].forEach((d,i) => {
-    setText('gt'+i, d.title);
-    setText('gd'+i, d.desc);
+// ===================== FULL HELP GUIDE =====================
+function renderHelp(){
+  const is_he=S.settings.lang==='he';
+  document.getElementById('helpBody').innerHTML=`
+    <div class="help-section">
+      <h3>📱 ${is_he?'מסכים ראשיים':'Main Screens'}</h3>
+      <div class="help-item"><div class="help-item-icon">🏠</div><div class="help-item-text"><strong>${is_he?'דף הבית':'Home'}</strong> — ${is_he?'סיכום חודשי, גישה מהירה לכל הפונקציות.':'Monthly summary, quick access to all features.'}</div></div>
+      <div class="help-item"><div class="help-item-icon">📋</div><div class="help-item-text"><strong>${is_he?'הוצאות':'Expenses'}</strong> — ${is_he?'רשימה מלאה עם 4 טאבים: הכל, רגיל, קבוע, תשלומים.':'Full list with 4 tabs: All, Regular, Fixed, Payments.'}</div></div>
+      <div class="help-item"><div class="help-item-icon">🕐</div><div class="help-item-text"><strong>${is_he?'היסטוריה':'History'}</strong> — ${is_he?'הוצאות מסוננות לפי זמן: היום, שבוע, חודש, 3 חודשים.':'Expenses filtered by time: today, week, month, 3 months.'}</div></div>
+      <div class="help-item"><div class="help-item-icon">📊</div><div class="help-item-text"><strong>${is_he?'דוחות':'Reports'}</strong> — ${is_he?'פירוט לפי קטגוריה, ממוצע יומי, ניצול תקציב.':'Breakdown by category, daily average, budget usage.'}</div></div>
+    </div>
+    <div class="help-section">
+      <h3>➕ ${is_he?'הוספת הוצאה':'Adding Expenses'}</h3>
+      <div class="help-item"><div class="help-item-icon">💸</div><div class="help-item-text"><strong>${is_he?'רגילה':'Regular'}</strong> — ${is_he?'הוצאה חד פעמית רגילה.':'One-time regular expense.'}</div></div>
+      <div class="help-item"><div class="help-item-icon">🔄</div><div class="help-item-text"><strong>${is_he?'קבועה':'Fixed'}</strong> — ${is_he?'הוצאה שחוזרת כל חודש (שכירות, מנויים).':'Monthly recurring expense (rent, subscriptions).'}</div></div>
+      <div class="help-item"><div class="help-item-icon">💳</div><div class="help-item-text"><strong>${is_he?'תשלומים':'Payments'}</strong> — ${is_he?'עסקה שמתפרסת על פני מספר חודשים. מעקב תשלומים עם נקודות ✓ שולם / ● עכשיו / ○ עתידי.':'Transaction spread over months. Track with dots ✓ paid / ● current / ○ future.'}</div></div>
+      <div class="help-item"><div class="help-item-icon">✏️</div><div class="help-item-text">${is_he?'לעריכת הוצאה: לחץ על ✏️ ליד ההוצאה, או לחיצה ארוכה עליה.':'To edit: tap ✏️ next to the expense, or long press it.'}</div></div>
+    </div>
+    <div class="help-section">
+      <h3>💰 ${is_he?'תקציב והכנסות':'Budget & Income'}</h3>
+      <div class="help-item"><div class="help-item-icon">🎯</div><div class="help-item-text">${is_he?'הגדר תקציב חודשי כולל — הדוחות יראו כמה נותר.':'Set a monthly budget — reports will show remaining amount.'}</div></div>
+      <div class="help-item"><div class="help-item-icon">💵</div><div class="help-item-text">${is_he?'הוסף מקורות הכנסה (שם + סכום). Toggle להצגה בדוחות לשמירת פרטיות.':'Add income sources (name + amount). Toggle to show in reports for privacy.'}</div></div>
+    </div>
+    <div class="help-section">
+      <h3>📷 ${is_he?'קבלות':'Receipts'}</h3>
+      <div class="help-item"><div class="help-item-icon">📸</div><div class="help-item-text">${is_he?'צלם קבלה ישירות מהאפליקציה (פותח מצלמה) או העלה מהגלריה. אפשר לצרף קבלה בעת הוספת הוצאה.':'Take receipt directly (opens camera) or upload from gallery. Attach receipt when adding expense.'}</div></div>
+    </div>
+    <div class="help-section">
+      <h3>📤 ${is_he?'ייצוא':'Export'}</h3>
+      <div class="help-item"><div class="help-item-icon">📄</div><div class="help-item-text"><strong>PDF</strong> — ${is_he?'פותח חלון הדפסה. ניתן לשמור כ-PDF או להדפיס.':'Opens print dialog. Save as PDF or print.'}</div></div>
+      <div class="help-item"><div class="help-item-icon">📊</div><div class="help-item-text"><strong>CSV</strong> — ${is_he?'מוריד קובץ שאפשר לפתוח ב-Excel או Google Sheets.':'Downloads file openable in Excel or Google Sheets.'}</div></div>
+      <div class="help-item"><div class="help-item-icon">✉️</div><div class="help-item-text">${is_he?'מייל — שולח סיכום עם שמך.':'Email — sends summary with your name.'}</div></div>
+      <div class="help-item"><div class="help-item-icon">🔗</div><div class="help-item-text">${is_he?'שתף — WhatsApp, Telegram ועוד, עם שמך מצורף.':'Share — WhatsApp, Telegram & more, with your name attached.'}</div></div>
+    </div>
+    <div class="help-section">
+      <h3>⚙️ ${is_he?'טיפים נוספים':'More Tips'}</h3>
+      <div class="help-item"><div class="help-item-icon">👤</div><div class="help-item-text">${is_he?'הגדר שם משתמש בהגדרות — יופיע בכל שיתוף וייצוא.':'Set username in Settings — appears in all shares and exports.'}</div></div>
+      <div class="help-item"><div class="help-item-icon">🎨</div><div class="help-item-text">${is_he?'החלף עיצוב בכפתור 🎨 בדף הבית — 4 ערכות צבע.':'Change design via 🎨 on home — 4 color themes.'}</div></div>
+      <div class="help-item"><div class="help-item-icon">💾</div><div class="help-item-text">${is_he?'הנתונים נשמרים על המכשיר בלבד. ייצא ל-CSV גיבוי קבוע.':'Data saved on device only. Export to CSV for regular backup.'}</div></div>
+    </div>
+  `;
+}
+
+// ===================== GUIDE =====================
+const GUIDE_HE=[
+  {title:'ברוך הבא ל-MoneyNest',desc:'הדרך החכמה לנהל את ההוצאות שלך. פשוט, מהיר, ובפרטיות מלאה.'},
+  {title:'הוסף הוצאות',desc:'3 סוגים: רגילה, קבועה חודשית, תשלומים מפוצלים. מקלדת נוחה + 8 קטגוריות.'},
+  {title:'דוחות חכמים',desc:'ראה לאן הולך הכסף לפי קטגוריה וזמן. גרפים ברורים מול התקציב.'},
+  {title:'תקציב והכנסות',desc:'הגדר תקציב חודשי ומקורות הכנסה. הדוחות יראו מאזן — בפרטיות.'},
+  {title:'צלם קבלות',desc:'צלם קבלות ישירות מהאפליקציה. הן נשמרות ואפשר לייצא אותן.'},
+  {title:'הכל מוכן! 🎉',desc:'הנתונים שמורים על המכשיר בלבד. ייצא ל-PDF, Excel, מייל ושיתוף.'},
+];
+const GUIDE_EN=[
+  {title:'Welcome to MoneyNest',desc:'The smart way to manage your expenses. Simple, fast, and completely private.'},
+  {title:'Add Expenses',desc:'3 types: Regular, Fixed monthly, Split payments. Easy numpad + 8 categories.'},
+  {title:'Smart Reports',desc:'See where your money goes by category and time. Clear charts vs your budget.'},
+  {title:'Budget & Income',desc:'Set a monthly budget and income sources. Reports show balance — privately.'},
+  {title:'Take Receipts',desc:'Take receipt photos directly in the app. Saved and exportable.'},
+  {title:'All Set! 🎉',desc:'Data saved on device only. Export to PDF, Excel, email & share.'},
+];
+function updateGuideLabels(){
+  const data=S.settings.lang==='he'?GUIDE_HE:GUIDE_EN;
+  data.forEach((d,i)=>{setText('gt'+i,d.title);setText('gd'+i,d.desc);});
+  setText('guideSkipBtn',t('דלג','Skip'));
+  const nextBtn=document.getElementById('guideNextBtn');
+  if(nextBtn) nextBtn.innerHTML=guideStep<5?t('הבא ←','Next →'):t('התחל 🚀','Start 🚀');
+  const prevBtn=document.getElementById('guidePrevBtn');
+  if(prevBtn){ prevBtn.style.display=guideStep>0?'block':'none'; prevBtn.innerHTML=t('→ חזור','← Back'); }
+}
+function updateGuideDots(){
+  document.querySelectorAll('.guide-dot').forEach((d,i)=>d.classList.toggle('active',i===guideStep));
+}
+function updateGuideStepDisplay(){
+  document.querySelectorAll('.guide-step').forEach((s,i)=>s.classList.toggle('active',i===guideStep));
+  updateGuideLabels(); updateGuideDots();
+}
+function nextGuide(){
+  if(guideStep<5){guideStep++;updateGuideStepDisplay();}
+  else{document.getElementById('guideScreen').style.display='none';S.firstRun=false;save();}
+}
+function prevGuide(){if(guideStep>0){guideStep--;updateGuideStepDisplay();}}
+function skipGuide(){document.getElementById('guideScreen').style.display='none';S.firstRun=false;save();}
+function showGuide(){guideStep=0;updateGuideStepDisplay();document.getElementById('guideScreen').style.display='flex';}
+
+// ===================== UTILS =====================
+function fmt(n){
+  if(!n||isNaN(n)) return '0';
+  return parseFloat(n.toFixed(2)).toLocaleString('he-IL');
+}
+function fmtDate(d){
+  if(!d) return '';
+  const date=new Date(d+'T00:00:00');
+  return S.settings.lang==='he'?date.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit',year:'numeric'}):date.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+function toast(msg){
+  const el=document.createElement('div');
+  el.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--text);padding:10px 20px;border-radius:20px;border:1px solid var(--border);z-index:9999;font-size:.9rem;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.4);animation:fadeIn .2s ease;white-space:nowrap;';
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),2200);
+}
+
+// ===================== INIT =====================
+function init(){
+  load();
+  document.documentElement.setAttribute('data-theme',S.settings.theme||'green');
+  ['green','gold','navy','light'].forEach(x=>{
+    const k=document.getElementById('tck'+cap(x));
+    const c=document.getElementById('tc'+cap(x));
+    if(k) k.style.display=x===S.settings.theme?'block':'none';
+    if(c) c.classList.toggle('active',x===S.settings.theme);
   });
-  const skip = document.getElementById('guideSkip');
-  const next = document.getElementById('guideNext');
-  if (skip) skip.textContent = lang==='he'?'דלג':'Skip';
-  if (next) {
-    next.innerHTML = guideStep < 5 ? (lang==='he'?'הבא ←':'Next →') : (lang==='he'?'התחל 🚀':'Start 🚀');
-  }
+  const lang=S.settings.lang||'he';
+  document.documentElement.lang=lang;
+  document.documentElement.dir=lang==='he'?'rtl':'ltr';
+  document.getElementById('langLabel').textContent=lang==='he'?'EN':'עב';
+  const bHe=document.getElementById('desLangHe');
+  const bEn=document.getElementById('desLangEn');
+  if(bHe) bHe.className='btn '+(lang==='he'?'btn-primary':'btn-secondary');
+  if(bEn) bEn.className='btn '+(lang!=='he'?'btn-primary':'btn-secondary');
+  applyLabels();
+  renderHome();
+  if(!S.firstRun) document.getElementById('guideScreen').style.display='none';
+  else { updateGuideStepDisplay(); }
 }
-function showGuide() {
-  guideStep = 0;
-  updateGuideStep();
-  document.getElementById('guideScreen').style.display = 'flex';
-}
-function updateGuideStep() {
-  document.querySelectorAll('.guide-step').forEach((s,i) => s.classList.toggle('active', i===guideStep));
-  document.querySelectorAll('.guide-dot').forEach((d,i) => d.classList.toggle('active', i===guideStep));
-  const lang = state.settings.lang;
-  const next = document.getElementById('guideNext');
-  if (next) next.innerHTML = guideStep < 5 ? (lang==='he'?'הבא ←':'Next →') : (lang==='he'?'התחל 🚀':'Start 🚀');
-}
-document.getElementById('guideNext').onclick = () => {
-  if (guideStep < 5) { guideStep++; updateGuideStep(); }
-  else { document.getElementById('guideScreen').style.display = 'none'; state.firstRun=false; saveState(); }
-};
-document.getElementById('guideSkip').onclick = () => {
-  document.getElementById('guideScreen').style.display = 'none';
-  state.firstRun = false; saveState();
-};
-
-// ===== MODAL HELPERS =====
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-// ===== TOAST =====
-function showToast(msg) {
-  const t = document.createElement('div');
-  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--text);padding:10px 20px;border-radius:20px;border:1px solid var(--border);z-index:9999;font-size:0.9rem;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.4);animation:fadeIn 0.2s ease;';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2200);
-}
-
-// ===== UTILS =====
-function formatDate(d) {
-  if (!d) return '';
-  const date = new Date(d + 'T00:00:00');
-  if (state.settings.lang === 'he') {
-    return date.toLocaleDateString('he-IL', {day:'2-digit',month:'2-digit',year:'numeric'});
-  }
-  return date.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
-}
-
-function checkBudgetAlert(amount) {
-  if (!state.settings.notifyBudget || !state.budget.monthly) return;
-  const now = new Date();
-  const total = state.expenses.filter(e => {
-    const d = new Date(e.date);
-    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-  }).reduce((s,e)=>s+e.amount,0);
-  if (total > state.budget.monthly) {
-    showToast(state.settings.lang==='he'?'⚠️ חריגה מהתקציב!':'⚠️ Budget exceeded!');
-  }
-}
-
-// ===== INIT =====
-function init() {
-  loadState();
-  applyTheme(state.settings.theme || 'green');
-  setLang(state.settings.lang || 'he');
-  refreshHome();
-  updateStaticLabels();
-  if (!state.firstRun) {
-    document.getElementById('guideScreen').style.display = 'none';
-  } else {
-    updateGuideText();
-  }
-  // set today date
-  document.getElementById('addDate').value = new Date().toISOString().split('T')[0];
-}
-
 init();
 </script>
 </body>
