@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a7a4a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MoneyNest">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <title>MoneyNest — יומן ניהול הוצאות</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -1460,6 +1467,70 @@ function init(){
   if(S.firstRun)showGuide();
 }
 init();
+</script>
+<script>
+// Register Service Worker for PWA/offline support
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').then(function(reg){
+      console.log('MoneyNest SW registered:', reg.scope);
+    }).catch(function(err){
+      console.log('SW registration failed:', err);
+    });
+  });
+}
+
+// PWA Install prompt
+var deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  deferredPrompt = e;
+  // Show install banner after 3 seconds if not installed
+  setTimeout(function(){
+    var installed = localStorage.getItem('mn_pwa_installed');
+    if(!installed && deferredPrompt){
+      showInstallBanner();
+    }
+  }, 3000);
+});
+
+window.addEventListener('appinstalled', function(){
+  localStorage.setItem('mn_pwa_installed','1');
+  deferredPrompt = null;
+  var banner = document.getElementById('installBanner');
+  if(banner) banner.remove();
+});
+
+function showInstallBanner(){
+  if(document.getElementById('installBanner')) return;
+  var banner = document.createElement('div');
+  banner.id = 'installBanner';
+  banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:var(--p);color:white;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;z-index:8000;gap:10px;box-shadow:0 -4px 20px rgba(0,0,0,0.4);';
+  var txt = document.createElement('div');
+  txt.style.cssText = 'font-size:.9rem;font-weight:600;font-family:var(--fn);';
+  txt.textContent = '📲 ' + (document.documentElement.lang === 'he' ? 'התקן את MoneyNest על המכשיר' : 'Install MoneyNest on your device');
+  var btns = document.createElement('div');
+  btns.style.cssText = 'display:flex;gap:8px;flex-shrink:0;';
+  var installBtn = document.createElement('button');
+  installBtn.style.cssText = 'background:white;color:var(--pd);border:none;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-family:var(--fn);font-size:.85rem;';
+  installBtn.textContent = document.documentElement.lang === 'he' ? 'התקן' : 'Install';
+  installBtn.onclick = function(){
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(){deferredPrompt=null;});
+    }
+    banner.remove();
+  };
+  var closeBtn = document.createElement('button');
+  closeBtn.style.cssText = 'background:rgba(255,255,255,.2);color:white;border:none;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:1rem;';
+  closeBtn.textContent = '✕';
+  closeBtn.onclick = function(){banner.remove(); localStorage.setItem('mn_pwa_installed','dismissed');};
+  btns.appendChild(installBtn);
+  btns.appendChild(closeBtn);
+  banner.appendChild(txt);
+  banner.appendChild(btns);
+  document.body.appendChild(banner);
+}
 </script>
 </body>
 </html>
