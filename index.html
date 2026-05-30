@@ -202,6 +202,17 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 .tc-nm{font-size:.85rem;font-weight:700;}
 .tc-chk{position:absolute;top:8px;right:8px;}
 
+/* DATE RANGE BAR */
+.drb-wrap{background:var(--bg2);border-bottom:1px solid var(--br);padding:10px 12px;flex-shrink:0;}
+.drb-row{display:flex;gap:6px;flex-wrap:wrap;}
+.drb-btn{padding:6px 12px;border-radius:20px;border:1.5px solid var(--br);background:var(--cb);cursor:pointer;font-family:var(--fn);font-size:.78rem;font-weight:600;color:var(--t2);white-space:nowrap;font-family:var(--fn);}
+.drb-btn.on{border-color:var(--p);background:rgba(26,122,74,.18);color:var(--pl);}
+[data-theme="gold"] .drb-btn.on{background:rgba(201,162,39,.18);color:var(--pl);}
+[data-theme="navy"] .drb-btn.on{background:rgba(58,111,196,.18);color:var(--pl);}
+[data-theme="light"] .drb-btn.on{background:rgba(124,58,237,.18);color:var(--pl);}
+.drb-custom{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.drb-date{padding:8px 10px;font-size:.85rem;}
+
 /* GUIDE */
 .guide-sc{position:fixed;inset:0;z-index:2000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
 .gs{display:none;text-align:center;max-width:340px;width:100%;flex-direction:column;align-items:center;gap:16px;}
@@ -350,11 +361,12 @@ select.inp option{background:var(--bg3);color:var(--tx);}
     <div style="width:60px"></div>
   </div>
   <div class="tabs" id="eTabs">
-    <button class="tab on" onclick="fltExp('all',this)" id="etAll">הכל</button>
-    <button class="tab" onclick="fltExp('regular',this)" id="etReg">רגיל</button>
-    <button class="tab" onclick="fltExp('fixed',this)" id="etFix">קבוע</button>
-    <button class="tab" onclick="fltExp('installments',this)" id="etInst">תשלומים</button>
+    <button class="tab on" onclick="fltExpType('all',this)" id="etAll">הכל</button>
+    <button class="tab" onclick="fltExpType('regular',this)" id="etReg">רגיל</button>
+    <button class="tab" onclick="fltExpType('fixed',this)" id="etFix">קבוע</button>
+    <button class="tab" onclick="fltExpType('installments',this)" id="etInst">תשלומים</button>
   </div>
+  <div id="drb_exp"></div>
   <div class="sb" id="expList"></div>
   <div class="badge">Powered by <span>AppNest</span></div>
 </div>
@@ -366,13 +378,7 @@ select.inp option{background:var(--bg3);color:var(--tx);}
     <div class="tb-title" id="hTitle">היסטוריה</div>
     <div style="width:60px"></div>
   </div>
-  <div class="tabs">
-    <button class="tab on" onclick="fltHist('all',this)" id="htAll">הכל</button>
-    <button class="tab" onclick="fltHist('today',this)" id="htToday">היום</button>
-    <button class="tab" onclick="fltHist('week',this)" id="htWeek">שבוע</button>
-    <button class="tab" onclick="fltHist('month',this)" id="htMonth">חודש</button>
-    <button class="tab" onclick="fltHist('3m',this)" id="ht3m">3 חודשים</button>
-  </div>
+  <div id="drb_hist"></div>
   <div class="sb" id="histList"></div>
   <div class="badge">Powered by <span>AppNest</span></div>
 </div>
@@ -384,13 +390,7 @@ select.inp option{background:var(--bg3);color:var(--tx);}
     <div class="tb-title" id="rTitle">דוחות</div>
     <div style="width:60px"></div>
   </div>
-  <div class="tabs">
-    <button class="tab on" onclick="fltRpt('week',this)" id="rtW">שבוע</button>
-    <button class="tab" onclick="fltRpt('month',this)" id="rtM">חודש</button>
-    <button class="tab" onclick="fltRpt('3m',this)" id="rt3m">3 חודשים</button>
-    <button class="tab" onclick="fltRpt('year',this)" id="rtY">שנה</button>
-    <button class="tab" onclick="fltRpt('all',this)" id="rtA">הכל</button>
-  </div>
+  <div id="drb_rpt"></div>
   <div class="sb" id="rptBody"></div>
   <div class="badge">Powered by <span>AppNest</span></div>
 </div>
@@ -442,14 +442,7 @@ select.inp option{background:var(--bg3);color:var(--tx);}
     <div style="width:60px"></div>
   </div>
   <div class="sb">
-    <div class="ig"><div class="il" id="xRngLbl">טווח זמן</div>
-      <select class="inp" id="xRange" onchange="updXPrev()">
-        <option value="month" id="xM">חודש נוכחי</option>
-        <option value="3m" id="x3m">3 חודשים</option>
-        <option value="year" id="xY">שנה</option>
-        <option value="all" id="xA">הכל</option>
-      </select>
-    </div>
+    <div id="drb_export_cont"></div>
     <div class="card" style="text-align:center;margin-bottom:16px;"><div id="xPrev" style="color:var(--t2);font-size:.9rem;"></div></div>
     <div class="exp-opt" onclick="doPDF()"><div class="exp-ic">📄</div><div><div class="exp-ttl">PDF</div><div class="exp-desc" id="xPdfD">פותח חלון הדפסה</div></div></div>
     <div class="exp-opt" onclick="doCSV()"><div class="exp-ic">📊</div><div><div class="exp-ttl">CSV / Excel</div><div class="exp-desc" id="xCsvD">מוריד קובץ ל-Excel</div></div></div>
@@ -601,81 +594,226 @@ let S = {
 };
 let aS = {amt:'',type:'regular',cat:'',date:'',desc:'',notes:'',pay:'credit',receipt:null,instCount:12};
 let editId=null, curEF='all', curHF='all', curRF='month';
+// Custom date ranges
+let histCustomFrom='', histCustomTo='';
+let rptCustomFrom='', rptCustomTo='';
+let expCustomFrom='', expCustomTo='';
+let exportCustomFrom='', exportCustomTo='';
 let recSelMode=false, recSelected=new Set();
 let guideStep=0;
 
 // ======================== PERSIST ========================
 // Save receipts separately to avoid quota issues with large base64 data
-function load(){
-  try{
-    // Load main data (no receipts)
-    const d=localStorage.getItem('mn3_data');
-    if(d){
-      const parsed=JSON.parse(d);
-      S.expenses     = parsed.expenses     || [];
-      S.budget       = parsed.budget       || {monthly:0,incomes:[],showInReports:false};
-      S.settings     = {...S.settings, ...(parsed.settings||{})};
-      S.customPays   = parsed.customPays   || [];
-      S.customCats   = parsed.customCats   || [];
-      S.firstRun     = parsed.firstRun !== undefined ? parsed.firstRun : true;
-    }
-    // Load receipts separately — each stored by id to avoid one big string
-    const recIdx=localStorage.getItem('mn3_rec_idx');
-    if(recIdx){
-      const ids=JSON.parse(recIdx);
-      S.receipts=[];
-      ids.forEach(id=>{
-        try{
-          const r=localStorage.getItem('mn3_rec_'+id);
-          if(r) S.receipts.push(JSON.parse(r));
-        }catch(e){}
-      });
-    }
-  }catch(e){console.warn('Load error',e);}
+// ======================== INDEXEDDB STORAGE ========================
+const DB_NAME='MoneyNestDB', DB_VER=1, DB_STORE='appdata';
+let db=null;
+
+function openDB(){
+  return new Promise((res,rej)=>{
+    if(db){res(db);return;}
+    const req=indexedDB.open(DB_NAME,DB_VER);
+    req.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains(DB_STORE))
+        d.createObjectStore(DB_STORE);
+    };
+    req.onsuccess=e=>{db=e.target.result;res(db);};
+    req.onerror=e=>{console.warn('IDB open failed',e);rej(e);};
+  });
+}
+function idbSet(key,val){
+  return openDB().then(d=>{
+    return new Promise((res,rej)=>{
+      const tx=d.transaction(DB_STORE,'readwrite');
+      tx.objectStore(DB_STORE).put(val,key);
+      tx.oncomplete=res; tx.onerror=rej;
+    });
+  });
+}
+function idbGet(key){
+  return openDB().then(d=>{
+    return new Promise((res,rej)=>{
+      const req=d.transaction(DB_STORE,'readonly').objectStore(DB_STORE).get(key);
+      req.onsuccess=e=>res(e.target.result);
+      req.onerror=rej;
+    });
+  });
+}
+function idbDel(key){
+  return openDB().then(d=>{
+    return new Promise((res,rej)=>{
+      const tx=d.transaction(DB_STORE,'readwrite');
+      tx.objectStore(DB_STORE).delete(key);
+      tx.oncomplete=res; tx.onerror=rej;
+    });
+  });
 }
 
+// Sync save to localStorage (fast, immediate) + async save to IndexedDB (persistent)
 function save(){
-  // Always save main data first (no image blobs here — fast and small)
+  const main={
+    expenses:S.expenses, budget:S.budget, settings:S.settings,
+    customPays:S.customPays, customCats:S.customCats, firstRun:S.firstRun,
+    receipts:S.receipts
+  };
+  // 1. localStorage — immediate (may fail on quota but expenses are small)
   try{
-    const main={
-      expenses:   S.expenses,
-      budget:     S.budget,
-      settings:   S.settings,
-      customPays: S.customPays,
-      customCats: S.customCats,
-      firstRun:   S.firstRun
-    };
-    localStorage.setItem('mn3_data', JSON.stringify(main));
-  }catch(e){
-    console.warn('Save main failed',e);
-    toast(T('שגיאת שמירה!','Save error!'));
-    return;
-  }
-  // Save receipts individually — each in its own key so one large image won't block all
+    // Save without receipt image data to localStorage (fast/small)
+    const lsData={...main, receipts:S.receipts.map(r=>({...r,data:r.data?r.data.substring(0,100)+'[truncated]':''}) )};
+    // Actually save full data - expenses are tiny, receipts optional
+    const fullStr=JSON.stringify(main);
+    if(fullStr.length < 4*1024*1024){ // under 4MB
+      localStorage.setItem('mn4',fullStr);
+    } else {
+      // Save without receipt images
+      const noImg={...main,receipts:[]};
+      localStorage.setItem('mn4',JSON.stringify(noImg));
+    }
+  }catch(e){ console.warn('LS save failed',e); }
+  
+  // 2. IndexedDB — async, large capacity, truly persistent
+  idbSet('appdata', main).catch(e=>console.warn('IDB save failed',e));
+}
+
+// Load: try IndexedDB first (most reliable), fall back to localStorage
+async function loadAsync(){
+  // Try IndexedDB first
   try{
-    const ids=S.receipts.map(r=>r.id);
-    localStorage.setItem('mn3_rec_idx', JSON.stringify(ids));
-    S.receipts.forEach(r=>{
-      try{ localStorage.setItem('mn3_rec_'+r.id, JSON.stringify(r)); }
-      catch(e){
-        // Single receipt too large — skip silently
-        console.warn('Receipt too large to save:',r.id);
-      }
-    });
-    // Clean up deleted receipt keys
-    for(let i=0;i<localStorage.length;i++){
-      const k=localStorage.key(i);
-      if(k && k.startsWith('mn3_rec_') && k!=='mn3_rec_idx'){
-        const id=k.replace('mn3_rec_','');
-        if(!ids.includes(id)){ localStorage.removeItem(k); i--; }
+    const idbData=await idbGet('appdata');
+    if(idbData && idbData.expenses){
+      applyLoaded(idbData);
+      console.log('Loaded from IndexedDB:', idbData.expenses.length, 'expenses');
+      return true;
+    }
+  }catch(e){console.warn('IDB load failed',e);}
+  
+  // Fallback: localStorage
+  try{
+    // Try new key first, then old keys
+    const keys=['mn4','mn3_data','mn3'];
+    for(const key of keys){
+      const d=localStorage.getItem(key);
+      if(d){
+        const parsed=JSON.parse(d);
+        if(parsed.expenses || parsed.budget){
+          applyLoaded(parsed);
+          // Also load old separate receipts if present
+          if(!parsed.receipts || parsed.receipts.length===0){
+            const recIdx=localStorage.getItem('mn3_rec_idx');
+            if(recIdx){
+              const ids=JSON.parse(recIdx);
+              S.receipts=[];
+              ids.forEach(id=>{
+                try{const r=localStorage.getItem('mn3_rec_'+id);if(r)S.receipts.push(JSON.parse(r));}catch(e){}
+              });
+            }
+          }
+          console.log('Loaded from localStorage ('+key+'):', S.expenses.length, 'expenses');
+          // Migrate to IDB
+          idbSet('appdata',{...S}).catch(()=>{});
+          return true;
+        }
       }
     }
-  }catch(e){
-    console.warn('Save receipts failed',e);
-  }
+  }catch(e){console.warn('LS load failed',e);}
+  
+  return false;
 }
+
+function applyLoaded(parsed){
+  if(parsed.expenses)   S.expenses   = parsed.expenses;
+  if(parsed.budget)     S.budget     = parsed.budget;
+  if(parsed.settings)   S.settings   = {...S.settings,...parsed.settings};
+  if(parsed.customPays) S.customPays = parsed.customPays;
+  if(parsed.customCats) S.customCats = parsed.customCats;
+  if(parsed.receipts)   S.receipts   = parsed.receipts;
+  if(parsed.firstRun !== undefined) S.firstRun = parsed.firstRun;
+}
+
+function load(){ /* sync stub — real load is async in init */ }
 
 // ======================== NAV ========================
+// ======================== DATE RANGE HELPER ========================
+function dateRangeBarHTML(screen, currentFilter){
+  const isHe = S.settings.lang==='he';
+  // Preset buttons
+  const presets = [
+    {v:'all',    he:'הכל',       en:'All'},
+    {v:'month',  he:'חודש',      en:'Month'},
+    {v:'3m',     he:'3 חודשים',  en:'3 Months'},
+    {v:'year',   he:'שנה',       en:'Year'},
+    {v:'week',   he:'שבוע',      en:'Week'},
+    {v:'today',  he:'היום',      en:'Today'},
+    {v:'custom', he:'מותאם',     en:'Custom'},
+  ];
+  // Which presets to show per screen
+  const show = {
+    hist:  ['all','today','week','month','3m','custom'],
+    rpt:   ['week','month','3m','year','all','custom'],
+    exp:   ['all','today','week','month','3m','custom'],
+    export:['month','3m','year','all','custom'],
+  };
+  const shown = show[screen] || presets.map(p=>p.v);
+  const filtered = presets.filter(p=>shown.includes(p.v));
+  
+  let customFrom='', customTo='';
+  if(screen==='hist'){customFrom=histCustomFrom;customTo=histCustomTo;}
+  else if(screen==='rpt'){customFrom=rptCustomFrom;customTo=rptCustomTo;}
+  else if(screen==='exp'){customFrom=expCustomFrom;customTo=expCustomTo;}
+  else if(screen==='export'){customFrom=exportCustomFrom;customTo=exportCustomTo;}
+
+  const btns = filtered.map(p=>`<button class="drb-btn${currentFilter===p.v?' on':''}" onclick="setDateFilter('${screen}','${p.v}',this)">${isHe?p.he:p.en}</button>`).join('');
+  const customRow = currentFilter==='custom' ? `
+    <div class="drb-custom">
+      <input type="date" class="inp drb-date" id="drFrom_${screen}" value="${customFrom}" onchange="setCustomDate('${screen}','from',this.value)" placeholder="${isHe?'מ-':'From'}">
+      <span style="color:var(--t3);font-size:.8rem;">→</span>
+      <input type="date" class="inp drb-date" id="drTo_${screen}" value="${customTo}" onchange="setCustomDate('${screen}','to',this.value)" placeholder="${isHe?'עד':'To'}">
+    </div>` : '';
+  return `<div class="drb-wrap"><div class="drb-row">${btns}</div>${customRow}</div>`;
+}
+
+function setDateFilter(screen, filter, el){
+  if(screen==='hist'){ curHF=filter; renderHist(filter); }
+  else if(screen==='rpt'){ curRF=filter; renderRpt(filter); }
+  else if(screen==='exp'){ curEF=filter; renderExp(filter); }
+  else if(screen==='export'){ curXF=filter;
+    const cont=document.getElementById('drb_export');
+    if(cont) cont.outerHTML=dateRangeBarHTML('export',filter).replace('<div class="drb-wrap"','<div id="drb_export" class="drb-wrap"');
+    updXPrev();
+  }
+}
+
+function setCustomDate(screen, which, val){
+  if(screen==='hist'){ if(which==='from')histCustomFrom=val; else histCustomTo=val; renderHist('custom'); }
+  else if(screen==='rpt'){ if(which==='from')rptCustomFrom=val; else rptCustomTo=val; renderRpt('custom'); }
+  else if(screen==='exp'){ if(which==='from')expCustomFrom=val; else expCustomTo=val; renderExp('custom'); }
+  else if(screen==='export'){ if(which==='from')exportCustomFrom=val; else exportCustomTo=val; updXPrev(); }
+}
+
+// Apply date filter to expense array
+function applyDateFilter(exps, filter, screen){
+  const now = new Date();
+  if(filter==='today') return exps.filter(e=>new Date(e.date).toDateString()===now.toDateString());
+  if(filter==='week'){ const w=new Date(now);w.setDate(w.getDate()-7);return exps.filter(e=>new Date(e.date)>=w); }
+  if(filter==='month') return exps.filter(e=>{const d=new Date(e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+  if(filter==='3m'){ const m=new Date(now);m.setMonth(m.getMonth()-3);return exps.filter(e=>new Date(e.date)>=m); }
+  if(filter==='year') return exps.filter(e=>new Date(e.date).getFullYear()===now.getFullYear());
+  if(filter==='custom'){
+    let from='',to='';
+    if(screen==='hist'){from=histCustomFrom;to=histCustomTo;}
+    else if(screen==='rpt'){from=rptCustomFrom;to=rptCustomTo;}
+    else if(screen==='exp'){from=expCustomFrom;to=expCustomTo;}
+    else if(screen==='export'){from=exportCustomFrom;to=exportCustomTo;}
+    return exps.filter(e=>{
+      if(from && e.date < from) return false;
+      if(to && e.date > to) return false;
+      return true;
+    });
+  }
+  return exps; // 'all'
+}
+
+
 function go(id){
   document.querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
   const el=document.getElementById(id);
@@ -684,15 +822,34 @@ function go(id){
 function onGo(id){
   if(id==='sc-home') renderHome();
   else if(id==='sc-add') initAdd();
-  else if(id==='sc-exp') renderExp(curEF);
-  else if(id==='sc-hist') renderHist(curHF);
-  else if(id==='sc-rpt') renderRpt(curRF);
+  else if(id==='sc-exp'){ renderDateBar('exp',curEF); renderExp(curEF); }
+  else if(id==='sc-hist'){ renderDateBar('hist',curHF); renderHist(curHF); }
+  else if(id==='sc-rpt'){ renderDateBar('rpt',curRF); renderRpt(curRF); }
   else if(id==='sc-bud') renderBud();
   else if(id==='sc-rec') renderRecs();
-  else if(id==='sc-export') updXPrev();
+  else if(id==='sc-export'){ renderDateBar('export',curXF); updXPrev(); }
   else if(id==='sc-set') renderSet();
   else if(id==='sc-bk') renderBk();
   else if(id==='sc-help') renderHelp();
+}
+function renderDateBar(screen,f){
+  const barId='drb_'+screen;
+  const html=dateRangeBarHTML(screen,f);
+  // Try existing bar (re-render in place)
+  const existing=document.getElementById(barId);
+  if(existing){
+    existing.outerHTML=html.replace('<div class="drb-wrap"','<div id="'+barId+'" class="drb-wrap"');
+    return;
+  }
+  // Placeholder containers for hist/rpt/exp are the div itself with that id
+  // For export, use drb_export_cont as wrapper
+  if(screen==='export'){
+    const cont=document.getElementById('drb_export_cont');
+    if(cont){ cont.innerHTML=html; const inner=cont.querySelector('.drb-wrap'); if(inner) inner.id=barId; return; }
+  }
+  // Fallback: find by id and replace
+  const cont=document.getElementById(barId);
+  if(cont){ cont.outerHTML=html.replace('<div class="drb-wrap"','<div id="'+barId+'" class="drb-wrap"'); }
 }
 
 // ======================== LANG ========================
@@ -936,9 +1093,14 @@ function saveExp(){
 }
 
 // ======================== EXPENSE LIST ========================
-function fltExp(f,el){curEF=f;document.querySelectorAll('#eTabs .tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');renderExp(f);}
+let curEFType='all';
+function fltExpType(f,el){curEFType=f;document.querySelectorAll('#eTabs .tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');renderExp(curEF);}
+function fltExp(f){curEF=f;renderExp(f);}
 function renderExp(f){
-  let ex=[...S.expenses]; if(f!=='all') ex=ex.filter(e=>e.type===f);
+  const barCont=document.getElementById('drb_exp');
+  if(barCont) barCont.outerHTML=dateRangeBarHTML('exp',f).replace('<div class="drb-wrap"','<div id="drb_exp" class="drb-wrap"');
+  let ex=applyDateFilter([...S.expenses],f,'exp');
+  if(curEFType!=='all') ex=ex.filter(e=>e.type===curEFType);
   const el=document.getElementById('expList');
   if(!ex.length){el.innerHTML=emptyHTML('📋',T('אין הוצאות','No expenses'),T('הוסף את הראשונה ↑','Add your first one ↑'));return;}
   el.innerHTML=ex.map(e=>eiHTML(e,true)).join('');
@@ -982,17 +1144,12 @@ function ts(id){ttmr=setTimeout(()=>openEdit(id),600);}
 function te(){clearTimeout(ttmr);}
 
 // ======================== HISTORY ========================
-function fltHist(f,el){curHF=f;document.querySelectorAll('#sc-hist .tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');renderHist(f);}
+function fltHist(f){curHF=f;renderHist(f);}
 function renderHist(f){
-  const now=new Date();
-  let ex=S.expenses.filter(e=>{
-    const d=new Date(e.date);
-    if(f==='today') return d.toDateString()===now.toDateString();
-    if(f==='week'){const w=new Date(now);w.setDate(w.getDate()-7);return d>=w;}
-    if(f==='month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-    if(f==='3m'){const m=new Date(now);m.setMonth(m.getMonth()-3);return d>=m;}
-    return true;
-  });
+  // Render the date range bar
+  const barCont=document.getElementById('drb_hist');
+  if(barCont) barCont.outerHTML=dateRangeBarHTML('hist',f).replace('<div class="drb-wrap"','<div id="drb_hist" class="drb-wrap"');
+  let ex=applyDateFilter([...S.expenses],'hist'==='hist'?f:f,'hist');
   const el=document.getElementById('histList');
   if(!ex.length){el.innerHTML=emptyHTML('🕐',T('אין הוצאות','No expenses'));return;}
   const grp={};
@@ -1001,23 +1158,24 @@ function renderHist(f){
 }
 
 // ======================== REPORTS ========================
-function fltRpt(f,el){curRF=f;document.querySelectorAll('#sc-rpt .tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');renderRpt(f);}
+function fltRpt(f){curRF=f;renderRpt(f);}
 function renderRpt(f){
+  const barCont=document.getElementById('drb_rpt');
+  if(barCont) barCont.outerHTML=dateRangeBarHTML('rpt',f).replace('<div class="drb-wrap"','<div id="drb_rpt" class="drb-wrap"');
+  let ex=applyDateFilter([...S.expenses],f,'rpt');
   const now=new Date();
-  let ex=S.expenses.filter(e=>{
-    const d=new Date(e.date);
-    if(f==='week'){const w=new Date(now);w.setDate(w.getDate()-7);return d>=w;}
-    if(f==='month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-    if(f==='3m'){const m=new Date(now);m.setMonth(m.getMonth()-3);return d>=m;}
-    if(f==='year') return d.getFullYear()===now.getFullYear();
-    return true;
-  });
   const tot=ex.reduce((s,e)=>s+e.amount,0);
   let days=7;
   if(f==='month') days=now.getDate();
   else if(f==='3m') days=90;
   else if(f==='year') days=Math.ceil((now-new Date(now.getFullYear(),0,1))/86400000);
-  else if(f==='all'&&ex.length){const old=new Date(ex[ex.length-1].date);days=Math.max(1,Math.ceil((now-old)/86400000));}
+  else if(f==='custom'){
+    const from=rptCustomFrom?new Date(rptCustomFrom):null;
+    const to=rptCustomTo?new Date(rptCustomTo):now;
+    if(from) days=Math.max(1,Math.ceil((to-from)/86400000)+1);
+    else days=ex.length>0?Math.max(1,Math.ceil((now-new Date(ex[ex.length-1].date))/86400000)):1;
+  }
+  else if(f==='all'&&ex.length){const oldest=new Date(ex[ex.length-1].date);days=Math.max(1,Math.ceil((now-oldest)/86400000));}
   const daily=tot/Math.max(1,days);
   const byCat={};
   ex.forEach(e=>{byCat[e.category]=(byCat[e.category]||0)+e.amount;});
@@ -1217,20 +1375,28 @@ function dlRec(i){
 }
 
 // ======================== EXPORT ========================
-function getXExps(){
-  const rng=document.getElementById('xRange')?.value||'month';
-  const now=new Date();
-  return S.expenses.filter(e=>{
-    const d=new Date(e.date);
-    if(rng==='month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-    if(rng==='3m'){const m=new Date(now);m.setMonth(m.getMonth()-3);return d>=m;}
-    if(rng==='year') return d.getFullYear()===now.getFullYear();
-    return true;
-  });
-}
+let curXF='month';
+function getXExps(){ return applyDateFilter([...S.expenses],curXF,'export'); }
 function updXPrev(){
+  // Render/refresh the date bar inside container
+  const cont=document.getElementById('drb_export_cont');
+  if(cont){
+    // Use innerHTML to keep the container div
+    cont.innerHTML=dateRangeBarHTML('export',curXF);
+    // Set the inner bar id
+    const inner=cont.querySelector('.drb-wrap');
+    if(inner) inner.id='drb_export';
+  } else {
+    const bar=document.getElementById('drb_export');
+    if(bar) bar.outerHTML=dateRangeBarHTML('export',curXF).replace('<div class="drb-wrap"','<div id="drb_export" class="drb-wrap"');
+  }
   const n=getXExps().length;
-  st('xPrev',T(`${n} רשומות לייצוא`,`${n} records to export`));
+  const months=S.settings.lang==='he'?['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר']:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now=new Date();
+  let rangeLabel='';
+  if(curXF==='month') rangeLabel=months[now.getMonth()]+' '+now.getFullYear();
+  else if(curXF==='custom'&&exportCustomFrom) rangeLabel=exportCustomFrom+(exportCustomTo?' → '+exportCustomTo:'');
+  st('xPrev',T(`${n} רשומות לייצוא${rangeLabel?' ('+rangeLabel+')':''}`,`${n} records to export${rangeLabel?' ('+rangeLabel+')':''}`));
 }
 function doPDF(){
   const ex=getXExps(); const user=S.settings.username||'MoneyNest';
@@ -1348,7 +1514,11 @@ function clearAll(){
   if(!confirm(T('האם אתה בטוח? כל הנתונים יימחקו לצמיתות!','Are you sure? All data will be permanently deleted!'))) return;
   const lang=S.settings.lang, theme=S.settings.theme, uname=S.settings.username;
   S={expenses:[],budget:{monthly:0,incomes:[],showInReports:false},settings:{username:uname,lang,theme,notifyBudget:false,notifyDaily:false},customPays:[],customCats:[],receipts:[],firstRun:false};
-  save(); go('sc-home'); toast(T('🗑️ נמחק הכל','🗑️ All deleted'));
+  save();
+  curHF='all'; curRF='month'; curEF='all'; curXF='month';
+  histCustomFrom=''; histCustomTo=''; rptCustomFrom=''; rptCustomTo='';
+  expCustomFrom=''; expCustomTo=''; exportCustomFrom=''; exportCustomTo='';
+  go('sc-home'); toast(T('🗑️ נמחק הכל','🗑️ All deleted'));
 }
 
 // ======================== BACKUP & RESTORE ========================
@@ -1430,6 +1600,7 @@ function doRestore(ev){
       }
       S.firstRun=false;
       save();
+      curHF='all'; curRF='month'; curEF='all'; curXF='month';
       toast(T(`✓ שוחזר! ${S.expenses.length} הוצאות`,`✓ Restored! ${S.expenses.length} expenses`));
       go('sc-home');
     }catch(err){
@@ -1528,28 +1699,10 @@ function toast(msg){
 function emptyHTML(ic,msg,sub=''){return`<div class="empty"><div class="ei2">${ic}</div><p>${msg}</p>${sub?`<p style="margin-top:6px;font-size:.8rem;">${sub}</p>`:''}</div>`;}
 
 // ======================== INIT ========================
-function init(){
-  // Migrate old storage keys (mn3 -> mn3_data)
-  try{
-    const oldData=localStorage.getItem('mn3');
-    if(oldData && !localStorage.getItem('mn3_data')){
-      const parsed=JSON.parse(oldData);
-      const main={expenses:parsed.expenses||[],budget:parsed.budget||{monthly:0,incomes:[],showInReports:false},settings:parsed.settings||{},customPays:parsed.customPays||[],customCats:parsed.customCats||[],firstRun:parsed.firstRun!==undefined?parsed.firstRun:true};
-      localStorage.setItem('mn3_data',JSON.stringify(main));
-      // also migrate receipt index
-      const oldRecs=localStorage.getItem('mn3_recs');
-      if(oldRecs){
-        const recs=JSON.parse(oldRecs);
-        const ids=recs.map(r=>r.id);
-        localStorage.setItem('mn3_rec_idx',JSON.stringify(ids));
-        recs.forEach(r=>{ try{localStorage.setItem('mn3_rec_'+r.id,JSON.stringify(r));}catch(e){} });
-      }
-      localStorage.removeItem('mn3');
-      localStorage.removeItem('mn3_recs');
-    }
-  }catch(e){console.warn('Migration error',e);}
+async function init(){
+  // Async load from IDB or localStorage
+  await loadAsync();
 
-  load();
   const theme=S.settings.theme||'green';
   document.documentElement.setAttribute('data-theme',theme);
   ['green:G','gold:Go','navy:N','light:L'].forEach(pair=>{
