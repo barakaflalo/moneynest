@@ -596,7 +596,7 @@ function st(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
 var DRB_PRESETS={
   e:[{v:'all',he:'הכל',en:'All'},{v:'today',he:'היום',en:'Today'},{v:'week',he:'שבוע',en:'Week'},{v:'month',he:'חודש',en:'Month'},{v:'3m',he:'3 חודשים',en:'3 Months'},{v:'custom',he:'מותאם',en:'Custom'}],
   h:[{v:'all',he:'הכל',en:'All'},{v:'today',he:'היום',en:'Today'},{v:'week',he:'שבוע',en:'Week'},{v:'month',he:'חודש',en:'Month'},{v:'3m',he:'3 חודשים',en:'3 Months'},{v:'custom',he:'מותאם',en:'Custom'}],
-  r:[{v:'week',he:'שבוע',en:'Week'},{v:'month',he:'חודש',en:'Month'},{v:'3m',he:'3 חודשים',en:'3 Months'},{v:'year',he:'שנה',en:'Year'},{v:'all',he:'הכל',en:'All'},{v:'custom',he:'מותאם',en:'Custom'}],
+  r:[{v:'week',he:'שבוע',en:'Week'},{v:'month',he:'חודש',en:'Month'},{v:'year',he:'שנה',en:'Year'},{v:'all',he:'הכל',en:'All'},{v:'pick',he:'בחר חודש',en:'Pick Month'},{v:'custom',he:'מותאם',en:'Custom'}],
   x:[{v:'month',he:'חודש',en:'Month'},{v:'3m',he:'3 חודשים',en:'3 Months'},{v:'year',he:'שנה',en:'Year'},{v:'all',he:'הכל',en:'All'},{v:'custom',he:'מותאם',en:'Custom'}]
 };
 function getCurF(sc){if(sc==='e')return curEF;if(sc==='h')return curHF;if(sc==='r')return curRF;return curXF;}
@@ -607,18 +607,81 @@ function renderDrb(sc,f){
   var rowId={e:'eDrbRow',h:'hDrbRow',r:'rDrbRow',x:'xDrbRow'}[sc];
   var row=document.getElementById(rowId);if(!row)return;
   var presets=DRB_PRESETS[sc]||[];
+  var months=S.settings.lang==='he'?MHE:MEN;
+  var now=new Date();
+
+  // Build preset buttons
   var html=presets.map(function(p){
-    return '<button class="drb-btn'+(f===p.v?' on':'')+'" onclick="clickDrb(\''+sc+'\',\''+p.v+'\')">'+(S.settings.lang==='he'?p.he:p.en)+'</button>';
+    var isOn=(f===p.v)||(f&&f.startsWith('mon_')&&p.v==='pick');
+    return '<button class="drb-btn'+(isOn?' on':'')+'" onclick="clickDrb(\'' +sc+ '\',\'' +p.v+ '\')">'+( S.settings.lang==='he'?p.he:p.en)+'</button>';
   }).join('');
+
+  // Custom date range row
   if(f==='custom'){
     var from=getCustFrom(sc),to=getCustTo(sc);
-    html+='<div class="drb-custom"><input type="date" class="inp drb-date" value="'+from+'" onchange="setCustDate(\''+sc+'\',\'from\',this.value)"><span style="color:var(--t3)">→</span><input type="date" class="inp drb-date" value="'+to+'" onchange="setCustDate(\''+sc+'\',\'to\',this.value)"></div>';
+    html+='<div class="drb-custom" id="custWrap_'+sc+'">'
+      +'<input type="date" class="inp drb-date" id="custFrom_'+sc+'" value="'+from+'">'
+      +'<span style="color:var(--t3)">→</span>'
+      +'<input type="date" class="inp drb-date" id="custTo_'+sc+'" value="'+to+'">'
+      +'</div>';
   }
+
+  // Month picker row — shown when filter is mon_YYYY_MM or pick
+  if(f&&f.startsWith('mon_')){
+    var parts=f.split('_');
+    var selYr=parseInt(parts[1])||now.getFullYear();
+    var selMon=parseInt(parts[2]);
+    if(isNaN(selMon))selMon=now.getMonth();
+
+    var mOpts='';
+    for(var mi=0;mi<12;mi++){
+      mOpts+='<option value="'+mi+'"'+(mi===selMon?' selected':'')+'>'+months[mi]+'</option>';
+    }
+    var yOpts='';
+    for(var yi=now.getFullYear()-3;yi<=now.getFullYear()+2;yi++){
+      yOpts+='<option value="'+yi+'"'+(yi===selYr?' selected':'')+'>'+yi+'</option>';
+    }
+    html+='<div class="drb-custom" style="gap:6px;margin-top:7px;" id="monPickWrap_'+sc+'">'
+      +'<select class="inp drb-date" id="pickMon_'+sc+'" style="flex:1;">'+mOpts+'</select>'
+      +'<select class="inp drb-date" id="pickYr_'+sc+'" style="width:88px;">'+yOpts+'</select>'
+      +'</div>';
+  }
+
   row.innerHTML=html;
+  // Attach change listeners to month/year pickers after DOM update
+  var mon=document.getElementById('pickMon_'+sc);
+  var yr=document.getElementById('pickYr_'+sc);
+  if(mon){mon.addEventListener('change',function(){applyMonPick(sc);});}
+  if(yr){yr.addEventListener('change',function(){applyMonPick(sc);});}
+  var cf=document.getElementById('custFrom_'+sc);
+  var ct=document.getElementById('custTo_'+sc);
+  if(cf){cf.addEventListener('change',function(){setCustDate(sc,'from',this.value);});}
+  if(ct){ct.addEventListener('change',function(){setCustDate(sc,'to',this.value);});}
 }
 function clickDrb(sc,f){
+  if(f==='pick'){
+    // Just show the picker without running — user picks month+year first
+    var now=new Date();
+    var pf='mon_'+now.getFullYear()+'_'+now.getMonth();
+    setCurF(sc,pf);renderDrb(sc,pf);
+    // apply immediately to current month
+    if(sc==='r')renderRpt();else if(sc==='h')renderHist();else if(sc==='e')renderExp();else updXPrev();
+    return;
+  }
   setCurF(sc,f);renderDrb(sc,f);
   if(sc==='e')renderExp();else if(sc==='h')renderHist();else if(sc==='r')renderRpt();else updXPrev();
+}
+function applyMonPick(sc){
+  var mEl=document.getElementById('pickMon_'+sc);
+  var yEl=document.getElementById('pickYr_'+sc);
+  if(!mEl||!yEl)return;
+  var f='mon_'+yEl.value+'_'+mEl.value;
+  setCurF(sc,f);
+  renderDrb(sc,f);
+  if(sc==='r')renderRpt();
+  else if(sc==='h')renderHist();
+  else if(sc==='e')renderExp();
+  else updXPrev();
 }
 function setCustDate(sc,which,val){
   if(sc==='e'){if(which==='from')eCustFrom=val;else eCustTo=val;renderExp();}
@@ -634,19 +697,137 @@ function applyDrf(exps,sc){
   if(f==='3m'){var m=new Date(now);m.setMonth(m.getMonth()-3);return exps.filter(function(e){return new Date(e.date)>=m;});}
   if(f==='year')return exps.filter(function(e){return new Date(e.date).getFullYear()===now.getFullYear();});
   if(f==='custom'){var fr=getCustFrom(sc),to=getCustTo(sc);return exps.filter(function(e){if(fr&&e.date<fr)return false;if(to&&e.date>to)return false;return true;});}
+  if(f&&f.startsWith('mon_')){var parts=f.split('_'),yr=parseInt(parts[1]),mn=parseInt(parts[2]);return exps.filter(function(e){var d=new Date(e.date);return d.getMonth()===mn&&d.getFullYear()===yr;});}
   return exps;
 }
 // ============ HOME ============
+// Returns all expense "events" for a given month (incl. recurrences & installments)
 function getMonthExps(mon,yr){
-  var direct=S.expenses.filter(function(e){var d=new Date(e.date);return d.getMonth()===mon&&d.getFullYear()===yr;});
-  var fixed=S.expenses.filter(function(e){
-    if(e.type!=='fixed')return false;
-    var d=new Date(e.date),em=d.getMonth(),ey=d.getFullYear();
-    if(ey===yr&&em===mon)return false;
-    return ey<yr||(ey===yr&&em<mon);
+  var result=[];
+  S.expenses.forEach(function(e){
+    var sd=new Date(e.date);
+    var sm=sd.getMonth(), sy=sd.getFullYear();
+    if(e.type==='regular'){
+      // Only appears in its own month
+      if(sm===mon && sy===yr) result.push(e);
+    } else if(e.type==='fixed'){
+      // Appears every month from start month onwards (past & future)
+      var startYM=sy*12+sm;
+      var targetYM=yr*12+mon;
+      if(targetYM>=startYM){
+        if(sm===mon && sy===yr){
+          result.push(e); // original entry
+        } else {
+          // virtual recurrence
+          var vDate=new Date(yr,mon,sd.getDate()<28?sd.getDate():28);
+          result.push(Object.assign({},e,{
+            date:vDate.toISOString().split('T')[0],
+            id:e.id+'_m'+(targetYM-startYM),
+            _virtual:true,_fixedRef:e.id
+          }));
+        }
+      }
+    } else if(e.type==='installments'){
+      // Each installment appears in its respective month
+      var n=e.instCount||1;
+      for(var i=0;i<n;i++){
+        var instDate=new Date(sy,sm+i,sd.getDate()<28?sd.getDate():28);
+        var im=instDate.getMonth(), iy=instDate.getFullYear();
+        if(im===mon && iy===yr){
+          var perAmt=parseFloat((e.amount/n).toFixed(2));
+          result.push(Object.assign({},e,{
+            amount:perAmt,
+            date:instDate.toISOString().split('T')[0],
+            id:e.id+'_i'+i,
+            _virtual:true,_instNum:i+1,_instTotal:n,_instRef:e.id
+          }));
+          break;
+        }
+      }
+    }
   });
-  return direct.concat(fixed);
+  return result;
 }
+
+// Returns ALL expense events across a date range (used by reports & chart)
+function getAllExpsInRange(fromYM, toYM){
+  // fromYM and toYM are year*12+month numbers
+  var result=[];
+  S.expenses.forEach(function(e){
+    var sd=new Date(e.date);
+    var sm=sd.getMonth(), sy=sd.getFullYear();
+    var startYM=sy*12+sm;
+    if(e.type==='regular'){
+      if(startYM>=fromYM && startYM<=toYM) result.push(e);
+    } else if(e.type==='fixed'){
+      // appears every month from startYM to toYM (no end limit — fixed forever)
+      var begin=Math.max(startYM,fromYM);
+      for(var ym=begin;ym<=toYM;ym++){
+        var yr=Math.floor(ym/12), mon=ym%12;
+        if(ym===startYM){
+          result.push(e);
+        } else {
+          var vDate=new Date(yr,mon,sd.getDate()<28?sd.getDate():28);
+          result.push(Object.assign({},e,{
+            date:vDate.toISOString().split('T')[0],
+            id:e.id+'_m'+(ym-startYM),
+            _virtual:true,_fixedRef:e.id
+          }));
+        }
+      }
+    } else if(e.type==='installments'){
+      var n=e.instCount||1;
+      for(var i=0;i<n;i++){
+        var instDate=new Date(sy,sm+i,sd.getDate()<28?sd.getDate():28);
+        var im=instDate.getMonth(), iy=instDate.getFullYear();
+        var iym=iy*12+im;
+        if(iym>=fromYM && iym<=toYM){
+          var perAmt=parseFloat((e.amount/n).toFixed(2));
+          result.push(Object.assign({},e,{
+            amount:perAmt,
+            date:instDate.toISOString().split('T')[0],
+            id:e.id+'_i'+i,
+            _virtual:true,_instNum:i+1,_instTotal:n,_instRef:e.id
+          }));
+        }
+      }
+    }
+  });
+  return result;
+}
+
+// Get range from filter string
+function getFilterRange(f,sc){
+  var now=new Date();
+  var nowYM=now.getFullYear()*12+now.getMonth();
+  var fromYM,toYM;
+  if(f==='today'||f==='week'||f==='month'){
+    fromYM=nowYM; toYM=nowYM;
+  } else if(f==='3m'){
+    fromYM=nowYM-2; toYM=nowYM;
+  } else if(f==='year'){
+    fromYM=now.getFullYear()*12; toYM=nowYM;
+  } else if(f==='all'){
+    // find earliest expense
+    var earliest=nowYM;
+    S.expenses.forEach(function(e){var d=new Date(e.date);var ym=d.getFullYear()*12+d.getMonth();if(ym<earliest)earliest=ym;});
+    fromYM=earliest; toYM=nowYM+24; // include future installments/fixed
+  } else if(f==='custom'){
+    var cf=sc==='r'?rCustFrom:(sc==='h'?hCustFrom:(sc==='e'?eCustFrom:xCustFrom));
+    var ct=sc==='r'?rCustTo:(sc==='h'?hCustTo:(sc==='e'?eCustTo:xCustTo));
+    if(cf){var d=new Date(cf);fromYM=d.getFullYear()*12+d.getMonth();}else fromYM=nowYM;
+    if(ct){var d2=new Date(ct);toYM=d2.getFullYear()*12+d2.getMonth();}else toYM=nowYM;
+  } else if(f&&f.startsWith('mon_')){
+    // specific month: mon_YYYY_MM
+    var parts=f.split('_'); var yr=parseInt(parts[1]),mn=parseInt(parts[2]);
+    fromYM=yr*12+mn; toYM=fromYM;
+  } else {
+    fromYM=nowYM; toYM=nowYM;
+  }
+  return {from:fromYM,to:toYM};
+}
+
+
 function renderHome(){
   var now=new Date(),ms=S.settings.lang==='he'?MHE:MEN;
   st('hMonth',ms[now.getMonth()]+' '+now.getFullYear());
@@ -778,78 +959,124 @@ function renderHist(){
 }
 // ============ REPORTS ============
 function renderRpt(){
-  var ex=applyDrf(S.expenses.slice(),'r');
   var now=new Date();
-  // add fixed recurrences
-  S.expenses.filter(function(e){return e.type==='fixed';}).forEach(function(fe){
-    var sd=new Date(fe.date);
-    for(var off=1;off<=24;off++){
-      var d=new Date(sd.getFullYear(),sd.getMonth()+off,1);
-      if(d>now)break;
-      var virtual=Object.assign({},fe,{date:d.toISOString().split('T')[0],id:fe.id+'_r'+off,_v:true});
-      var inRange=applyDrf([virtual],'r');
-      if(inRange.length&&!ex.find(function(e){return e.date===virtual.date&&e.desc===fe.desc;}))ex.push(virtual);
-    }
-  });
+  var f=curRF;
+  var range=getFilterRange(f,'r');
+  var ex=getAllExpsInRange(range.from,range.to);
+
+  // For 'today'/'week' filters, also date-filter within the month
+  if(f==='today'){
+    ex=ex.filter(function(e){return new Date(e.date).toDateString()===now.toDateString();});
+  } else if(f==='week'){
+    var w=new Date(now);w.setDate(w.getDate()-7);
+    ex=ex.filter(function(e){var d=new Date(e.date);return d>=w;});
+  }
+
   var tot=ex.reduce(function(s,e){return s+e.amount;},0);
-  var f=curRF,days=7;
-  if(f==='month')days=now.getDate();
-  else if(f==='3m')days=90;
-  else if(f==='year')days=Math.ceil((now-new Date(now.getFullYear(),0,1))/86400000);
-  else if(f==='custom'&&rCustFrom){var fr=new Date(rCustFrom),to=rCustTo?new Date(rCustTo):now;days=Math.max(1,Math.ceil((to-fr)/86400000)+1);}
-  else if(f==='all'&&ex.length){var old=new Date(ex[ex.length-1].date);days=Math.max(1,Math.ceil((now-old)/86400000));}
+  var days=30;
+  var fromMon=range.from, toMon=range.to;
+  if(f==='month'||f.startsWith('mon_')) days=new Date(Math.floor(toMon/12),toMon%12+1,0).getDate();
+  else if(f==='3m') days=92;
+  else if(f==='year') days=365;
+  else if(f==='custom'||f==='all'){
+    var fromDate=new Date(Math.floor(fromMon/12),fromMon%12,1);
+    var toDate=new Date(Math.floor(toMon/12),toMon%12+1,0);
+    days=Math.max(1,Math.ceil((toDate-fromDate)/86400000)+1);
+  }
   var daily=tot/Math.max(1,days);
-  var byCat={};ex.forEach(function(e){byCat[e.category]=(byCat[e.category]||0)+e.amount;});
+
+  var byCat={};
+  ex.forEach(function(e){byCat[e.category]=(byCat[e.category]||0)+e.amount;});
   var catS=Object.entries(byCat).sort(function(a,b){return b[1]-a[1];});
+
   var incH='';
   if(S.budget.showInReports){
     var ti=S.budget.incomes.reduce(function(s,i){return s+i.amount;},0);
     var bal=ti-tot;
-    incH='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;"><div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:var(--ok);">₪'+fmt(ti)+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('הכנסות','Income')+'</div></div><div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:'+(bal>=0?'var(--ok)':'var(--dn)')+';">₪'+fmt(Math.abs(bal))+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('מאזן','Balance')+'</div></div></div>';
+    incH='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">'
+      +'<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:var(--ok);">₪'+fmt(ti)+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('הכנסות','Income')+'</div></div>'
+      +'<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:'+(bal>=0?'var(--ok)':'var(--dn)')+';">₪'+fmt(Math.abs(bal))+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('מאזן','Balance')+'</div></div>'
+      +'</div>';
   }
   var bL=S.budget.monthly>0?S.budget.monthly-tot:null;
   var pct=S.budget.monthly>0?Math.min(100,(tot/S.budget.monthly)*100):0;
+
   var html='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">';
   html+='<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:var(--pl);">₪'+fmt(tot)+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('סה"כ','Total')+'</div></div>';
   html+='<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:var(--pl);">₪'+fmt(daily)+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('ממוצע יומי','Daily Avg')+'</div></div>';
-  if(bL!==null)html+='<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:'+(bL>=0?'var(--ok)':'var(--dn)')+';">₪'+fmt(Math.abs(bL))+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('נותר','Left')+'</div></div>';
+  if(bL!==null) html+='<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:'+(bL>=0?'var(--ok)':'var(--dn)')+';">₪'+fmt(Math.abs(bL))+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('נותר','Left')+'</div></div>';
   html+='</div>'+incH;
-  if(S.budget.monthly>0)html+='<div class="card"><div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:8px;"><span>'+T('ניצול','Usage')+'</span><span>₪'+fmt(tot)+' / ₪'+fmt(S.budget.monthly)+'</span></div><div class="prog"><div class="prog-fill '+(pct>100?'d':pct>80?'w':'')+'" style="width:'+Math.min(100,pct)+'%"></div></div></div>';
-  html+='<div class="sec-ttl">'+T('גרף חודשי','Monthly Chart')+'</div>';
+  if(S.budget.monthly>0) html+='<div class="card"><div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:8px;"><span>'+T('ניצול','Usage')+'</span><span>₪'+fmt(tot)+' / ₪'+fmt(S.budget.monthly)+'</span></div><div class="prog"><div class="prog-fill '+(pct>100?'d':pct>80?'w':'')+'" style="width:'+Math.min(100,pct)+'%"></div></div></div>';
+  html+='<div class="sec-ttl">'+T('גרף חודשי — 12 חודשים','Monthly Chart — 12 Months')+'</div>';
   html+='<div class="card" style="padding:12px 6px;margin-bottom:12px;">'+buildChart()+'</div>';
   html+='<div class="sec-ttl">'+T('לפי קטגוריה','By Category')+'</div>';
-  if(!catS.length)html+=emptyHTML('📊',T('אין נתונים','No data'));
+  if(!catS.length) html+=emptyHTML('📊',T('אין נתונים','No data'));
   else catS.forEach(function(ce){
     var c=catById(ce[0]),p=tot>0?(ce[1]/tot*100):0;
-    html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><div style="font-size:1.3rem;width:32px;text-align:center;">'+c.icon+'</div><div style="flex:1;"><div style="font-size:.88rem;font-weight:600;margin-bottom:4px;display:flex;justify-content:space-between;"><span>'+c.name+'</span><span>₪'+fmt(ce[1])+'</span></div><div class="prog" style="height:6px;"><div class="prog-fill" style="width:'+p+'%"></div></div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+p.toFixed(1)+'%</div></div></div>';
+    html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><div style="font-size:1.3rem;width:32px;text-align:center;flex-shrink:0;">'+c.icon+'</div><div style="flex:1;"><div style="font-size:.88rem;font-weight:600;margin-bottom:4px;display:flex;justify-content:space-between;"><span>'+c.name+'</span><span>₪'+fmt(ce[1])+'</span></div><div class="prog" style="height:6px;"><div class="prog-fill" style="width:'+p+'%"></div></div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+p.toFixed(1)+'%</div></div></div>';
   });
-  html+='<div class="sec-ttl" style="margin-top:20px;">'+T('5 הוצאות אחרונות','Last 5 Expenses')+'</div>';
-  var last5=ex.filter(function(e){return!e._v;}).slice(0,5);
-  html+=last5.length?last5.map(function(e){return eiHTML(e,false);}).join(''):emptyHTML('💸',T('אין','None'));
+  html+='<div class="sec-ttl" style="margin-top:20px;">'+T('רשימת הוצאות','Expense List')+'</div>';
+  // Show all expenses including virtual recurrences/installments, sorted by date
+  var listEx=ex.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).slice(0,15);
+  if(listEx.length){
+    html+=listEx.map(function(e){
+      var cat=catById(e.category);
+      var labels=S.settings.lang==='he'?PHE:PEN;
+      var badge='';
+      if(e._instNum) badge='<span class="chip y" style="margin-inline-start:4px;">'+T('תשלום','Pay')+' '+e._instNum+'/'+e._instTotal+'</span>';
+      else if(e._fixedRef) badge='<span class="chip b" style="margin-inline-start:4px;">🔄 '+T('קבוע','Fixed')+'</span>';
+      var amtColor=e._virtual?'color:var(--t2)':'';
+      return '<div class="ei"><div class="ei-icon">'+cat.icon+'</div>'
+        +'<div class="ei-info"><div class="ei-name">'+e.desc+badge+'</div>'
+        +'<div class="ei-meta">'+fmtD(e.date)+' • '+(labels[e.pay]||e.pay)+'</div></div>'
+        +'<div class="ei-amt" style="'+amtColor+'">₪'+fmt(e.amount)+'</div></div>';
+    }).join('');
+  } else {
+    html+=emptyHTML('💸',T('אין הוצאות לתקופה זו','No expenses for this period'));
+  }
   document.getElementById('rptBody').innerHTML=html;
 }
+
 function buildChart(){
-  var now=new Date(),bars='',maxV=1;
+  var now=new Date();
+  var nowYM=now.getFullYear()*12+now.getMonth();
+  var bars='',maxV=1;
   var data=[];
-  for(var i=11;i>=0;i--){
-    var d=new Date(now.getFullYear(),now.getMonth()-i,1);
-    var mT=getMonthExps(d.getMonth(),d.getFullYear()).reduce(function(s,e){return s+e.amount;},0);
-    data.push({label:(S.settings.lang==='he'?MHE:MEN)[d.getMonth()].substring(0,3),total:mT,mon:d.getMonth(),yr:d.getFullYear()});
+  // Show 6 past months + current + 5 future = 12 months total
+  for(var i=-6;i<=5;i++){
+    var ym=nowYM+i;
+    var yr=Math.floor(ym/12), mon=ym%12;
+    var monthExps=getAllExpsInRange(ym,ym);
+    var mT=monthExps.reduce(function(s,e){return s+e.amount;},0);
+    var isFuture=ym>nowYM;
+    var isCur=ym===nowYM;
+    data.push({
+      label:(S.settings.lang==='he'?MHE:MEN)[mon].substring(0,3),
+      total:mT,ym:ym,isCur:isCur,isFuture:isFuture,yr:yr,mon:mon
+    });
     if(mT>maxV)maxV=mT;
   }
   data.forEach(function(m){
-    var pct=Math.max(4,(m.total/maxV)*80);
-    var isCur=m.mon===now.getMonth()&&m.yr===now.getFullYear();
-    var col=isCur?'var(--p)':'var(--cb)';
+    var pct=m.total>0?Math.max(4,(m.total/maxV)*80):2;
+    var col=m.isCur?'var(--p)':(m.isFuture?'var(--p)':'var(--cb)');
+    var opacity=m.isFuture?'0.45':'1';
     var lbl=m.total>0?'₪'+fmt(m.total):'';
+    var txtCol=m.isCur?'var(--pl)':(m.isFuture?'var(--t2)':'var(--t3)');
+    var fw=m.isCur?700:400;
     bars+='<div style="display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;">';
-    bars+='<div style="font-size:.55rem;color:var(--t3);text-align:center;min-height:22px;display:flex;align-items:flex-end;justify-content:center;">'+lbl+'</div>';
-    bars+='<div style="width:100%;height:'+pct+'px;background:'+col+';border-radius:3px 3px 0 0;border:1px solid var(--br);"></div>';
-    bars+='<div style="font-size:.55rem;color:'+(isCur?'var(--pl)':'var(--t3)')+';font-weight:'+(isCur?700:400)+';text-align:center;">'+m.label+'</div>';
+    bars+='<div style="font-size:.5rem;color:var(--t3);text-align:center;min-height:22px;display:flex;align-items:flex-end;justify-content:center;line-height:1.2;">'+lbl+'</div>';
+    bars+='<div style="width:100%;height:'+pct+'px;background:'+col+';border-radius:3px 3px 0 0;border:1px solid var(--br);opacity:'+opacity+';"></div>';
+    bars+='<div style="font-size:.5rem;color:'+txtCol+';font-weight:'+fw+';text-align:center;">'+m.label+'</div>';
     bars+='</div>';
   });
-  return '<div style="display:flex;align-items:flex-end;gap:2px;height:120px;padding:0 2px;">'+bars+'</div>';
+  var legendFixed=T('קבוע','Fixed'),legendInst=T('תשלומים','Install.'),legendFut=T('עתידי','Future');
+  return '<div style="display:flex;align-items:flex-end;gap:2px;height:120px;padding:0 2px;">'+bars+'</div>'
+    +'<div style="display:flex;gap:12px;justify-content:center;margin-top:8px;font-size:.68rem;color:var(--t3);">'
+    +'<span>⬛ '+T('רגיל','Regular')+'</span>'
+    +'<span style="opacity:.45">🟩 '+legendFut+'</span>'
+    +'</div>';
 }
+
 // ============ BUDGET ============
 function renderBud(){
   var html='<div class="sec-ttl">'+T('תקציב חודשי','Monthly Budget')+'</div>';
@@ -865,7 +1092,87 @@ function renderBud(){
   if(ti>0)html+='<div class="card" style="text-align:center;margin-top:12px;"><div style="font-size:1.5rem;font-weight:800;color:var(--ok);">₪'+fmt(ti)+'</div><div style="font-size:.8rem;color:var(--t3);margin-top:4px;">'+T('סה"כ הכנסות','Total Income')+'</div></div>';
   document.getElementById('budBody').innerHTML=html;
 }
-function addInc(){var nm=prompt(T('שם מקור הכנסה:','Income source name:'));if(!nm)return;var amt=parseFloat(prompt(T('סכום חודשי:','Monthly amount:')));if(!amt||isNaN(amt))return;S.budget.incomes.push({name:nm,amount:amt});save();renderBud();}
+function showConfirm(title, msg, actionLbl, onConfirm){
+  var ov=document.createElement('div');
+  ov.className='ov'; ov.style.zIndex='9500';
+  var wrap=document.createElement('div');
+  wrap.style.cssText='max-width:380px;width:92%;background:var(--bg3);border-radius:var(--r);padding:20px;';
+  var ttl=document.createElement('div');
+  ttl.style.cssText='font-size:1.05rem;font-weight:700;margin-bottom:8px;';
+  ttl.textContent=title;
+  var sub=document.createElement('div');
+  sub.style.cssText='font-size:.88rem;color:var(--t2);margin-bottom:18px;line-height:1.5;';
+  sub.textContent=msg;
+  var row=document.createElement('div');
+  row.style.cssText='display:flex;gap:10px;';
+  var cancelBtn=document.createElement('button');
+  cancelBtn.className='btn btn-s'; cancelBtn.style.flex='1';
+  cancelBtn.textContent=T('ביטול','Cancel');
+  cancelBtn.onclick=function(){ov.remove();};
+  var okBtn=document.createElement('button');
+  okBtn.className='btn btn-d'; okBtn.style.flex='1';
+  okBtn.textContent=actionLbl;
+  okBtn.onclick=function(){ov.remove();onConfirm();};
+  row.appendChild(cancelBtn); row.appendChild(okBtn);
+  wrap.appendChild(ttl); wrap.appendChild(sub); wrap.appendChild(row);
+  ov.appendChild(wrap);
+  ov.onclick=function(e){if(e.target===ov)ov.remove();};
+  document.body.appendChild(ov);
+}
+function addInc(){
+  var ov=document.createElement('div');
+  ov.className='ov'; ov.style.zIndex='9000';
+  var wrap=document.createElement('div');
+  wrap.style.cssText='max-width:480px;width:95%;background:var(--bg3);border-radius:var(--r);padding:20px;';
+  // Title
+  var ttl=document.createElement('div');
+  ttl.style.cssText='font-size:1.1rem;font-weight:700;margin-bottom:16px;';
+  ttl.textContent=T('הוסף מקור הכנסה','Add Income Source');
+  wrap.appendChild(ttl);
+  // Name input
+  var nmLbl=document.createElement('div');
+  nmLbl.style.cssText='font-size:.82rem;color:var(--t2);font-weight:600;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;';
+  nmLbl.textContent=T('שם מקור','Source Name');
+  var nmInp=document.createElement('input');
+  nmInp.type='text'; nmInp.className='inp';
+  nmInp.placeholder=T('משכורת, שכירות, פרילנס...','Salary, rent, freelance...');
+  nmInp.style.marginBottom='12px';
+  wrap.appendChild(nmLbl); wrap.appendChild(nmInp);
+  // Amount input
+  var amtLbl=document.createElement('div');
+  amtLbl.style.cssText='font-size:.82rem;color:var(--t2);font-weight:600;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;';
+  amtLbl.textContent=T('סכום חודשי','Monthly Amount');
+  var amtInp=document.createElement('input');
+  amtInp.type='number'; amtInp.className='inp';
+  amtInp.placeholder='0'; amtInp.min='0'; amtInp.step='0.01';
+  amtInp.style.marginBottom='16px';
+  wrap.appendChild(amtLbl); wrap.appendChild(amtInp);
+  // Buttons row
+  var row=document.createElement('div');
+  row.style.cssText='display:flex;gap:10px;';
+  var cancelBtn=document.createElement('button');
+  cancelBtn.className='btn btn-s'; cancelBtn.style.flex='1';
+  cancelBtn.textContent=T('ביטול','Cancel');
+  cancelBtn.onclick=function(){ov.remove();};
+  var saveBtn=document.createElement('button');
+  saveBtn.className='btn btn-p'; saveBtn.style.flex='1';
+  saveBtn.textContent=T('הוסף','Add');
+  saveBtn.onclick=function(){
+    var nm=nmInp.value.trim();
+    var amt=parseFloat(amtInp.value);
+    if(!nm){nmInp.focus();nmInp.style.borderColor='var(--dn)';return;}
+    if(!amt||isNaN(amt)||amt<=0){amtInp.focus();amtInp.style.borderColor='var(--dn)';return;}
+    S.budget.incomes.push({name:nm,amount:amt});
+    save(); ov.remove(); renderBud();
+    toast(T('✓ מקור הכנסה נוסף','✓ Income source added'));
+  };
+  row.appendChild(cancelBtn); row.appendChild(saveBtn);
+  wrap.appendChild(row);
+  ov.appendChild(wrap);
+  ov.onclick=function(e){if(e.target===ov)ov.remove();};
+  document.body.appendChild(ov);
+  setTimeout(function(){nmInp.focus();},100);
+}
 // ============ RECEIPTS ============
 function addPageRec(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(e){S.receipts.push({id:'r_'+Date.now(),data:e.target.result,date:new Date().toISOString().split('T')[0],desc:''});save();renderRecs();};r.readAsDataURL(f);ev.target.value='';}
 function renderRecs(){
@@ -975,9 +1282,12 @@ function doSaveEdit(){
   save();closeEdit();var a=document.querySelector('.sc.on');if(a)onGo(a.id);toast(T('✓ עודכן','✓ Updated'));
 }
 function doDelExp(){
-  if(!editId)return;if(!confirm(T('למחוק?','Delete?')))return;
-  S.expenses=S.expenses.filter(function(x){return x.id!==editId;});
-  save();closeEdit();var a=document.querySelector('.sc.on');if(a)onGo(a.id);toast(T('🗑️ נמחק','🗑️ Deleted'));
+  if(!editId)return;
+  showConfirm(T('מחק הוצאה?','Delete Expense?'),T('לא ניתן לשחזר פעולה זו','This cannot be undone'),T('מחק','Delete'),function(){
+    S.expenses=S.expenses.filter(function(x){return x.id!==editId;});
+    save();closeEdit();var a=document.querySelector('.sc.on');if(a)onGo(a.id);
+    toast(T('🗑️ נמחק','🗑️ Deleted'));
+  });
 }
 // ============ SETTINGS ============
 function renderSet(){
@@ -990,7 +1300,13 @@ function toggleNotif(type,el){
     else toast(T('אפשר התראות בהגדרות הדפדפן','Enable notifications in browser settings'));
   });
 }
-function clearAll(){if(!confirm(T('האם אתה בטוח? כל הנתונים יימחקו!','Are you sure? All data will be deleted!')))return;var l=S.settings.lang,th=S.settings.theme,u=S.settings.username;S={expenses:[],budget:{monthly:0,incomes:[],showInReports:false},settings:{username:u,lang:l,theme:th,notifyBudget:false,notifyDaily:false},customPays:[],customCats:[],receipts:[],firstRun:false};save();go('sc-home');toast(T('🗑️ נמחק הכל','🗑️ All deleted'));}
+function clearAll(){
+  showConfirm(T('מחק את כל הנתונים?','Delete All Data?'),T('כל ההוצאות, הקבלות וההגדרות יימחקו לצמיתות!','All expenses, receipts and settings will be permanently deleted!'),T('מחק הכל','Delete All'),function(){
+    var l=S.settings.lang,th=S.settings.theme,u=S.settings.username;
+    S={expenses:[],budget:{monthly:0,incomes:[],showInReports:false},settings:{username:u,lang:l,theme:th,notifyBudget:false,notifyDaily:false},customPays:[],customCats:[],receipts:[],firstRun:false};
+    save();go('sc-home');toast(T('🗑️ נמחק הכל','🗑️ All deleted'));
+  });
+}
 // ============ BACKUP ============
 function renderBk(){
   var html='<div class="sec-ttl">'+T('גיבוי','Backup')+'</div><div class="card"><p style="font-size:.9rem;color:var(--t2);line-height:1.6;margin-bottom:14px;">'+T('ייצא את כל הנתונים לקובץ JSON. שמור אותו לשחזור בעתיד.','Export all data to JSON. Save it for future restore.')+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><button class="btn btn-p btn-bl" onclick="doBackup()">📥 '+T('גבה עכשיו','Backup Now')+'</button><button class="btn btn-s btn-bl" onclick="doShareBackup()">📤 '+T('שתף גיבוי','Share Backup')+'</button></div><div style="margin-top:10px;font-size:.8rem;color:var(--t3);">'+S.expenses.length+' '+T('הוצאות','expenses')+' • '+S.receipts.length+' '+T('קבלות','receipts')+'</div></div>';
@@ -1000,7 +1316,33 @@ function renderBk(){
 }
 function doBackup(){var d=JSON.stringify(Object.assign({},S,{_v:3,_date:new Date().toISOString()}),null,2);var blob=new Blob([d],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='moneynest_backup_'+new Date().toISOString().split('T')[0]+'.json';a.click();toast(T('✓ גיבוי הורד','✓ Backup downloaded'));}
 function doShareBackup(){var d=JSON.stringify(Object.assign({},S,{_v:3,_date:new Date().toISOString()}));if(navigator.share){var blob=new Blob([d],{type:'application/json'});var file=new File([blob],'moneynest_backup.json',{type:'application/json'});navigator.share({title:'MoneyNest Backup',files:[file]}).catch(function(){doBackup();});}else doBackup();}
-function doRestore(ev){var f=ev.target.files[0];if(!f)return;if(!confirm(T('שחזור יחליף את כל הנתונים. להמשיך?','Restore will replace all data. Continue?')))return;var r=new FileReader();r.onload=function(e){try{var d=JSON.parse(e.target.result);if(!d.expenses&&!d.budget)throw new Error('invalid');if(d.expenses)S.expenses=d.expenses;if(d.budget)S.budget=d.budget;if(d.customPays)S.customPays=d.customPays;if(d.customCats)S.customCats=d.customCats;if(d.receipts)S.receipts=d.receipts;if(d.settings){S.settings.username=d.settings.username||S.settings.username;S.settings.notifyBudget=d.settings.notifyBudget||false;S.settings.notifyDaily=d.settings.notifyDaily||false;}S.firstRun=false;save();toast(T('✓ שוחזר! '+S.expenses.length+' הוצאות','✓ Restored! '+S.expenses.length+' expenses'));go('sc-home');}catch(err){toast(T('❌ קובץ לא תקין','❌ Invalid file'));}};r.readAsText(f);}
+function doRestore(ev){
+  var f=ev.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    try{
+      var d=JSON.parse(e.target.result);
+      if(!d.expenses&&!d.budget)throw new Error('invalid');
+      showConfirm(
+        T('שחזר נתונים?','Restore Data?'),
+        T('הנתונים הקיימים יוחלפו ב-'+( d.expenses?d.expenses.length:0)+' הוצאות','Existing data will be replaced with '+(d.expenses?d.expenses.length:0)+' expenses'),
+        T('שחזר','Restore'),
+        function(){
+          if(d.expenses)S.expenses=d.expenses;
+          if(d.budget)S.budget=d.budget;
+          if(d.customPays)S.customPays=d.customPays;
+          if(d.customCats)S.customCats=d.customCats;
+          if(d.receipts)S.receipts=d.receipts;
+          if(d.settings){S.settings.username=d.settings.username||S.settings.username;S.settings.notifyBudget=d.settings.notifyBudget||false;S.settings.notifyDaily=d.settings.notifyDaily||false;}
+          S.firstRun=false;save();
+          toast(T('✓ שוחזר! '+S.expenses.length+' הוצאות','✓ Restored! '+S.expenses.length+' expenses'));
+          go('sc-home');
+        }
+      );
+    }catch(err){toast(T('❌ קובץ לא תקין','❌ Invalid file'));}
+  };
+  r.readAsText(f);
+}
 function dlAllRecs(){if(!S.receipts.length){toast(T('אין קבלות','No receipts'));return;}S.receipts.forEach(function(r,i){setTimeout(function(){var a=document.createElement('a');a.href=r.data;a.download='receipt_'+r.date+'_'+(i+1)+'.jpg';a.click();},i*400);});}
 // ============ HELP ============
 function renderHelp(){
