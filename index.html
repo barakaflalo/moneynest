@@ -608,29 +608,70 @@ let guideStep=0;
 // Save receipts separately to avoid quota issues with large base64 data
 function load(){
   try{
-    const d=localStorage.getItem('mn3');
+    // Load main data (no receipts)
+    const d=localStorage.getItem('mn3_data');
     if(d){
       const parsed=JSON.parse(d);
-      Object.assign(S,parsed);
-      // receipts stored separately
-      const recs=localStorage.getItem('mn3_recs');
-      if(recs) S.receipts=JSON.parse(recs);
+      S.expenses     = parsed.expenses     || [];
+      S.budget       = parsed.budget       || {monthly:0,incomes:[],showInReports:false};
+      S.settings     = {...S.settings, ...(parsed.settings||{})};
+      S.customPays   = parsed.customPays   || [];
+      S.customCats   = parsed.customCats   || [];
+      S.firstRun     = parsed.firstRun !== undefined ? parsed.firstRun : true;
+    }
+    // Load receipts separately — each stored by id to avoid one big string
+    const recIdx=localStorage.getItem('mn3_rec_idx');
+    if(recIdx){
+      const ids=JSON.parse(recIdx);
+      S.receipts=[];
+      ids.forEach(id=>{
+        try{
+          const r=localStorage.getItem('mn3_rec_'+id);
+          if(r) S.receipts.push(JSON.parse(r));
+        }catch(e){}
+      });
     }
   }catch(e){console.warn('Load error',e);}
 }
+
 function save(){
+  // Always save main data first (no image blobs here — fast and small)
   try{
-    const toSave={...S, receipts:[]};  // save without receipts in main key
-    localStorage.setItem('mn3',JSON.stringify(toSave));
-    // save receipts separately (may be large)
-    localStorage.setItem('mn3_recs',JSON.stringify(S.receipts));
+    const main={
+      expenses:   S.expenses,
+      budget:     S.budget,
+      settings:   S.settings,
+      customPays: S.customPays,
+      customCats: S.customCats,
+      firstRun:   S.firstRun
+    };
+    localStorage.setItem('mn3_data', JSON.stringify(main));
   }catch(e){
-    // if quota exceeded, try without receipt data
-    try{
-      const toSave={...S, receipts:S.receipts.map(r=>({...r,data:''}))};
-      localStorage.setItem('mn3',JSON.stringify(toSave));
-      toast(T('אחסון מלא — מחק קבלות ישנות','Storage full — delete old receipts'));
-    }catch(e2){console.warn('Save error',e2);}
+    console.warn('Save main failed',e);
+    toast(T('שגיאת שמירה!','Save error!'));
+    return;
+  }
+  // Save receipts individually — each in its own key so one large image won't block all
+  try{
+    const ids=S.receipts.map(r=>r.id);
+    localStorage.setItem('mn3_rec_idx', JSON.stringify(ids));
+    S.receipts.forEach(r=>{
+      try{ localStorage.setItem('mn3_rec_'+r.id, JSON.stringify(r)); }
+      catch(e){
+        // Single receipt too large — skip silently
+        console.warn('Receipt too large to save:',r.id);
+      }
+    });
+    // Clean up deleted receipt keys
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('mn3_rec_') && k!=='mn3_rec_idx'){
+        const id=k.replace('mn3_rec_','');
+        if(!ids.includes(id)){ localStorage.removeItem(k); i--; }
+      }
+    }
+  }catch(e){
+    console.warn('Save receipts failed',e);
   }
 }
 
@@ -1101,25 +1142,57 @@ function updRecSelBar(){
   st('recSelCnt',`${cnt} ${T('נבחרו','selected')}`);
   document.getElementById('rcShare').textContent=T(cnt>0?`שלח (${cnt})`:'שלח',cnt>0?`Send (${cnt})`:'Send');
 }
+// Convert base64 data URL to File
+function b64toFile(dataUrl,filename){
+  const arr=dataUrl.split(','), mime=arr[0].match(/:(.*?);/)[1];
+  const bstr=atob(arr[1]); let n=bstr.length; const u8=new Uint8Array(n);
+  while(n--) u8[n]=bstr.charCodeAt(n);
+  return new File([u8],filename,{type:mime});
+}
+
 async function shareSelRec(){
   if(recSelected.size===0){toast(T('בחר קבלות לשיתוף','Select receipts to share'));return;}
   const selRecs=S.receipts.filter(r=>recSelected.has(r.id));
-  if(navigator.share&&selRecs.length>0){
+  if(!selRecs.length) return;
+  const user=S.settings.username||'MoneyNest';
+  const shareText='📷 MoneyNest — '+user+'\n'+selRecs.map(r=>T('קבלה','Receipt')+': '+(r.desc||T('ללא שם','Unnamed'))+' | '+fmtD(r.date)).join('\n');
+
+  // Try sharing as actual image files (supported on Android Chrome, iOS Safari 15+)
+  if(navigator.canShare){
     try{
-      // share text with info
-      const txt=selRecs.map(r=>`${T('קבלה','Receipt')}: ${r.desc||T('קבלה','Receipt')} | ${fmtD(r.date)}`).join('\n');
-      const user=S.settings.username?`${S.settings.username} — `:'';
-      await navigator.share({title:'MoneyNest — '+T('קבלות','Receipts'),text:user+'\n'+txt});
-    }catch(e){console.log(e);}
-  } else {
-    // fallback: open images in new tabs
-    selRecs.forEach(r=>{
-      const a=document.createElement('a');
-      a.href=r.data; a.download=`receipt_${r.date}.jpg`; a.click();
-    });
-    toast(T(`${selRecs.length} קבלות הורדו`,`${selRecs.length} receipts downloaded`));
+      const files=selRecs.map((r,i)=>b64toFile(r.data,'receipt_'+r.date+'_'+(i+1)+'.jpg'));
+      if(navigator.canShare({files})){
+        await navigator.share({title:'MoneyNest',text:shareText,files});
+        cancelRecSel(); return;
+      }
+    }catch(e){console.log('File share failed',e);}
   }
+
+  // Fallback: show options modal
+  const saved=new Set(recSelected); // keep selection for modal actions
   cancelRecSel();
+  const ov=document.createElement('div');
+  ov.className='ov'; ov.style.zIndex='3000';
+  ov.innerHTML='<div style="max-width:480px;width:95%;background:var(--bg3);border-radius:var(--r);padding:20px;">'
+    +'<div style="font-size:1.1rem;font-weight:700;margin-bottom:14px;">📤 '+T('שתף קבלות','Share Receipts')+' ('+selRecs.length+')</div>'
+    +'<div style="display:flex;flex-direction:column;gap:10px;">'
+    +'<button class="btn btn-p btn-bl" onclick="dlRecs('+JSON.stringify(selRecs.map(r=>r.id))+');this.closest(\'.ov\').remove();">💾 '+T('הורד תמונות','Download Images')+'</button>'
+    +'<button class="btn btn-s btn-bl" onclick="shareText('+JSON.stringify(encodeURIComponent(shareText))+');this.closest(\'.ov\').remove();">📋 '+T('שתף כטקסט','Share as Text')+'</button>'
+    +'<button class="btn btn-d btn-bl" onclick="this.closest(\'.ov\').remove();">'+T('ביטול','Cancel')+'</button>'
+    +'</div></div>';
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  document.body.appendChild(ov);
+}
+
+function dlRecs(ids){
+  const recs=S.receipts.filter(r=>ids.includes(r.id));
+  recs.forEach((r,i)=>setTimeout(()=>{const a=document.createElement('a');a.href=r.data;a.download='receipt_'+r.date+'_'+(i+1)+'.jpg';a.click();},i*400));
+  toast(T('מוריד '+recs.length+' קבלות...','Downloading '+recs.length+' receipts...'));
+}
+function shareText(encoded){
+  const text=decodeURIComponent(encoded);
+  if(navigator.share) navigator.share({title:'MoneyNest',text});
+  else navigator.clipboard.writeText(text).then(()=>toast(T('הועתק ללוח','Copied')));
 }
 function viewRec(i){
   const r=S.receipts[i];
@@ -1456,6 +1529,26 @@ function emptyHTML(ic,msg,sub=''){return`<div class="empty"><div class="ei2">${i
 
 // ======================== INIT ========================
 function init(){
+  // Migrate old storage keys (mn3 -> mn3_data)
+  try{
+    const oldData=localStorage.getItem('mn3');
+    if(oldData && !localStorage.getItem('mn3_data')){
+      const parsed=JSON.parse(oldData);
+      const main={expenses:parsed.expenses||[],budget:parsed.budget||{monthly:0,incomes:[],showInReports:false},settings:parsed.settings||{},customPays:parsed.customPays||[],customCats:parsed.customCats||[],firstRun:parsed.firstRun!==undefined?parsed.firstRun:true};
+      localStorage.setItem('mn3_data',JSON.stringify(main));
+      // also migrate receipt index
+      const oldRecs=localStorage.getItem('mn3_recs');
+      if(oldRecs){
+        const recs=JSON.parse(oldRecs);
+        const ids=recs.map(r=>r.id);
+        localStorage.setItem('mn3_rec_idx',JSON.stringify(ids));
+        recs.forEach(r=>{ try{localStorage.setItem('mn3_rec_'+r.id,JSON.stringify(r));}catch(e){} });
+      }
+      localStorage.removeItem('mn3');
+      localStorage.removeItem('mn3_recs');
+    }
+  }catch(e){console.warn('Migration error',e);}
+
   load();
   const theme=S.settings.theme||'green';
   document.documentElement.setAttribute('data-theme',theme);
