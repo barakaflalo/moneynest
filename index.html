@@ -214,7 +214,7 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 .drb-date{padding:8px 10px;font-size:.85rem;}
 
 /* GUIDE */
-.guide-sc{position:fixed;inset:0;z-index:2000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.guide-sc{position:fixed;inset:0;z-index:9000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;pointer-events:all;}
 .gs{display:none;text-align:center;max-width:340px;width:100%;flex-direction:column;align-items:center;gap:16px;}
 .gs.on{display:flex;animation:fi .3s ease;}
 .g-ic{font-size:4rem;}
@@ -250,7 +250,7 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 <div id="app">
 
 <!-- GUIDE -->
-<div class="guide-sc" id="guideScreen">
+<div class="guide-sc" id="guideScreen" style="display:none;">
   <div style="position:absolute;top:16px;right:16px;">
     <button class="tb-btn" onclick="skipGuide()" id="gSkip">דלג</button>
   </div>
@@ -582,6 +582,22 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 
 </div>
 <script>
+// ======================== STATE ========================
+// Immediately check if this is first run (sync localStorage check)
+// so guide shows without waiting for async IDB
+(function(){
+  try{
+    const quick = localStorage.getItem('mn4') || localStorage.getItem('mn3_data') || localStorage.getItem('mn3');
+    if(!quick){
+      // Definitely first run - show guide immediately
+      document.addEventListener('DOMContentLoaded', function(){
+        const gs = document.getElementById('guideScreen');
+        if(gs) gs.style.display = 'flex';
+      });
+    }
+  }catch(e){}
+})();
+
 // ======================== STATE ========================
 let S = {
   expenses:[],
@@ -1320,12 +1336,11 @@ function renderRpt(f){
     <div class="card" style="padding:16px 8px;margin-bottom:12px;">${buildMonthlyChartHTML()}</div>
     <div class="sec-ttl" style="margin-top:4px;">${T('5 הוצאות אחרונות','Last 5 Expenses')}</div>
     ${ex.slice(0,5).map(e=>eiHTML(e,false)).join('')||emptyHTML('💸',T('אין הוצאות','No expenses'))}
-  \`;
+  `;
 }
 
 // ======================== MONTHLY CHART ========================
 function buildMonthlyChartHTML(){
-  // Last 12 months data
   const now = new Date();
   const months = [];
   for(let i=11; i>=0; i--){
@@ -1336,20 +1351,22 @@ function buildMonthlyChartHTML(){
     months.push({label:mShort, total:mTotal, year:d.getFullYear(), month:d.getMonth()});
   }
   const maxVal = Math.max(...months.map(m=>m.total), 1);
-  const isCurrentMonth = (m) => m.month===now.getMonth() && m.year===now.getFullYear();
-  const bars = months.map(m=>{
+  let bars = '';
+  months.forEach(function(m){
     const pct = Math.max(2, (m.total/maxVal)*100);
-    const isCur = isCurrentMonth(m);
+    const isCur = m.month===now.getMonth() && m.year===now.getFullYear();
     const color = isCur ? 'var(--p)' : 'var(--cb)';
     const border = isCur ? '2px solid var(--pl)' : '1px solid var(--br)';
     const label = m.total>0 ? '₪'+fmt(m.total) : '';
-    return \`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;">
-      <div style="font-size:.62rem;color:var(--t3);writing-mode:horizontal-tb;text-align:center;min-height:28px;display:flex;align-items:flex-end;justify-content:center;">${label}</div>
-      <div style="width:100%;height:\${pct}%;min-height:4px;max-height:80px;background:\${color};border-radius:4px 4px 0 0;border:\${border};transition:height .4s;"></div>
-      <div style="font-size:.62rem;color:\${isCur?'var(--pl)':'var(--t3)'};font-weight:\${isCur?700:400};text-align:center;">\${m.label}</div>
-    </div>\`;
-  }).join('');
-  return \`<div style="display:flex;align-items:flex-end;gap:3px;height:130px;padding:0 4px;">\${bars}</div>\`;
+    const labelColor = isCur ? 'var(--pl)' : 'var(--t3)';
+    const fontWeight = isCur ? '700' : '400';
+    bars += '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;">';
+    bars += '<div style="font-size:.6rem;color:var(--t3);text-align:center;min-height:26px;display:flex;align-items:flex-end;justify-content:center;">'+label+'</div>';
+    bars += '<div style="width:100%;height:'+pct+'px;min-height:4px;max-height:80px;background:'+color+';border-radius:4px 4px 0 0;border:'+border+';"></div>';
+    bars += '<div style="font-size:.6rem;color:'+labelColor+';font-weight:'+fontWeight+';text-align:center;">'+m.label+'</div>';
+    bars += '</div>';
+  });
+  return '<div style="display:flex;align-items:flex-end;gap:2px;height:130px;padding:0 2px;">'+bars+'</div>';
 }
 
 // ======================== BUDGET ========================
@@ -1922,7 +1939,14 @@ function updGuideLbls(){
   if(pb){pb.style.display=guideStep>0?'block':'none';pb.innerHTML=T('→ חזור','← Back');}
 }
 function updGDots(){document.querySelectorAll('.g-dot').forEach((d,i)=>d.classList.toggle('on',i===guideStep));}
-function updGStep(){document.querySelectorAll('.gs').forEach((s,i)=>s.classList.toggle('on',i===guideStep));updGuideLbls();updGDots();}
+function updGStep(){
+  document.querySelectorAll('.gs').forEach((s,i)=>s.classList.toggle('on',i===guideStep));
+  updGuideLbls();
+  updGDots();
+  // Make sure guide screen is visible
+  const gs=document.getElementById('guideScreen');
+  if(gs) gs.style.display='flex';
+}
 function nextG(){if(guideStep<5){guideStep++;updGStep();}else{document.getElementById('guideScreen').style.display='none';S.firstRun=false;save();}}
 function prevG(){if(guideStep>0){guideStep--;updGStep();}}
 function skipGuide(){document.getElementById('guideScreen').style.display='none';S.firstRun=false;save();}
@@ -1945,7 +1969,7 @@ function emptyHTML(ic,msg,sub=''){return`<div class="empty"><div class="ei2">${i
 // ======================== INIT ========================
 async function init(){
   // Async load from IDB or localStorage
-  await loadAsync();
+  try { await loadAsync(); } catch(e){ console.warn('Load failed, starting fresh:', e); }
 
   const theme=S.settings.theme||'green';
   document.documentElement.setAttribute('data-theme',theme);
