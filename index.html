@@ -1041,21 +1041,54 @@ function shareApp(){
   else showShareModal(msg);
 }
 function showShareModal(msg){
-  var wa='https://wa.me/?text='+encodeURIComponent(msg);
-  var tg='https://t.me/share/url?url='+encodeURIComponent(APP_URL)+'&text='+encodeURIComponent(T('MoneyNest — אפליקציית ניהול הוצאות חינמית!','MoneyNest — Free expense tracker!'));
-  var em='mailto:?subject='+encodeURIComponent('MoneyNest — יומן ניהול הוצאות')+'&body='+encodeURIComponent(msg);
-  var ov=document.createElement('div');ov.className='ov';ov.style.zIndex='9000';
-  ov.innerHTML='<div style="max-width:480px;width:95%;background:var(--bg3);border-radius:var(--r);padding:20px;">'
-    +'<div style="font-size:1.1rem;font-weight:700;margin-bottom:14px;">📣 '+T('שתף את MoneyNest','Share MoneyNest')+'</div>'
-    +'<div style="display:flex;flex-direction:column;gap:10px;">'
-    +'<a href="'+wa+'" target="_blank" style="background:#25d366;color:white;border-radius:var(--rs);padding:13px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;text-decoration:none;font-family:var(--fn);font-size:.95rem;">💬 WhatsApp</a>'
-    +'<a href="'+tg+'" target="_blank" style="background:#2ca5e0;color:white;border-radius:var(--rs);padding:13px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;text-decoration:none;font-family:var(--fn);font-size:.95rem;">✈️ Telegram</a>'
-    +'<a href="'+em+'" style="background:var(--cb);color:var(--tx);border:1px solid var(--br);border-radius:var(--rs);padding:13px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;text-decoration:none;font-family:var(--fn);font-size:.95rem;">✉️ '+T('מייל','Email')+'</a>'
-    +'<button class="btn btn-s btn-bl" onclick="copyAppLink();this.textContent=''+T('✓ הועתק!','✓ Copied!')+'';">🔗 '+T('העתק קישור','Copy Link')+'</button>'
-    +'<button class="btn btn-d btn-sm btn-bl" onclick="this.closest('.ov').remove();">'+T('ביטול','Cancel')+'</button>'
-    +'</div></div>';
-  ov.onclick=function(e){if(e.target===ov)ov.remove();};document.body.appendChild(ov);
+  var ov=document.createElement('div');
+  ov.className='ov';ov.style.zIndex='9000';
+  var wrap=document.createElement('div');
+  wrap.style.cssText='max-width:480px;width:95%;background:var(--bg3);border-radius:var(--r);padding:20px;';
+  var title=document.createElement('div');
+  title.style.cssText='font-size:1.1rem;font-weight:700;margin-bottom:14px;';
+  title.textContent='📣 '+T('שתף את MoneyNest','Share MoneyNest');
+  wrap.appendChild(title);
+  var col=document.createElement('div');
+  col.style.cssText='display:flex;flex-direction:column;gap:10px;';
+  // WhatsApp
+  var wa=document.createElement('a');
+  wa.href='https://wa.me/?text='+encodeURIComponent(msg);
+  wa.target='_blank';
+  wa.style.cssText='background:#25d366;color:white;border-radius:var(--rs);padding:13px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;text-decoration:none;font-family:var(--fn);font-size:.95rem;';
+  wa.textContent='💬 WhatsApp';
+  col.appendChild(wa);
+  // Telegram
+  var tg=document.createElement('a');
+  tg.href='https://t.me/share/url?url='+encodeURIComponent(APP_URL)+'&text='+encodeURIComponent(T('MoneyNest — אפליקציית ניהול הוצאות!','MoneyNest — Free expense tracker!'));
+  tg.target='_blank';
+  tg.style.cssText='background:#2ca5e0;color:white;border-radius:var(--rs);padding:13px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;text-decoration:none;font-family:var(--fn);font-size:.95rem;';
+  tg.textContent='✈️ Telegram';
+  col.appendChild(tg);
+  // Email
+  var em=document.createElement('a');
+  em.href='mailto:?subject='+encodeURIComponent('MoneyNest — יומן ניהול הוצאות')+'&body='+encodeURIComponent(msg);
+  em.style.cssText='background:var(--cb);color:var(--tx);border:1px solid var(--br);border-radius:var(--rs);padding:13px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;text-decoration:none;font-family:var(--fn);font-size:.95rem;';
+  em.textContent='✉️ '+T('מייל','Email');
+  col.appendChild(em);
+  // Copy link button
+  var cp=document.createElement('button');
+  cp.className='btn btn-s btn-bl';
+  cp.textContent='🔗 '+T('העתק קישור','Copy Link');
+  cp.onclick=function(){copyAppLink();cp.textContent=T('✓ הועתק!','✓ Copied!');};
+  col.appendChild(cp);
+  // Cancel
+  var ca=document.createElement('button');
+  ca.className='btn btn-d btn-sm btn-bl';
+  ca.textContent=T('ביטול','Cancel');
+  ca.onclick=function(){ov.remove();};
+  col.appendChild(ca);
+  wrap.appendChild(col);
+  ov.appendChild(wrap);
+  ov.onclick=function(e){if(e.target===ov)ov.remove();};
+  document.body.appendChild(ov);
 }
+
 function copyAppLink(){
   var txt=APP_URL;
   if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){toast(T('✓ קישור הועתק! שתף עם חברים 🎉','✓ Link copied! Share with friends 🎉'));}).catch(function(){fbCopy(txt);});}
