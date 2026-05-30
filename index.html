@@ -732,6 +732,75 @@ function applyLoaded(parsed){
 
 function load(){ /* sync stub — real load is async in init */ }
 
+// ======================== NOTIFICATIONS ========================
+function requestNotifPermission(){
+  if(!('Notification' in window)) return Promise.resolve('denied');
+  if(Notification.permission==='granted') return Promise.resolve('granted');
+  return Notification.requestPermission();
+}
+
+function sendNotif(title, body, icon){
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  try{
+    new Notification(title,{body, icon:icon||'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50,5 93,27.5 93,72.5 50,95 7,72.5 7,27.5" fill="%231a7a4a"/><text x="50" y="60" text-anchor="middle" fill="white" font-size="40">₪</text></svg>'});
+  }catch(e){}
+}
+
+function checkBudgetAlert(){
+  if(!S.settings.notifyBudget||!S.budget.monthly) return;
+  const now=new Date();
+  const tot=S.expenses.filter(e=>{const d=new Date(e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).reduce((s,e)=>s+e.amount,0);
+  const pct=(tot/S.budget.monthly)*100;
+  if(tot>S.budget.monthly){
+    toast(T('⚠️ חרגת מהתקציב החודשי!','⚠️ Monthly budget exceeded!'));
+    sendNotif('MoneyNest ⚠️', T('חרגת מהתקציב החודשי! הוצאת ₪'+fmt(tot)+' מתוך ₪'+fmt(S.budget.monthly),'Monthly budget exceeded! Spent ₪'+fmt(tot)+' of ₪'+fmt(S.budget.monthly)));
+  } else if(pct>=90){
+    toast(T('⚠️ ניצלת '+Math.round(pct)+'% מהתקציב','⚠️ Used '+Math.round(pct)+'% of budget'));
+    sendNotif('MoneyNest', T('ניצלת '+Math.round(pct)+'% מהתקציב החודשי','Used '+Math.round(pct)+'% of monthly budget'));
+  }
+}
+
+function toggleNotif(type, el){
+  requestNotifPermission().then(p=>{
+    if(p==='granted'){
+      el.classList.toggle('on');
+      if(type==='budget') S.settings.notifyBudget=el.classList.contains('on');
+      else S.settings.notifyDaily=el.classList.contains('on');
+      save();
+      if(type==='daily'&&S.settings.notifyDaily) setupDailyReminder();
+      toast(el.classList.contains('on')?T('✓ התראות הופעלו','✓ Notifications on'):T('התראות כובו','Notifications off'));
+    } else {
+      toast(T('אפשר התראות בהגדרות הדפדפן','Enable notifications in browser settings'));
+    }
+  });
+}
+
+function setupDailyReminder(){
+  if(!S.settings.notifyDaily) return;
+  requestNotifPermission().then(p=>{
+    if(p!=='granted') return;
+    // Check if we already reminded today
+    const today=new Date().toDateString();
+    const lastReminder=localStorage.getItem('mn_last_reminder');
+    if(lastReminder===today) return;
+    // Schedule reminder (immediate demo — in real app would use service worker)
+    const now=new Date();
+    const target=new Date(now.getFullYear(),now.getMonth(),now.getDate(),20,0,0); // 8pm
+    const delay=target-now;
+    if(delay>0&&delay<86400000){
+      setTimeout(()=>{
+        sendNotif('MoneyNest 📝',T('זכור לרשום את ההוצאות של היום!','Remember to log today's expenses!'));
+        localStorage.setItem('mn_last_reminder',new Date().toDateString());
+      },delay);
+    } else if(delay<=0){
+      // already past 8pm, remind now if not reminded
+      sendNotif('MoneyNest 📝',T('זכור לרשום את ההוצאות של היום!','Remember to log today's expenses!'));
+      localStorage.setItem('mn_last_reminder',today);
+    }
+  });
+}
+
+
 // ======================== NAV ========================
 // ======================== DATE RANGE HELPER ========================
 function dateRangeBarHTML(screen, currentFilter){
@@ -952,13 +1021,34 @@ function applyLbls(){
 function st(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
 
 // ======================== HOME ========================
+function getMonthExpenses(month, year){
+  // Regular + installment expenses for the given month
+  const direct = S.expenses.filter(e=>{
+    const d=new Date(e.date);
+    return d.getMonth()===month && d.getFullYear()===year;
+  });
+  // Fixed expenses: show in every month AFTER their start date
+  const fixedFromOther = S.expenses.filter(e=>{
+    if(e.type!=='fixed') return false;
+    const d=new Date(e.date);
+    const eMonth = d.getMonth(), eYear = d.getFullYear();
+    // Already counted above if same month
+    if(eYear===year && eMonth===month) return false;
+    // Include if started before or in this month
+    return (eYear<year)||(eYear===year && eMonth<month);
+  });
+  return [...direct, ...fixedFromOther];
+}
+
 function renderHome(){
   const now=new Date();
   const ms=S.settings.lang==='he'?MHE:MEN;
   st('hMonth',ms[now.getMonth()]+' '+now.getFullYear());
-  const tm=S.expenses.filter(e=>{const d=new Date(e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
+  const tm=getMonthExpenses(now.getMonth(), now.getFullYear());
+  // Count only direct entries for record count
+  const directCnt=S.expenses.filter(e=>{const d=new Date(e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).length;
   const tot=tm.reduce((s,e)=>s+e.amount,0);
-  st('hTotal',fmt(tot)); st('hCnt',tm.length);
+  st('hTotal',fmt(tot)); st('hCnt',directCnt);
   st('hAvg','₪'+fmt(tot/Math.max(1,now.getDate())));
   if(S.budget.monthly>0){
     const left=S.budget.monthly-tot;
@@ -1083,11 +1173,7 @@ function saveExp(){
     S.receipts.push({id:'r_'+Date.now(),data:aS.receipt,date,desc});
   }
   save();
-  if(S.settings.notifyBudget&&S.budget.monthly>0){
-    const now=new Date();
-    const tot=S.expenses.filter(e=>{const d=new Date(e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).reduce((s,e)=>s+e.amount,0);
-    if(tot>S.budget.monthly) toast(T('⚠️ חרגת מהתקציב!','⚠️ Budget exceeded!'));
-  }
+  checkBudgetAlert();
   go('sc-home');
   toast(T('✓ הוצאה נשמרה','✓ Expense saved'));
 }
@@ -1162,7 +1248,23 @@ function fltRpt(f){curRF=f;renderRpt(f);}
 function renderRpt(f){
   const barCont=document.getElementById('drb_rpt');
   if(barCont) barCont.outerHTML=dateRangeBarHTML('rpt',f).replace('<div class="drb-wrap"','<div id="drb_rpt" class="drb-wrap"');
+  // Include fixed expenses that recur in the filtered period
   let ex=applyDateFilter([...S.expenses],f,'rpt');
+  // Add virtual recurrences of fixed expenses for months in range
+  const fixedExps=S.expenses.filter(e=>e.type==='fixed');
+  const now2=new Date();
+  fixedExps.forEach(fe=>{
+    const startD=new Date(fe.date);
+    // Check each month in the filtered range
+    for(let mOff=1; mOff<=24; mOff++){
+      const d=new Date(startD.getFullYear(), startD.getMonth()+mOff, 1);
+      if(d>now2) break;
+      const inRange=applyDateFilter([{...fe, date:d.toISOString().split('T')[0], id:fe.id+'_r'+mOff}],f,'rpt');
+      if(inRange.length>0 && !ex.find(e=>e.date===inRange[0].date && e.desc===fe.desc)){
+        ex.push({...fe, date:d.toISOString().split('T')[0], id:fe.id+'_r'+mOff, _virtual:true});
+      }
+    }
+  });
   const now=new Date();
   const tot=ex.reduce((s,e)=>s+e.amount,0);
   let days=7;
@@ -1214,9 +1316,40 @@ function renderRpt(f){
         </div>
       </div>`;
     }).join('')}
-    <div class="sec-ttl" style="margin-top:20px;">${T('5 הוצאות אחרונות','Last 5 Expenses')}</div>
+    <div class="sec-ttl" style="margin-top:20px;">${T('גרף חודשי','Monthly Chart')}</div>
+    <div class="card" style="padding:16px 8px;margin-bottom:12px;">${buildMonthlyChartHTML()}</div>
+    <div class="sec-ttl" style="margin-top:4px;">${T('5 הוצאות אחרונות','Last 5 Expenses')}</div>
     ${ex.slice(0,5).map(e=>eiHTML(e,false)).join('')||emptyHTML('💸',T('אין הוצאות','No expenses'))}
-  `;
+  \`;
+}
+
+// ======================== MONTHLY CHART ========================
+function buildMonthlyChartHTML(){
+  // Last 12 months data
+  const now = new Date();
+  const months = [];
+  for(let i=11; i>=0; i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const mName = (S.settings.lang==='he'?MHE:MEN)[d.getMonth()];
+    const mShort = mName.substring(0,3);
+    const mTotal = getMonthExpenses(d.getMonth(), d.getFullYear()).reduce((s,e)=>s+e.amount,0);
+    months.push({label:mShort, total:mTotal, year:d.getFullYear(), month:d.getMonth()});
+  }
+  const maxVal = Math.max(...months.map(m=>m.total), 1);
+  const isCurrentMonth = (m) => m.month===now.getMonth() && m.year===now.getFullYear();
+  const bars = months.map(m=>{
+    const pct = Math.max(2, (m.total/maxVal)*100);
+    const isCur = isCurrentMonth(m);
+    const color = isCur ? 'var(--p)' : 'var(--cb)';
+    const border = isCur ? '2px solid var(--pl)' : '1px solid var(--br)';
+    const label = m.total>0 ? '₪'+fmt(m.total) : '';
+    return \`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;">
+      <div style="font-size:.62rem;color:var(--t3);writing-mode:horizontal-tb;text-align:center;min-height:28px;display:flex;align-items:flex-end;justify-content:center;">${label}</div>
+      <div style="width:100%;height:\${pct}%;min-height:4px;max-height:80px;background:\${color};border-radius:4px 4px 0 0;border:\${border};transition:height .4s;"></div>
+      <div style="font-size:.62rem;color:\${isCur?'var(--pl)':'var(--t3)'};font-weight:\${isCur?700:400};text-align:center;">\${m.label}</div>
+    </div>\`;
+  }).join('');
+  return \`<div style="display:flex;align-items:flex-end;gap:3px;height:130px;padding:0 4px;">\${bars}</div>\`;
 }
 
 // ======================== BUDGET ========================
@@ -1399,27 +1532,72 @@ function updXPrev(){
   st('xPrev',T(`${n} רשומות לייצוא${rangeLabel?' ('+rangeLabel+')':''}`,`${n} records to export${rangeLabel?' ('+rangeLabel+')':''}`));
 }
 function doPDF(){
-  const ex=getXExps(); const user=S.settings.username||'MoneyNest';
+  const ex=getXExps(); 
+  const user=S.settings.username||'MoneyNest';
   const tot=ex.reduce((s,e)=>s+e.amount,0);
+  const now=new Date();
+  // Category summary
+  const byCat={};
+  ex.forEach(e=>{byCat[e.category]=(byCat[e.category]||0)+e.amount;});
+  const catRows=Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([cid,amt])=>{
+    const c=catById(cid);
+    const pct=tot>0?((amt/tot)*100).toFixed(1):0;
+    return `<tr><td>${c.icon} ${c.name}</td><td>₪${fmt(amt)}</td><td>${pct}%</td></tr>`;
+  }).join('');
+  // Budget info
+  const budgetHTML = S.budget.monthly>0
+    ? `<div style="margin:20px 0;padding:12px;background:#f0f9f4;border-radius:8px;border:1px solid #1a7a4a;">
+        <strong>תקציב חודשי:</strong> ₪${fmt(S.budget.monthly)} | 
+        <strong>נותר:</strong> <span style="color:${S.budget.monthly-tot>=0?'#1a7a4a':'#e05555'}">₪${fmt(Math.abs(S.budget.monthly-tot))}</span>
+        ${S.budget.showInReports&&S.budget.incomes.length>0?` | <strong>הכנסות:</strong> ₪${fmt(S.budget.incomes.reduce((s,i)=>s+i.amount,0))}`:''}
+      </div>` : '';
   const w=window.open('','_blank');
   if(!w){toast(T('אפשר חלונות קופצים','Allow popups'));return;}
-  w.document.write(`<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8"><title>MoneyNest</title><style>
-  body{font-family:Arial,sans-serif;padding:30px;direction:rtl;color:#222;}
-  h1{color:#1a7a4a;}h2{color:#777;font-size:1rem;font-weight:400;margin-bottom:20px;}
-  table{width:100%;border-collapse:collapse;margin-top:20px;}
-  th,td{border:1px solid #ddd;padding:9px 12px;text-align:right;}
-  th{background:#1a7a4a;color:#fff;}tr:nth-child(even){background:#f9f9f9;}
-  .tot{font-size:1.2rem;font-weight:700;margin-top:20px;color:#1a7a4a;}
-  .ft{margin-top:30px;font-size:.8rem;color:#999;}
+  w.document.write(`<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8">
+  <title>MoneyNest — ${user}</title><style>
+  *{box-sizing:border-box;}
+  body{font-family:Arial,sans-serif;padding:30px;direction:rtl;color:#222;max-width:900px;margin:0 auto;}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:15px;border-bottom:3px solid #1a7a4a;}
+  .logo{font-size:1.5rem;font-weight:900;color:#1a7a4a;}
+  .user-info{text-align:left;font-size:.9rem;color:#666;}
+  h2{color:#1a7a4a;font-size:1.1rem;margin:20px 0 10px;border-bottom:1px solid #e5e5e5;padding-bottom:5px;}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;}
+  th,td{border:1px solid #e0e0e0;padding:8px 12px;text-align:right;}
+  th{background:#1a7a4a;color:#fff;}
+  tr:nth-child(even){background:#f9f9f9;}
+  .sum-box{display:flex;gap:15px;margin:15px 0;flex-wrap:wrap;}
+  .sum-item{flex:1;min-width:120px;background:#f0f9f4;border-radius:8px;padding:12px;border:1px solid #c0e0cc;text-align:center;}
+  .sum-val{font-size:1.4rem;font-weight:700;color:#1a7a4a;}
+  .sum-lbl{font-size:.75rem;color:#666;margin-top:3px;}
+  .footer{margin-top:30px;padding-top:15px;border-top:1px solid #e5e5e5;font-size:.75rem;color:#999;text-align:center;}
+  @media print{body{padding:15px;}.no-print{display:none;}}
   </style></head><body>
-  <h1>📊 MoneyNest — יומן ניהול הוצאות</h1>
-  <h2>${user} | ${new Date().toLocaleDateString('he-IL')}</h2>
+  <div class="header">
+    <div class="logo">🦅 MoneyNest<div style="font-size:.75rem;font-weight:400;color:#666;margin-top:3px;">יומן ניהול הוצאות</div></div>
+    <div class="user-info">
+      <div><strong>${user}</strong></div>
+      <div>הופק: ${now.toLocaleDateString('he-IL')} ${now.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}</div>
+      <div>${ex.length} רשומות</div>
+    </div>
+  </div>
+  <div class="sum-box">
+    <div class="sum-item"><div class="sum-val">₪${fmt(tot)}</div><div class="sum-lbl">סה"כ הוצאות</div></div>
+    <div class="sum-item"><div class="sum-val">${ex.length}</div><div class="sum-lbl">מספר רשומות</div></div>
+    <div class="sum-item"><div class="sum-val">₪${fmt(tot/Math.max(1,ex.length))}</div><div class="sum-lbl">ממוצע להוצאה</div></div>
+    ${S.budget.monthly>0?`<div class="sum-item"><div class="sum-val" style="color:${S.budget.monthly-tot>=0?'#1a7a4a':'#e05555'};">₪${fmt(Math.abs(S.budget.monthly-tot))}</div><div class="sum-lbl">${S.budget.monthly-tot>=0?'נותר בתקציב':'חריגה מתקציב'}</div></div>`:''}
+  </div>
+  ${budgetHTML}
+  <h2>📊 סיכום לפי קטגוריה</h2>
+  <table><tr><th>קטגוריה</th><th>סכום</th><th>אחוז</th></tr>${catRows}</table>
+  <h2>📋 פירוט הוצאות</h2>
   <table><tr><th>תיאור</th><th>קטגוריה</th><th>סוג</th><th>אמצעי תשלום</th><th>תאריך</th><th>סכום</th></tr>
-  ${ex.map(e=>{const c=catById(e.category);const tp={regular:'רגילה',fixed:'קבועה',installments:'תשלומים'};return`<tr><td>${e.desc}</td><td>${c.icon} ${c.name}</td><td>${tp[e.type]||e.type}</td><td>${PHE[e.pay]||e.pay}</td><td>${fmtD(e.date)}</td><td>₪${fmt(e.amount)}</td></tr>`;}).join('')}
-  </table><div class="tot">סה"כ: ₪${fmt(tot)}</div>
-  <div class="ft">הופק ע"י MoneyNest • AppNest © 2025</div>
+  ${ex.map(e=>{const c=catById(e.category);const tp={regular:'רגילה',fixed:'קבועה',installments:'תשלומים'};const labels={credit:'אשראי',cash:'מזומן',bit:'Bit',paybox:'PayBox',other:'אחר'};return`<tr><td>${e.desc}${e.notes?'<br><small style="color:#888;">'+e.notes+'</small>':''}</td><td>${c.icon} ${c.name}</td><td>${tp[e.type]||e.type}</td><td>${labels[e.pay]||e.pay}</td><td>${fmtD(e.date)}</td><td><strong>₪${fmt(e.amount)}</strong></td></tr>`;}).join('')}
+  <tr style="background:#f0f9f4;font-weight:700;"><td colspan="5">סה"כ</td><td>₪${fmt(tot)}</td></tr>
+  </table>
+  <div class="footer">הופק ע"י MoneyNest • AppNest © 2025 | ${user}</div>
+  <button class="no-print" onclick="window.print()" style="margin-top:20px;padding:12px 30px;background:#1a7a4a;color:white;border:none;border-radius:8px;font-size:1rem;cursor:pointer;">🖨️ הדפס / שמור PDF</button>
   </body></html>`);
-  w.document.close(); setTimeout(()=>w.print(),600);
+  w.document.close(); setTimeout(()=>w.print(),800);
 }
 function doCSV(){
   const ex=getXExps();
@@ -1433,10 +1611,64 @@ function doCSV(){
 function doEmail(){
   const ex=getXExps(); const user=S.settings.username||'MoneyNest User';
   const tot=ex.reduce((s,e)=>s+e.amount,0);
-  let body=`${T('דוח הוצאות','Expense Report')} — ${user}\n\n`;
+  // Get receipts for the same period
+  const exDates=new Set(ex.map(e=>e.date));
+  const relReceipts=S.receipts.filter(r=>exDates.has(r.date));
+  
+  // Show options modal if there are receipts
+  if(relReceipts.length>0){
+    const ov=document.createElement('div');
+    ov.className='ov'; ov.style.zIndex='3000';
+    ov.innerHTML=`<div style="max-width:480px;width:95%;background:var(--bg3);border-radius:var(--r);padding:20px;">
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:6px;">✉️ ${T('שלח מייל','Send Email')}</div>
+      <div style="font-size:.85rem;color:var(--t2);margin-bottom:16px;">${T('נמצאו '+relReceipts.length+' קבלות לתקופה זו','Found '+relReceipts.length+' receipts for this period')}</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-p btn-bl" onclick="sendEmailOnly();this.closest('.ov').remove();">
+          ✉️ ${T('שלח סיכום בלבד','Send Summary Only')}
+        </button>
+        <button class="btn btn-s btn-bl" onclick="downloadRecsForEmail(${JSON.stringify(relReceipts.map(r=>r.id))});this.closest('.ov').remove();">
+          📷 ${T('הורד קבלות לצירוף ידני','Download Receipts to Attach')}
+        </button>
+        <button class="btn btn-s btn-bl" onclick="sendEmailOnly();downloadRecsForEmail(${JSON.stringify(relReceipts.map(r=>r.id))});this.closest('.ov').remove();">
+          📧 ${T('שלח סיכום + הורד קבלות','Send Summary + Download Receipts')}
+        </button>
+        <button class="btn btn-d btn-sm" onclick="this.closest('.ov').remove();">${T('ביטול','Cancel')}</button>
+      </div>
+    </div>`;
+    ov.onclick=e=>{if(e.target===ov)ov.remove();};
+    document.body.appendChild(ov);
+  } else {
+    sendEmailOnly();
+  }
+}
+
+function sendEmailOnly(){
+  const ex=getXExps(); const user=S.settings.username||'MoneyNest User';
+  const tot=ex.reduce((s,e)=>s+e.amount,0);
+  let body=T('דוח הוצאות','Expense Report')+' — '+user+'\n\n';
+  // Group by category
+  const byCat={};
+  ex.forEach(e=>{byCat[e.category]=(byCat[e.category]||0)+e.amount;});
+  body+=T('לפי קטגוריה:','By Category:')+'\n';
+  Object.entries(byCat).sort((a,b)=>b[1]-a[1]).forEach(([cid,amt])=>{
+    const c=catById(cid);
+    body+=`  ${c.icon} ${c.name}: ₪${fmt(amt)}\n`;
+  });
+  body+='\n'+T('פירוט הוצאות:','Expense Details:')+'\n';
   ex.forEach(e=>{body+=`${fmtD(e.date)} | ${e.desc} | ₪${fmt(e.amount)}\n`;});
-  body+=`\n${T('סה"כ','Total')}: ₪${fmt(tot)}\n\nMoneyNest • AppNest`;
-  window.location.href=`mailto:?subject=MoneyNest — ${user}&body=${encodeURIComponent(body)}`;
+  body+='\n'+T('סה"כ','Total')+': ₪'+fmt(tot)+'\n\nMoneyNest • AppNest';
+  window.location.href='mailto:?subject=MoneyNest — '+user+'&body='+encodeURIComponent(body);
+}
+
+function downloadRecsForEmail(ids){
+  const recs=S.receipts.filter(r=>ids.includes(r.id));
+  recs.forEach((r,i)=>{
+    setTimeout(()=>{
+      const a=document.createElement('a');
+      a.href=r.data; a.download='receipt_'+r.date+'_'+(i+1)+'.jpg'; a.click();
+    },i*400);
+  });
+  toast(T('הקבלות הורדו — צרף אותן למייל ידנית','Receipts downloaded — attach them to email'));
 }
 function doShare(){
   const ex=getXExps(); const user=S.settings.username||'MoneyNest';
@@ -1498,9 +1730,21 @@ function renderSet(){
     </div>
     <div class="sec-ttl">${T('התראות','Notifications')}</div>
     <div class="card" style="margin-bottom:14px;">
-      <div class="tog-wrap"><div class="tog-lbl">${T('התראה על חריגה מתקציב','Budget Alert')}</div><div class="tog ${S.settings.notifyBudget?'on':''}" onclick="this.classList.toggle('on');S.settings.notifyBudget=this.classList.contains('on');save();"></div></div>
+      <div class="tog-wrap">
+        <div>
+          <div class="tog-lbl">${T('התראה על חריגה מתקציב','Budget Alert')}</div>
+          <div style="font-size:.75rem;color:var(--t3);">${'Notification' in window ? T('דורש אישור התראות','Requires notification permission') : T('לא נתמך בדפדפן זה','Not supported in this browser')}</div>
+        </div>
+        <div class="tog ${S.settings.notifyBudget?'on':''}" onclick="toggleNotif('budget',this)"></div>
+      </div>
       <div class="div" style="margin:6px 0;"></div>
-      <div class="tog-wrap"><div class="tog-lbl">${T('תזכורת יומית','Daily Reminder')}</div><div class="tog ${S.settings.notifyDaily?'on':''}" onclick="this.classList.toggle('on');S.settings.notifyDaily=this.classList.contains('on');save();"></div></div>
+      <div class="tog-wrap">
+        <div>
+          <div class="tog-lbl">${T('תזכורת יומית בשעה 20:00','Daily Reminder at 20:00')}</div>
+          <div style="font-size:.75rem;color:var(--t3);">${'Notification' in window ? T('דורש אישור התראות','Requires notification permission') : T('לא נתמך','Not supported')}</div>
+        </div>
+        <div class="tog ${S.settings.notifyDaily?'on':''}" onclick="toggleNotif('daily',this)"></div>
+      </div>
     </div>
     <div class="sec-ttl"></div>
     <div class="set-item" onclick="go('sc-bk')"><div class="set-l"><div class="set-ic">💾</div><div class="set-nm">${T('גיבוי ושחזור','Backup & Restore')}</div></div><div class="set-ar">›</div></div>
@@ -1720,6 +1964,8 @@ async function init(){
   renderHome();
   if(!S.firstRun) document.getElementById('guideScreen').style.display='none';
   else updGStep();
+  // Set up daily reminder if enabled
+  if(S.settings.notifyDaily) setupDailyReminder();
 }
 init();
 </script>
