@@ -217,6 +217,7 @@ select.inp option{background:var(--bg3);color:var(--tx);}
     </div>
     <div class="tb-acts">
       <button class="tb-btn" onclick="cycleLang()">🌐 <span id="langLbl">EN</span></button>
+      <button class="tb-btn" onclick="shareApp()" title="שתף">📣</button>
       <button class="tb-btn" onclick="go('sc-design')">🎨</button>
     </div>
   </div>
@@ -409,6 +410,15 @@ select.inp option{background:var(--bg3);color:var(--tx);}
       <div style="font-size:.85rem;color:var(--t3);margin-top:6px;" id="abVer">גרסה 3.0.0 • פותח ע"י AppNest</div>
     </div>
     <div class="card"><p style="font-size:.9rem;color:var(--t2);line-height:1.7;" id="abDesc">MoneyNest שומר את הנתונים שלך על המכשיר בלבד. אין שרתים, אין ענן.</p></div>
+    <div class="card" style="margin-bottom:12px;">
+      <div style="font-size:1rem;font-weight:700;margin-bottom:10px;" id="abShareTitle">📣 שתף את MoneyNest</div>
+      <div style="font-size:.83rem;color:var(--t2);margin-bottom:12px;" id="abShareDesc">אהבת? שתף עם חברים ותן לנו פידבק!</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-p" style="flex:1;" onclick="shareApp()">📤 <span id="abShareBtn">שתף</span></button>
+        <button class="btn btn-s" style="flex:1;" onclick="copyAppLink()">🔗 <span id="abCopyBtn">העתק קישור</span></button>
+      </div>
+      <div style="margin-top:10px;font-size:.78rem;color:var(--t3);background:var(--cb);border-radius:var(--rs);padding:7px 10px;word-break:break-all;text-align:center;">barakaflalo.github.io/moneynest</div>
+    </div>
     <div class="card" style="text-align:center;"><div style="font-size:1.3rem;font-weight:800;color:var(--pl);margin-bottom:6px;">🌐 AppNest</div><a href="https://barakaflalo.github.io/appnest" style="color:var(--pl);font-size:.9rem;">barakaflalo.github.io/appnest</a><div class="div"></div><div style="font-size:.8rem;color:var(--t3);">© 2025 AppNest. כל הזכויות שמורות.</div></div>
   </div>
   <div class="badge">Powered by <b>AppNest</b></div>
@@ -575,6 +585,9 @@ function applyLbls(){
   st('abSub',T('יומן ניהול הוצאות','Expense Journal'));
   st('abVer',T('גרסה 3.0.0 • פותח ע"י AppNest','Version 3.0.0 • Built by AppNest'));
   st('abDesc',T('MoneyNest שומר את הנתונים שלך על המכשיר בלבד. אין שרתים, אין ענן.','MoneyNest saves your data on your device only. No servers, no cloud.'));
+  st('abShareTitle',T('📣 שתף את MoneyNest','📣 Share MoneyNest'));
+  st('abShareDesc',T('אהבת? שתף עם חברים ותן לנו פידבק!','Loved it? Share with friends and give us feedback!'));
+  st('abShareBtn',T('שתף','Share'));st('abCopyBtn',T('העתק קישור','Copy Link'));
   st('gSkipBtn',T('דלג','Skip'));
   updGuideLbls();
 }
@@ -968,7 +981,7 @@ function doDelExp(){
 }
 // ============ SETTINGS ============
 function renderSet(){
-  document.getElementById('setBody').innerHTML='<div class="sec-ttl">'+T('שם משתמש','Username')+'</div><div class="ig"><input type="text" class="inp" value="'+(S.settings.username||'')+'" placeholder="'+T('שמך...','Your name...')+'" oninput="S.settings.username=this.value;save();"></div><div class="sec-ttl">'+T('שפה','Language')+'</div><div style="display:flex;gap:10px;margin-bottom:14px;"><button class="btn '+(S.settings.lang==='he'?'btn-p':'btn-s')+'" style="flex:1;" onclick="setLang(\'he\')">🇮🇱 עברית</button><button class="btn '+(S.settings.lang==='en'?'btn-p':'btn-s')+'" style="flex:1;" onclick="setLang(\'en\')">🇬🇧 English</button></div><div class="sec-ttl">'+T('התראות','Notifications')+'</div><div class="card" style="margin-bottom:14px;"><div class="tog-wrap"><div class="tog-lbl">'+T('התראה על חריגה מתקציב','Budget Alert')+'</div><div class="tog '+(S.settings.notifyBudget?'on':'')+'" onclick="toggleNotif(\'budget\',this)"></div></div><div class="div" style="margin:6px 0;"></div><div class="tog-wrap"><div class="tog-lbl">'+T('תזכורת יומית 20:00','Daily Reminder 20:00')+'</div><div class="tog '+(S.settings.notifyDaily?'on':'')+'" onclick="toggleNotif(\'daily\',this)"></div></div></div><div class="sec-ttl"></div><div class="set-item" onclick="go(\'sc-bk\')"><div class="set-l"><div class="set-ic">💾</div><div class="set-nm">'+T('גיבוי ושחזור','Backup & Restore')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="go(\'sc-help\')"><div class="set-l"><div class="set-ic">📖</div><div class="set-nm">'+T('מדריך מלא','Full Guide')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="showGuide()"><div class="set-l"><div class="set-ic">🎓</div><div class="set-nm">'+T('מדריך ראשוני','Welcome Guide')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="go(\'sc-about\')"><div class="set-l"><div class="set-ic">ℹ️</div><div class="set-nm">'+T('אודות','About')+'</div></div><div style="color:var(--t3);">›</div></div><div style="margin-top:20px;"><button class="btn btn-d btn-bl" onclick="clearAll()">🗑️ '+T('מחק את כל הנתונים','Delete All Data')+'</button></div>';
+  document.getElementById('setBody').innerHTML='<div class="sec-ttl">'+T('שם משתמש','Username')+'</div><div class="ig"><input type="text" class="inp" value="'+(S.settings.username||'')+'" placeholder="'+T('שמך...','Your name...')+'" oninput="S.settings.username=this.value;save();"></div><div class="sec-ttl">'+T('שפה','Language')+'</div><div style="display:flex;gap:10px;margin-bottom:14px;"><button class="btn '+(S.settings.lang==='he'?'btn-p':'btn-s')+'" style="flex:1;" onclick="setLang(\'he\')">🇮🇱 עברית</button><button class="btn '+(S.settings.lang==='en'?'btn-p':'btn-s')+'" style="flex:1;" onclick="setLang(\'en\')">🇬🇧 English</button></div><div class="sec-ttl">'+T('התראות','Notifications')+'</div><div class="card" style="margin-bottom:14px;"><div class="tog-wrap"><div class="tog-lbl">'+T('התראה על חריגה מתקציב','Budget Alert')+'</div><div class="tog '+(S.settings.notifyBudget?'on':'')+'" onclick="toggleNotif(\'budget\',this)"></div></div><div class="div" style="margin:6px 0;"></div><div class="tog-wrap"><div class="tog-lbl">'+T('תזכורת יומית 20:00','Daily Reminder 20:00')+'</div><div class="tog '+(S.settings.notifyDaily?'on':'')+'" onclick="toggleNotif(\'daily\',this)"></div></div></div><div class="sec-ttl"></div><div class="set-item" onclick="go(\'sc-bk\')"><div class="set-l"><div class="set-ic">💾</div><div class="set-nm">'+T('גיבוי ושחזור','Backup & Restore')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="go(\'sc-help\')"><div class="set-l"><div class="set-ic">📖</div><div class="set-nm">'+T('מדריך מלא','Full Guide')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="showGuide()"><div class="set-l"><div class="set-ic">🎓</div><div class="set-nm">'+T('מדריך ראשוני','Welcome Guide')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="go(\'sc-about\')"><div class="set-l"><div class="set-ic">ℹ️</div><div class="set-nm">'+T('אודות','About')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="shareApp()"><div class="set-l"><div class="set-ic">📣</div><div class="set-nm">'+T('שתף את MoneyNest','Share MoneyNest')+'</div></div><div style="color:var(--t3);">›</div></div><div style="margin-top:20px;"><button class="btn btn-d btn-bl" onclick="clearAll()">🗑️ '+T('מחק את כל הנתונים','Delete All Data')+'</button></div>';
 }
 function toggleNotif(type,el){
   if(!('Notification' in window)){toast(T('לא נתמך בדפדפן זה','Not supported in this browser'));return;}
@@ -1020,6 +1033,36 @@ function fmtD(d){if(!d)return'';var dt=new Date(d+'T00:00:00');return S.settings
 function toast(msg){var el=document.createElement('div');el.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--ca);color:var(--tx);padding:10px 20px;border-radius:20px;border:1px solid var(--br);z-index:99999;font-size:.9rem;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap;pointer-events:none;';el.textContent=msg;document.body.appendChild(el);setTimeout(function(){el.remove();},2400);}
 function emptyHTML(ic,msg,sub){return'<div class="empty"><div class="ei2">'+ic+'</div><p>'+msg+'</p>'+(sub?'<p style="margin-top:6px;font-size:.8rem;">'+sub+'</p>':'')+'</div>';}
 // ============ INIT ============
+// ============ SHARE APP ============
+var APP_URL='https://barakaflalo.github.io/moneynest';
+function shareApp(){
+  var msg=T('היי! מצאתי אפליקציה מדהימה לניהול הוצאות 💰\n\n📱 MoneyNest — יומן ניהול הוצאות\n✅ חינמי לגמרי\n✅ עובד בלי אינטרנט\n✅ פרטיות מלאה — הנתונים אצלך\n\n👇 פתח כאן:','Hey! Found an amazing expense tracker 💰\n\n📱 MoneyNest — Expense Journal\n✅ Completely free\n✅ Works offline\n✅ Full privacy\n\n👇 Open here:')+' '+APP_URL;
+  if(navigator.share){navigator.share({title:'MoneyNest',text:msg,url:APP_URL}).catch(function(){showShareModal(msg);});}
+  else showShareModal(msg);
+}
+function showShareModal(msg){
+  var wa='https://wa.me/?text='+encodeURIComponent(msg);
+  var tg='https://t.me/share/url?url='+encodeURIComponent(APP_URL)+'&text='+encodeURIComponent(T('MoneyNest — אפליקציית ניהול הוצאות חינמית!','MoneyNest — Free expense tracker!'));
+  var em='mailto:?subject='+encodeURIComponent('MoneyNest — יומן ניהול הוצאות')+'&body='+encodeURIComponent(msg);
+  var ov=document.createElement('div');ov.className='ov';ov.style.zIndex='9000';
+  ov.innerHTML='<div style="max-width:480px;width:95%;background:var(--bg3);border-radius:var(--r);padding:20px;">'
+    +'<div style="font-size:1.1rem;font-weight:700;margin-bottom:14px;">📣 '+T('שתף את MoneyNest','Share MoneyNest')+'</div>'
+    +'<div style="display:flex;flex-direction:column;gap:10px;">'
+    +'<a href="'+wa+'" target="_blank" style="background:#25d366;color:white;border-radius:var(--rs);padding:13px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;text-decoration:none;font-family:var(--fn);font-size:.95rem;">💬 WhatsApp</a>'
+    +'<a href="'+tg+'" target="_blank" style="background:#2ca5e0;color:white;border-radius:var(--rs);padding:13px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;text-decoration:none;font-family:var(--fn);font-size:.95rem;">✈️ Telegram</a>'
+    +'<a href="'+em+'" style="background:var(--cb);color:var(--tx);border:1px solid var(--br);border-radius:var(--rs);padding:13px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;text-decoration:none;font-family:var(--fn);font-size:.95rem;">✉️ '+T('מייל','Email')+'</a>'
+    +'<button class="btn btn-s btn-bl" onclick="copyAppLink();this.textContent=''+T('✓ הועתק!','✓ Copied!')+'';">🔗 '+T('העתק קישור','Copy Link')+'</button>'
+    +'<button class="btn btn-d btn-sm btn-bl" onclick="this.closest('.ov').remove();">'+T('ביטול','Cancel')+'</button>'
+    +'</div></div>';
+  ov.onclick=function(e){if(e.target===ov)ov.remove();};document.body.appendChild(ov);
+}
+function copyAppLink(){
+  var txt=APP_URL;
+  if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){toast(T('✓ קישור הועתק! שתף עם חברים 🎉','✓ Link copied! Share with friends 🎉'));}).catch(function(){fbCopy(txt);});}
+  else fbCopy(txt);
+}
+function fbCopy(t){var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0;';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast(T('✓ הועתק','✓ Copied'));}catch(e){}document.body.removeChild(ta);}
+
 function init(){
   load();
   var theme=S.settings.theme||'green';
