@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MoneyNest — מדיניות פרטיות</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: #222; line-height: 1.7; }
+  .container { max-width: 800px; margin: 0 auto; padding: 40px 24px; }
+  .header { background: #1a7a4a; color: white; padding: 40px 24px; text-align: center; margin-bottom: 32px; border-radius: 12px; }
+  .header h1 { font-size: 2rem; margin-bottom: 8px; }
+  .header .subtitle { font-size: 1rem; opacity: 0.85; }
+  .logo { font-size: 3rem; margin-bottom: 12px; }
+  .card { background: white; border-radius: 12px; padding: 28px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  h2 { color: #1a7a4a; font-size: 1.2rem; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #e8f5ed; }
+  p { margin-bottom: 12px; color: #444; }
+  ul { padding-right: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 8px; color: #444; }
+  .highlight { background: #e8f5ed; border-right: 4px solid #1a7a4a; padding: 16px 20px; border-radius: 8px; margin: 16px 0; font-weight: 600; color: #0f5233; }
+  .footer { text-align: center; padding: 24px; color: #888; font-size: 0.9rem; margin-top: 20px; }
+  .footer a { color: #1a7a4a; text-decoration: none; }
+  .lang-switch { text-align: center; margin-bottom: 24px; }
+  .lang-btn { background: #1a7a4a; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; margin: 0 5px; }
+  .section-en { display: none; }
+  .section-he { display: block; }
+  .updated { color: #888; font-size: 0.85rem; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo">🦅</div>
+    <h1>MoneyNest</h1>
+    <div class="subtitle">מדיניות פרטיות | Privacy Policy</div>
+  </div>
+
+  <div class="lang-switch">
+    <button class="lang-btn" onclick="showHe()">🇮🇱 עברית</button>
+    <button class="lang-btn" onclick="showEn()">🇬🇧 English</button>
+  </div>
+
+  <!-- HEBREW -->
+  <div id="he-content">
+
+    <div class="card">
+      <div class="highlight">
+        📱 MoneyNest שומרת את כל הנתונים שלך על המכשיר בלבד. לא שולחים שום מידע לשרתים חיצוניים.
+      </div>
+      <p class="updated">עדכון אחרון: מאי 2025</p>
+    </div>
+
+    <div class="card">
+      <h2>🔐 איסוף מידע</h2>
+      <p>MoneyNest <strong>אינה אוספת, שומרת או משדרת</strong> שום מידע אישי לשרתים חיצוניים.</p>
+      <p>כל המידע שתזין באפליקציה — הוצאות, תקציב, קבלות, הגדרות — נשמר <strong>באחסון המקומי של המכשיר שלך בלבד</strong>.</p>
+    </div>
+
+    <div class="card">
+      <h2>📊 מה נשמר ואיפה</h2>
+      <ul>
+        <li><strong>הוצאות ונתונים פיננסיים</strong> — נשמרים ב-localStorage של המכשיר</li>
+        <li><strong>קבלות ותמונות</strong> — נשמרות מקומית כ-base64 על המכשיר</li>
+        <li><strong>הגדרות</strong> — נשמרות מקומית</li>
+        <li><strong>גיבויים</strong> — קבצי JSON שאתה מוריד ושולט בהם לחלוטין</li>
+      </ul>
+      <p>אנחנו <strong>לא</strong> משתמשים ב: cookies, analytics, tracking, פרסומות, או כל שירות צד שלישי שאוסף מידע.</p>
+    </div>
+
+    <div class="card">
+      <h2>🌐 שימוש ברשת</h2>
+      <p>האפליקציה עובדת <strong>לחלוטין אופליין</strong>. חיבור לאינטרנט נדרש רק ב:</p>
+      <ul>
+        <li>הורדת האפליקציה בפעם הראשונה</li>
+        <li>שיתוף קבצים ידני שאתה יוזם (כמו שליחת גיבוי ב-WhatsApp)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>📤 שיתוף נתונים</h2>
+      <p>שיתוף נתונים (ייצוא PDF, CSV, גיבוי, שיתוף קבלות) מתבצע <strong>רק ביוזמתך</strong> — כשאתה לוחץ על כפתור שיתוף. אנחנו לא שולחים שום דבר באופן אוטומטי.</p>
+    </div>
+
+    <div class="card">
+      <h2>🔔 הרשאות האפליקציה</h2>
+      <ul>
+        <li><strong>מצלמה</strong> — רק לצילום קבלות, לפי בקשתך</li>
+        <li><strong>אחסון</strong> — לשמירת קבלות ויצוא קבצים</li>
+        <li><strong>התראות</strong> — רק אם הפעלת תזכורת יומית בהגדרות</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>👶 ילדים</h2>
+      <p>האפליקציה אינה מיועדת לילדים מתחת לגיל 13 ואינה אוספת מידע מילדים.</p>
+    </div>
+
+    <div class="card">
+      <h2>✏️ שינויים במדיניות</h2>
+      <p>כל שינוי במדיניות הפרטיות יפורסם בדף זה. המשך השימוש באפליקציה לאחר עדכון מהווה הסכמה לשינויים.</p>
+    </div>
+
+    <div class="card">
+      <h2>📧 צור קשר</h2>
+      <p>שאלות? פנה אלינו:</p>
+      <p><strong>AppNest</strong> — פותח ע"י ברק אפללו</p>
+      <p>📧 <a href="mailto:appnest55@gmail.com">appnest55@gmail.com</a></p>
+      <p>🌐 <a href="https://barakaflalo.github.io/appnest">barakaflalo.github.io/appnest</a></p>
+    </div>
+
+  </div>
+
+  <!-- ENGLISH -->
+  <div id="en-content" style="display:none;">
+
+    <div class="card">
+      <div class="highlight">
+        📱 MoneyNest stores all your data on your device only. No data is ever sent to external servers.
+      </div>
+      <p class="updated">Last updated: May 2025</p>
+    </div>
+
+    <div class="card">
+      <h2>🔐 Data Collection</h2>
+      <p>MoneyNest <strong>does not collect, store, or transmit</strong> any personal information to external servers.</p>
+      <p>All data you enter — expenses, budgets, receipts, settings — is stored <strong>locally on your device only</strong>.</p>
+    </div>
+
+    <div class="card">
+      <h2>📊 What Is Stored and Where</h2>
+      <ul>
+        <li><strong>Expenses and financial data</strong> — stored in device localStorage</li>
+        <li><strong>Receipts and images</strong> — stored locally as base64 on your device</li>
+        <li><strong>Settings</strong> — stored locally</li>
+        <li><strong>Backups</strong> — JSON files you download and fully control</li>
+      </ul>
+      <p>We do <strong>not</strong> use: cookies, analytics, tracking, advertising, or any third-party data collection services.</p>
+    </div>
+
+    <div class="card">
+      <h2>🌐 Network Usage</h2>
+      <p>The app works <strong>completely offline</strong>. Internet connection is only needed for:</p>
+      <ul>
+        <li>Downloading the app for the first time</li>
+        <li>Manual file sharing you initiate (e.g. sending a backup via WhatsApp)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>📤 Data Sharing</h2>
+      <p>Data sharing (PDF export, CSV, backup, receipt sharing) occurs <strong>only at your initiative</strong> — when you tap a share button. We never send anything automatically.</p>
+    </div>
+
+    <div class="card">
+      <h2>🔔 App Permissions</h2>
+      <ul>
+        <li><strong>Camera</strong> — only for taking receipt photos, at your request</li>
+        <li><strong>Storage</strong> — for saving receipts and exporting files</li>
+        <li><strong>Notifications</strong> — only if you enabled daily reminder in settings</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>👶 Children</h2>
+      <p>This app is not intended for children under 13 and does not collect data from children.</p>
+    </div>
+
+    <div class="card">
+      <h2>✏️ Policy Changes</h2>
+      <p>Any changes to this privacy policy will be published on this page. Continued use of the app after updates constitutes acceptance of the changes.</p>
+    </div>
+
+    <div class="card">
+      <h2>📧 Contact</h2>
+      <p>Questions? Contact us:</p>
+      <p><strong>AppNest</strong> — Built by Barak Aflalo</p>
+      <p>📧 <a href="mailto:appnest55@gmail.com">appnest55@gmail.com</a></p>
+      <p>🌐 <a href="https://barakaflalo.github.io/appnest">barakaflalo.github.io/appnest</a></p>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <p>© 2025 AppNest — ברק אפללו | Barak Aflalo</p>
+    <p style="margin-top:8px;"><a href="https://barakaflalo.github.io/moneynest">MoneyNest App</a> | <a href="https://barakaflalo.github.io/appnest">AppNest</a></p>
+  </div>
+
+</div>
+
+<script>
+function showHe(){ document.getElementById('he-content').style.display='block'; document.getElementById('en-content').style.display='none'; }
+function showEn(){ document.getElementById('he-content').style.display='none'; document.getElementById('en-content').style.display='block'; }
+</script>
+</body>
+</html>
