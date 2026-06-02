@@ -1,7 +1,7 @@
 {
   "name": "MoneyNest — יומן ניהול הוצאות",
   "short_name": "MoneyNest",
-  "description": "יומן ניהול הוצאות חכם — פרטי, מהיר, עובד אופליין. מנהל הוצאות, תקציב, קבלות וגיבוי.",
+  "description": "יומן ניהול הוצאות חכם ופרטי — עובד אופליין, ללא שרתים",
   "start_url": "/moneynest/index.html",
   "scope": "/moneynest/",
   "display": "standalone",
@@ -12,37 +12,17 @@
   "dir": "rtl",
   "categories": ["finance", "productivity"],
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
     {
       "name": "הוסף הוצאה",
       "short_name": "הוסף",
       "description": "הוסף הוצאה חדשה במהירות",
-      "url": "/moneynest/index.html",
+      "url": "/moneynest/index.html#add",
       "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     }
   ]
