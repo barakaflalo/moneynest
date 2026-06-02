@@ -25,7 +25,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-
 .sc.on{display:flex;}
 .tb{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;background:var(--bg2);border-bottom:1px solid var(--br);flex-shrink:0;min-height:58px;}
 .tb-title{font-size:1.1rem;font-weight:700;}
-.tb-back{background:none;border:none;color:var(--pl);font-size:1rem;cursor:pointer;padding:6px 10px;border-radius:var(--rs);display:flex;align-items:center;gap:5px;font-family:var(--fn);font-weight:600;}
+.tb-back{background:var(--pl);border:none;color:#fff;font-size:.95rem;cursor:pointer;padding:8px 14px;border-radius:20px;display:flex;align-items:center;gap:6px;font-family:var(--fn);font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.25);}
 .tb-acts{display:flex;gap:6px;}
 .tb-btn{background:var(--ca);border:1px solid var(--br);color:var(--tx);font-size:.8rem;font-weight:700;padding:6px 10px;border-radius:var(--rs);cursor:pointer;font-family:var(--fn);}
 .sb{flex:1;overflow-y:auto;padding:16px;scrollbar-width:thin;scrollbar-color:var(--br) transparent;}
@@ -467,6 +467,7 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 <script>
 // ============ STATE ============
 var S={expenses:[],budget:{monthly:0,incomes:[],showInReports:false},settings:{username:'',lang:'he',theme:'green',notifyBudget:false,notifyDaily:false,reminderTime:'20:00'},customPays:[],customCats:[],receipts:[],firstRun:true};
+var hideIncAmt=false;
 var aS={amt:'',type:'regular',cat:'',date:'',desc:'',notes:'',pay:'credit',receipt:null,instCount:12};
 var editId=null,curET='all',curEF='all',curHF='all',curRF='month',curXF='month';
 var hCustFrom='',hCustTo='',rCustFrom='',rCustTo='',eCustFrom='',eCustTo='',xCustFrom='',xCustTo='';
@@ -1012,9 +1013,12 @@ function renderRpt(){
   if(S.budget.showInReports){
     var ti=S.budget.incomes.reduce(function(s,i){return s+i.amount;},0);
     var bal=ti-tot;
-    incH='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">'
-      +'<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:var(--ok);">₪'+fmt(ti)+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('הכנסות','Income')+'</div></div>'
-      +'<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:'+(bal>=0?'var(--ok)':'var(--dn)')+';">₪'+fmt(Math.abs(bal))+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('מאזן','Balance')+'</div></div>'
+    var tiDisp=hideIncAmt?'••••':'₪'+fmt(ti);
+    var balDisp=hideIncAmt?'••••':'₪'+fmt(Math.abs(bal));
+    var hideBtn='<div style="text-align:left;margin-bottom:8px;"><button onclick="hideIncAmt=!hideIncAmt;renderRpt();" style="background:rgba(128,128,128,.15);border:none;color:var(--t2);font-size:.78rem;padding:5px 12px;border-radius:20px;cursor:pointer;">'+(hideIncAmt?'👁 '+T('הצג סכומים','Show amounts'):'🙈 '+T('הסתר סכומים','Hide amounts'))+'</button></div>';
+    incH=hideBtn+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">'
+      +'<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:var(--ok);">'+tiDisp+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('הכנסות','Income')+'</div></div>'
+      +'<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:'+(bal>=0?'var(--ok)':'var(--dn)')+';">'+balDisp+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('מאזן','Balance')+'</div></div>'
       +'</div>';
   }
   var bL=S.budget.monthly>0?S.budget.monthly-tot:null;
@@ -1207,7 +1211,7 @@ function cancelRecSel(){recSelMode=false;recSel.clear();document.getElementById(
 function viewRec(i){
   var r=S.receipts[i];
   var ov=document.createElement('div');ov.className='ov';ov.style.zIndex='9000';
-  ov.innerHTML='<div style="max-width:480px;width:95%;background:var(--bg3);border-radius:var(--r);padding:16px;position:relative;"><button onclick="this.closest(\'.ov\').remove()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:1.1rem;">✕</button><img src="'+r.data+'" style="width:100%;border-radius:var(--rs);"><div style="margin-top:10px;display:flex;gap:8px;"><button class="btn btn-d btn-sm" onclick="S.receipts.splice('+i+',1);save();renderRecs();this.closest(\'.ov\').remove();">🗑️ '+T('מחק','Delete')+'</button><button class="btn btn-s btn-sm" onclick="var a=document.createElement(\'a\');a.href=\''+r.data+'\';a.download=\'receipt_'+r.date+'.jpg\';a.click();">💾</button></div></div>';
+  ov.innerHTML='<div style="max-width:480px;width:95%;background:var(--bg3);border-radius:var(--r);padding:16px;position:relative;"><button onclick="this.closest(\'.ov\').remove()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:1.1rem;">✕</button><img src="'+r.data+'" style="width:100%;border-radius:var(--rs);"><div style="margin-top:10px;display:flex;gap:8px;"><button class="btn btn-d btn-sm" onclick="S.receipts.splice('+i+',1);save();renderRecs();this.closest(\'.ov\').remove();">🗑️ '+T('מחק','Delete')+'</button><button class="btn btn-s btn-sm" onclick="saveRecToDevice(S.receipts['+i+'].data,S.receipts['+i+'].date);">💾 '+T('שמור','Save')+'</button></div></div>';
   ov.onclick=function(e){if(e.target===ov)ov.remove();};document.body.appendChild(ov);
 }
 function b64toFile(d,n){var a=d.split(','),m=a[0].match(/:(.*?);/)[1],b=atob(a[1]),n2=b.length,u=new Uint8Array(n2);while(n2--)u[n2]=b.charCodeAt(n2);return new File([u],n,{type:m});}
@@ -1602,6 +1606,31 @@ function showInstallBanner(){
   banner.appendChild(txt);
   banner.appendChild(btns);
   document.body.appendChild(banner);
+}
+
+var SWIPE_SCREENS=['sc-home','sc-exp','sc-hist','sc-rpt','sc-bud','sc-rec'];
+var swX=0;var swY=0;
+document.addEventListener('touchstart',function(e){swX=e.touches[0].clientX;swY=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',function(e){
+  var dx=e.changedTouches[0].clientX-swX;
+  var dy=e.changedTouches[0].clientY-swY;
+  if(Math.abs(dx)<70||Math.abs(dy)>Math.abs(dx))return;
+  var cur=document.querySelector('.sc.on');
+  if(!cur)return;
+  var idx=SWIPE_SCREENS.indexOf(cur.id);
+  if(idx<0)return;
+  if(dx<-70&&idx<SWIPE_SCREENS.length-1)go(SWIPE_SCREENS[idx+1]);
+  else if(dx>70&&idx>0)go(SWIPE_SCREENS[idx-1]);
+},{passive:true});
+
+function saveRecToDevice(data,date){
+  var a=document.createElement('a');
+  a.href=data;
+  a.download='MoneyNest_receipt_'+date+'.jpg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast(T('הקבלה נשמרה להורדות','Receipt saved to Downloads'));
 }
 </script>
 </body>
