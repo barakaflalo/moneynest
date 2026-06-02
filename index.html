@@ -123,6 +123,17 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 .drb-date{padding:7px 9px;font-size:.82rem;}
 /* MODAL */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:flex-end;justify-content:center;z-index:1000;}
+.lock-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;padding:30px;}
+.lock-logo{font-size:3.5rem;margin-bottom:8px;}
+.lock-title{font-size:1.4rem;font-weight:800;color:var(--tx);margin-bottom:4px;}
+.lock-sub{font-size:.85rem;color:var(--t3);margin-bottom:32px;}
+.lock-dots{display:flex;gap:14px;margin-bottom:28px;}
+.lock-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--pl);background:transparent;transition:.15s;}
+.lock-dot.filled{background:var(--pl);}
+.lock-numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:280px;}
+.lock-btn{background:var(--bg3);border:1px solid var(--br);color:var(--tx);font-size:1.6rem;font-weight:700;padding:18px;border-radius:var(--r);cursor:pointer;font-family:var(--fn);transition:.1s;}
+.lock-btn:active{background:var(--pl);color:#fff;}
+.lock-error{color:var(--dn);font-size:.85rem;margin-top:12px;min-height:20px;}
 .modal{background:var(--bg3);border-radius:var(--r) var(--r) 0 0;border:1px solid var(--br);border-bottom:none;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;padding:20px;}
 .modal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
 .modal-ttl{font-size:1.1rem;font-weight:700;}
@@ -466,8 +477,12 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 </div><!-- #app -->
 <script>
 // ============ STATE ============
-var S={expenses:[],budget:{monthly:0,incomes:[],showInReports:false},settings:{username:'',lang:'he',theme:'green',notifyBudget:false,notifyDaily:false,reminderTime:'20:00'},customPays:[],customCats:[],receipts:[],firstRun:true};
+var S={expenses:[],budget:{monthly:0,incomes:[],showInReports:false},settings:{username:'',lang:'he',theme:'green',notifyBudget:false,notifyDaily:false,reminderTime:'20:00',pin:'',biometric:false},customPays:[],customCats:[],receipts:[],firstRun:true};
 var hideIncAmt=false;
+var lockPin='';
+var lockInput='';
+var lockCallback=null;
+var lockMode='check';
 var aS={amt:'',type:'regular',cat:'',date:'',desc:'',notes:'',pay:'credit',receipt:null,instCount:12};
 var editId=null,curET='all',curEF='all',curHF='all',curRF='month',curXF='month';
 var hCustFrom='',hCustTo='',rCustFrom='',rCustTo='',eCustFrom='',eCustTo='',xCustFrom='',xCustTo='';
@@ -1015,7 +1030,13 @@ function renderRpt(){
     var bal=ti-tot;
     var tiDisp=hideIncAmt?'••••':'₪'+fmt(ti);
     var balDisp=hideIncAmt?'••••':'₪'+fmt(Math.abs(bal));
-    var hideBtn='<div style="text-align:left;margin-bottom:8px;"><button onclick="hideIncAmt=!hideIncAmt;renderRpt();" style="background:rgba(128,128,128,.15);border:none;color:var(--t2);font-size:.78rem;padding:5px 12px;border-radius:20px;cursor:pointer;">'+(hideIncAmt?'👁 '+T('הצג סכומים','Show amounts'):'🙈 '+T('הסתר סכומים','Hide amounts'))+'</button></div>';
+    var hideBtn='<div style="text-align:left;margin-bottom:8px;"><button onclick="'
+      +(hideIncAmt
+        ? 'requirePin(function(ok){if(ok){hideIncAmt=false;renderRpt();}});'
+        : 'hideIncAmt=true;renderRpt();')
+      +'" style="background:rgba(128,128,128,.15);border:none;color:var(--t2);font-size:.78rem;padding:5px 12px;border-radius:20px;cursor:pointer;">'
+      +(hideIncAmt?'👁 '+T('הצג סכומים','Show amounts'):'🙈 '+T('הסתר סכומים','Hide amounts'))
+      +'</button></div>';
     incH=hideBtn+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">'
       +'<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:var(--ok);">'+tiDisp+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('הכנסות','Income')+'</div></div>'
       +'<div class="card" style="margin-bottom:0;"><div style="font-size:1.4rem;font-weight:800;color:'+(bal>=0?'var(--ok)':'var(--dn)')+';">'+balDisp+'</div><div style="font-size:.75rem;color:var(--t3);margin-top:3px;">'+T('מאזן','Balance')+'</div></div>'
@@ -1118,7 +1139,7 @@ function renderBud(){
     html+='<div class="card" style="text-align:center;margin-top:12px;">'
       +'<div style="font-size:1.5rem;font-weight:800;color:var(--ok);">'+tiDisp+'</div>'
       +'<div style="font-size:.8rem;color:var(--t3);margin-top:4px;">'+T('סה"כ הכנסות','Total Income')+'</div>'
-      +'<button onclick="hideIncAmt=!hideIncAmt;renderBud();" style="margin-top:8px;background:rgba(128,128,128,.15);border:none;color:var(--t2);font-size:.78rem;padding:5px 12px;border-radius:20px;cursor:pointer;">'
+      +'<button onclick="'+(hideIncAmt?'requirePin(function(ok){if(ok){hideIncAmt=false;renderBud();}});':'hideIncAmt=true;renderBud();')+'" style="margin-top:8px;background:rgba(128,128,128,.15);border:none;color:var(--t2);font-size:.78rem;padding:5px 12px;border-radius:20px;cursor:pointer;">'
       +(hideIncAmt?'👁 '+T('הצג','Show'):'🙈 '+T('הסתר','Hide'))
       +'</button></div>';
   }
@@ -1328,7 +1349,18 @@ function doDelExp(){
 }
 // ============ SETTINGS ============
 function renderSet(){
-  document.getElementById('setBody').innerHTML='<div class="sec-ttl">'+T('שם משתמש','Username')+'</div><div class="ig"><input type="text" class="inp" value="'+(S.settings.username||'')+'" placeholder="'+T('שמך...','Your name...')+'" oninput="S.settings.username=this.value;save();"></div><div class="sec-ttl">'+T('שפה','Language')+'</div><div style="display:flex;gap:10px;margin-bottom:14px;"><button class="btn '+(S.settings.lang==='he'?'btn-p':'btn-s')+'" style="flex:1;" onclick="setLang(\'he\')">🇮🇱 עברית</button><button class="btn '+(S.settings.lang==='en'?'btn-p':'btn-s')+'" style="flex:1;" onclick="setLang(\'en\')">🇬🇧 English</button></div><div class="sec-ttl">'+T('התראות','Notifications')+'</div><div class="card" style="margin-bottom:14px;"><div class="tog-wrap"><div class="tog-lbl">'+T('התראה על חריגה מתקציב','Budget Alert')+'</div><div class="tog '+(S.settings.notifyBudget?'on':'')+'" onclick="toggleNotif(\'budget\',this)"></div></div><div class="div" style="margin:6px 0;"></div><div class="tog-wrap"><div class="tog-lbl">'+T('תזכורת יומית','Daily Reminder')+'</div><div class="tog '+(S.settings.notifyDaily?'on':'')+'" onclick="toggleNotif(\'daily\',this)"></div>'+(S.settings.notifyDaily?'<div style="display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 0 4px;border-top:1px solid var(--br);">'+'<div style="font-size:.85rem;color:var(--t2);flex:1;">'+T('שעת תזכורת','Reminder Time')+'</div>'+'<input type="time" class="inp" style="width:105px;padding:7px 10px;font-size:.95rem;" value="'+(S.settings.reminderTime||'20:00')+'" onchange="setReminderTime(this.value)">'+'</div>':'')+'</div></div><div class="sec-ttl"></div><div class="set-item" onclick="go(\'sc-bk\')"><div class="set-l"><div class="set-ic">💾</div><div class="set-nm">'+T('גיבוי ושחזור','Backup & Restore')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="go(\'sc-help\')"><div class="set-l"><div class="set-ic">📖</div><div class="set-nm">'+T('מדריך מלא','Full Guide')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="showGuide()"><div class="set-l"><div class="set-ic">🎓</div><div class="set-nm">'+T('מדריך ראשוני','Welcome Guide')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="go(\'sc-about\')"><div class="set-l"><div class="set-ic">ℹ️</div><div class="set-nm">'+T('אודות','About')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="shareApp()"><div class="set-l"><div class="set-ic">📣</div><div class="set-nm">'+T('שתף את MoneyNest','Share MoneyNest')+'</div></div><div style="color:var(--t3);">›</div></div><div style="margin-top:20px;"><button class="btn btn-d btn-bl" onclick="clearAll()">🗑️ '+T('מחק את כל הנתונים','Delete All Data')+'</button></div>';
+  var pinSection='<div class="sec-ttl">'+T('אבטחה','Security')+'</div><div class="card" style="margin-bottom:14px;">'
+    +(S.settings.pin
+      ?'<div class="tog-wrap"><div class="tog-lbl">'+T('קוד PIN מופעל','PIN Enabled')+'</div><div style="color:var(--ok);font-size:.85rem;">✓</div></div>'
+       +'<div class="div" style="margin:8px 0;"></div>'
+       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+       +'<button class="btn btn-s" onclick="showLockScreen(\'set\',null)">✏️ '+T('שנה PIN','Change PIN')+'</button>'
+       +'<button class="btn btn-d" onclick="removePinFlow()">🗑️ '+T('הסר PIN','Remove PIN')+'</button>'
+       +'</div>'
+      :'<button class="btn btn-p btn-bl" onclick="showLockScreen(\'set\',null)">🔐 '+T('הגדר קוד PIN','Set PIN Code')+'</button>'
+    )
+    +'</div>';
+  document.getElementById('setBody').innerHTML='<div class="sec-ttl">'+T('שם משתמש','Username')+'</div><div class="ig"><input type="text" class="inp" value="'+(S.settings.username||'')+'" placeholder="'+T('שמך...','Your name...')+'" oninput="S.settings.username=this.value;save();"></div><div class="sec-ttl">'+T('שפה','Language')+'</div><div style="display:flex;gap:10px;margin-bottom:14px;"><button class="btn '+(S.settings.lang==='he'?'btn-p':'btn-s')+'" style="flex:1;" onclick="setLang(\'he\')">🇮🇱 עברית</button><button class="btn '+(S.settings.lang==='en'?'btn-p':'btn-s')+'" style="flex:1;" onclick="setLang(\'en\')">🇬🇧 English</button></div>'+pinSection+'<div class="sec-ttl">'+T('התראות','Notifications')+'</div><div class="card" style="margin-bottom:14px;"><div class="tog-wrap"><div class="tog-lbl">'+T('התראה על חריגה מתקציב','Budget Alert')+'</div><div class="tog '+(S.settings.notifyBudget?'on':'')+'" onclick="toggleNotif(\'budget\',this)"></div></div><div class="div" style="margin:6px 0;"></div><div class="tog-wrap"><div class="tog-lbl">'+T('תזכורת יומית','Daily Reminder')+'</div><div class="tog '+(S.settings.notifyDaily?'on':'')+'" onclick="toggleNotif(\'daily\',this)"></div>'+(S.settings.notifyDaily?'<div style="display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 0 4px;border-top:1px solid var(--br);">'+'<div style="font-size:.85rem;color:var(--t2);flex:1;">'+T('שעת תזכורת','Reminder Time')+'</div>'+'<input type="time" class="inp" style="width:105px;padding:7px 10px;font-size:.95rem;" value="'+(S.settings.reminderTime||'20:00')+'" onchange="setReminderTime(this.value)">'+'</div>':'')+'</div></div><div class="sec-ttl"></div><div class="set-item" onclick="go(\'sc-bk\')"><div class="set-l"><div class="set-ic">💾</div><div class="set-nm">'+T('גיבוי ושחזור','Backup & Restore')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="go(\'sc-help\')"><div class="set-l"><div class="set-ic">📖</div><div class="set-nm">'+T('מדריך מלא','Full Guide')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="showGuide()"><div class="set-l"><div class="set-ic">🎓</div><div class="set-nm">'+T('מדריך ראשוני','Welcome Guide')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="go(\'sc-about\')"><div class="set-l"><div class="set-ic">ℹ️</div><div class="set-nm">'+T('אודות','About')+'</div></div><div style="color:var(--t3);">›</div></div><div class="set-item" onclick="shareApp()"><div class="set-l"><div class="set-ic">📣</div><div class="set-nm">'+T('שתף את MoneyNest','Share MoneyNest')+'</div></div><div style="color:var(--t3);">›</div></div><div style="margin-top:20px;"><button class="btn btn-d btn-bl" onclick="requirePin(function(ok){if(ok)clearAll();})">🗑️ '+T('מחק את כל הנתונים','Delete All Data')+'</button></div>';
 }
 function toggleNotif(type,el){
   el.classList.toggle('on');
@@ -1531,6 +1563,109 @@ function copyAppLink(){
 }
 function fbCopy(t){var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0;';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast(T('✓ הועתק','✓ Copied'));}catch(e){}document.body.removeChild(ta);}
 
+// ============ SECURITY ============
+function showLockScreen(mode, cb){
+  lockMode=mode; lockCallback=cb; lockInput='';
+  var existing=document.getElementById('lockScreen');
+  if(existing) existing.remove();
+  var wrap=document.createElement('div');
+  wrap.id='lockScreen'; wrap.className='lock-screen';
+  var title=mode==='set'?T('הגדר קוד PIN','Set PIN Code'):mode==='confirm'?T('אמת זהות','Verify Identity'):T('MoneyNest נעול','MoneyNest Locked');
+  var sub=mode==='set'?T('בחר 4 ספרות','Choose 4 digits'):mode==='confirm'?T('הכנס את קוד ה-PIN','Enter your PIN'):T('הכנס קוד PIN להמשך','Enter PIN to continue');
+  wrap.innerHTML='<div class="lock-logo">🔐</div>'
+    +'<div class="lock-title">'+title+'</div>'
+    +'<div class="lock-sub">'+sub+'</div>'
+    +'<div class="lock-dots" id="lockDots">'
+    +'<div class="lock-dot" id="ld0"></div><div class="lock-dot" id="ld1"></div><div class="lock-dot" id="ld2"></div><div class="lock-dot" id="ld3"></div>'
+    +'</div>'
+    +'<div class="lock-numpad" id="lockPad"></div>'
+    +'<div class="lock-error" id="lockErr"></div>'
+    +(mode!=='unlock'?'<button onclick="cancelLock();" style="margin-top:16px;background:none;border:none;color:var(--t3);font-size:.9rem;cursor:pointer;">'+T('ביטול','Cancel')+'</button>':'')
+    +(S.settings.biometric&&mode==='unlock'?'<button onclick="tryBiometric();" style="margin-top:12px;background:var(--ca);border:1px solid var(--br);color:var(--tx);padding:10px 24px;border-radius:var(--rs);font-size:.95rem;cursor:pointer;">👆 '+T('טביעת אצבע','Fingerprint')+'</button>':'');
+  document.body.appendChild(wrap);
+  var pad=document.getElementById('lockPad');
+  var nums=[1,2,3,4,5,6,7,8,9,'',0,'⌫'];
+  nums.forEach(function(n){
+    var btn=document.createElement('button');
+    btn.className='lock-btn';
+    btn.textContent=n===''?'':n;
+    if(n==='') btn.style.visibility='hidden';
+    btn.onclick=function(){
+      if(n==='⌫') lockBackspace();
+      else if(n!=='') lockPress(String(n));
+    };
+    pad.appendChild(btn);
+  });
+}
+
+function lockPress(d){
+  if(lockInput.length>=4) return;
+  lockInput+=d;
+  for(var i=0;i<4;i++) document.getElementById('ld'+i).classList.toggle('filled',i<lockInput.length);
+  document.getElementById('lockErr').textContent='';
+  if(lockInput.length===4){
+    setTimeout(function(){
+      if(lockMode==='set'){
+        lockPin=lockInput;
+        S.settings.pin=lockPin; save();
+        document.getElementById('lockScreen').remove();
+        toast(T('✓ קוד PIN נקבע','✓ PIN set'));
+        if(lockCallback) lockCallback(true);
+        renderSet();
+      } else {
+        if(lockInput===S.settings.pin){
+          document.getElementById('lockScreen').remove();
+          if(lockCallback) lockCallback(true);
+        } else {
+          lockInput='';
+          for(var j=0;j<4;j++) document.getElementById('ld'+j).classList.remove('filled');
+          document.getElementById('lockErr').textContent=T('קוד שגוי, נסה שוב','Wrong PIN, try again');
+        }
+      }
+    },200);
+  }
+}
+
+function lockBackspace(){
+  if(!lockInput.length) return;
+  lockInput=lockInput.slice(0,-1);
+  for(var i=0;i<4;i++) document.getElementById('ld'+i).classList.toggle('filled',i<lockInput.length);
+}
+
+function cancelLock(){
+  var s=document.getElementById('lockScreen');
+  if(s) s.remove();
+  if(lockCallback) lockCallback(false);
+}
+
+function tryBiometric(){
+  if(!window.PublicKeyCredential){toast(T('לא נתמך במכשיר זה','Not supported on this device'));return;}
+  navigator.credentials.get({publicKey:{challenge:new Uint8Array(32),timeout:60000,userVerification:'required'}})
+    .then(function(){
+      var s=document.getElementById('lockScreen');
+      if(s) s.remove();
+      if(lockCallback) lockCallback(true);
+    })
+    .catch(function(){
+      toast(T('אימות נכשל','Authentication failed'));
+    });
+}
+
+function requirePin(cb){
+  if(!S.settings.pin) cb();
+  else showLockScreen('confirm',cb);
+}
+
+function removePinFlow(){
+  showLockScreen('confirm',function(ok){
+    if(ok){
+      S.settings.pin=''; S.settings.biometric=false; save();
+      toast(T('קוד PIN הוסר','PIN removed'));
+      renderSet();
+    }
+  });
+}
+
 function init(){
   load();
   var theme=S.settings.theme||'green';
@@ -1554,6 +1689,8 @@ function init(){
   if(S.firstRun || (S.expenses.length===0 && !localStorage.getItem('mn_app'))){
     S.firstRun=true;
     showGuide();
+  } else if(S.settings.pin){
+    showLockScreen('unlock',function(ok){if(!ok) showLockScreen('unlock',function(){});});
   }
 }
 init();
