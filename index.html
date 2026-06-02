@@ -477,7 +477,7 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 </div><!-- #app -->
 <script>
 // ============ STATE ============
-var S={expenses:[],budget:{monthly:0,incomes:[],showInReports:false},settings:{username:'',lang:'he',theme:'green',notifyBudget:false,notifyDaily:false,reminderTime:'20:00',pin:'',biometric:false},customPays:[],customCats:[],receipts:[],firstRun:true};
+var S={expenses:[],budget:{monthly:0,incomes:[],showInReports:false},settings:{username:'',lang:'he',theme:'green',notifyBudget:false,notifyDaily:false,reminderTime:'20:00',pin:'',biometric:false,lockOnOpen:true},customPays:[],customCats:[],receipts:[],firstRun:true};
 var hideIncAmt=false;
 var lockPin='';
 var lockInput='';
@@ -1353,6 +1353,8 @@ function renderSet(){
     +(S.settings.pin
       ?'<div class="tog-wrap"><div class="tog-lbl">'+T('קוד PIN מופעל','PIN Enabled')+'</div><div style="color:var(--ok);font-size:.85rem;">✓</div></div>'
        +'<div class="div" style="margin:8px 0;"></div>'
+       +'<div class="tog-wrap" style="margin-bottom:10px;"><div><div class="tog-lbl">'+T('נעל בכניסה לאפליקציה','Lock on app open')+'</div><div style="font-size:.75rem;color:var(--t3);">'+T('כבה לכניסה מהירה','Disable for quick access')+'</div></div><div class="tog '+(S.settings.lockOnOpen?'on':'')+'" onclick="requirePin(function(ok){if(ok){S.settings.lockOnOpen=!S.settings.lockOnOpen;save();renderSet();}});"></div></div>'
+       +'<div class="div" style="margin:8px 0;"></div>'
        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
        +'<button class="btn btn-s" onclick="showLockScreen(\'set\',null)">✏️ '+T('שנה PIN','Change PIN')+'</button>'
        +'<button class="btn btn-d" onclick="removePinFlow()">🗑️ '+T('הסר PIN','Remove PIN')+'</button>'
@@ -1689,7 +1691,7 @@ function init(){
   if(S.firstRun || (S.expenses.length===0 && !localStorage.getItem('mn_app'))){
     S.firstRun=true;
     showGuide();
-  } else if(S.settings.pin){
+  } else if(S.settings.pin && S.settings.lockOnOpen!==false){
     showLockScreen('unlock',function(ok){if(!ok) showLockScreen('unlock',function(){});});
   }
 }
