@@ -492,10 +492,21 @@ var recSelMode=false,recSel=new Set();
 var guideStep=0;
 var MHE=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 var MEN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var MRU=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+var MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+var MAR=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function getMonths(){var l=S.settings.lang;if(l==='ru')return MRU;if(l==='es')return MES;if(l==='ar')return MAR;if(l==='en')return MEN;return MHE;}
 var PHE={credit:'אשראי',cash:'מזומן',bit:'Bit',paybox:'PayBox',other:'אחר'};
 var PEN={credit:'Credit',cash:'Cash',bit:'Bit',paybox:'PayBox',other:'Other'};
+var PRU={credit:'Карта',cash:'Наличные',bit:'Bit',paybox:'PayBox',other:'Другое'};
+var PES={credit:'Tarjeta',cash:'Efectivo',bit:'Bit',paybox:'PayBox',other:'Otro'};
+var PAR={credit:'بطاقة',cash:'نقد',bit:'Bit',paybox:'PayBox',other:'أخرى'};
+function getPayLabels(){var l=S.settings.lang;if(l==='ru')return PRU;if(l==='es')return PES;if(l==='ar')return PAR;if(l==='en')return PEN;return PHE;}
 var CATS_HE=[{id:'food',icon:'🍔',name:'אוכל'},{id:'transport',icon:'🚗',name:'תחבורה'},{id:'shopping',icon:'🛍️',name:'קניות'},{id:'health',icon:'💊',name:'בריאות'},{id:'bills',icon:'🏠',name:'חשבונות'},{id:'entertainment',icon:'🎮',name:'בידור'},{id:'education',icon:'📚',name:'חינוך'},{id:'other',icon:'📦',name:'אחר'}];
 var CATS_EN=[{id:'food',icon:'🍔',name:'Food'},{id:'transport',icon:'🚗',name:'Transport'},{id:'shopping',icon:'🛍️',name:'Shopping'},{id:'health',icon:'💊',name:'Health'},{id:'bills',icon:'🏠',name:'Bills'},{id:'entertainment',icon:'🎮',name:'Fun'},{id:'education',icon:'📚',name:'Education'},{id:'other',icon:'📦',name:'Other'}];
+var CATS_RU=[{id:'food',icon:'🍔',name:'Еда'},{id:'transport',icon:'🚗',name:'Транспорт'},{id:'shopping',icon:'🛍️',name:'Покупки'},{id:'health',icon:'💊',name:'Здоровье'},{id:'bills',icon:'🏠',name:'Счета'},{id:'entertainment',icon:'🎮',name:'Развлечения'},{id:'education',icon:'📚',name:'Образование'},{id:'other',icon:'📦',name:'Другое'}];
+var CATS_ES=[{id:'food',icon:'🍔',name:'Comida'},{id:'transport',icon:'🚗',name:'Transporte'},{id:'shopping',icon:'🛍️',name:'Compras'},{id:'health',icon:'💊',name:'Salud'},{id:'bills',icon:'🏠',name:'Facturas'},{id:'entertainment',icon:'🎮',name:'Entretenimiento'},{id:'education',icon:'📚',name:'Educación'},{id:'other',icon:'📦',name:'Otro'}];
+var CATS_AR=[{id:'food',icon:'🍔',name:'طعام'},{id:'transport',icon:'🚗',name:'مواصلات'},{id:'shopping',icon:'🛍️',name:'تسوق'},{id:'health',icon:'💊',name:'صحة'},{id:'bills',icon:'🏠',name:'فواتير'},{id:'entertainment',icon:'🎮',name:'ترفيه'},{id:'education',icon:'📚',name:'تعليم'},{id:'other',icon:'📦',name:'أخرى'}];
 // ============ STORAGE ============
 function save(){
   try{
@@ -589,7 +600,24 @@ var EXTRA_LANGS={
     'קוד שגוי, נסה שוב':'Неверный PIN, попробуйте снова','✓ קוד PIN נקבע':'✓ PIN установлен',
     'קוד PIN הוסר':'PIN удалён','טביעת אצבע':'Отпечаток пальца',
     'לא נתמך במכשיר זה':'Не поддерживается','אימות נכשל':'Ошибка аутентификации',
-    'הקבלה נשמרה להורדות':'Чек сохранён','אין קבלות':'Нет чеков',
+    'הקבלה נשמרה להורדות':'Чек сохранён',
+    '4 טאבים לפי סוג + סינון תאריכים':'4 вкладки по типу + фильтр дат',
+    'גרף חודשי, לפי קטגוריה, ניצול תקציב':'График, по категориям, бюджет',
+    'סינון לפי תאריך + עריכה ומחיקה':'Фильтр дат + редактировать/удалить',
+    'סוגי הוצאה':'Типы расходов','הוצאה חד פעמית רגילה':'Разовый расход',
+    'חוזרת בכל חודש אוטומטית בסיכומים ובגרף':'Ежемесячно автоматически',
+    'מתפרסת על חודשים. נקודות: ✓שולם / ●עכשיו / ○עתידי':'На месяцы. Точки: ✓оплачено / ●сейчас / ○будущий',
+    'לחץ ✏️ ליד הוצאה או לחיצה ארוכה לעריכה':'Нажмите ✏️ или долгое нажатие для редактирования',
+    'גיבוי עכשיו — מוריד קובץ JSON עם כל הנתונים כולל קבלות':'Резервная копия — JSON со всеми данными',
+    'שחזור — העלה קובץ JSON לשחזור מלא בין מכשירים':'Восстановление — загрузите JSON',
+    'דוח מקצועי עם שמך, קטגוריות, ופירוט מלא':'Профессиональный отчёт',
+    'מוריד קובץ לפתיחה ב-Excel':'Скачать файл для Excel',
+    'מייל עם אפשרות לצרף קבלות':'Email с возможностью прикрепить чеки',
+    'מסכים ראשיים':'Основные экраны',
+    'יומן ניהול הוצאות':'Журнал расходов',
+    'הדפס / שמור PDF':'Печать / Сохранить PDF',
+    'חריגה':'Превышение','לפי קטגוריה:':'По категориям:','פירוט:':'Детали:',
+    'דוח הוצאות':'Отчёт расходов','לפי קטגוריה':'По категориям','אין קבלות':'Нет чеков',
     'נבחרו':'выбрано','שלח':'Отправить','✓ הועתק':'✓ Скопировано',
     'מייל':'Email','שתף':'Поделиться','הצג סכומים':'👁 Показать суммы',
     'הסתר סכומים':'🙈 Скрыть суммы','הצג':'👁 Показать','הסתר':'🙈 Скрыть',
@@ -621,7 +649,24 @@ var EXTRA_LANGS={
     'דלג':'Saltar','הבא ←':'Siguiente →','התחל 🚀':'¡Comenzar 🚀',
     'MoneyNest נעול':'MoneyNest bloqueado','בחר 4 ספרות':'Elige 4 dígitos',
     'קוד שגוי, נסה שוב':'PIN incorrecto','טביעת אצבע':'Huella digital',
-    'הקבלה נשמרה להורדות':'Recibo guardado','שתף את MoneyNest':'Compartir MoneyNest',
+    'הקבלה נשמרה להורדות':'Recibo guardado',
+    '4 טאבים לפי סוג + סינון תאריכים':'4 pestañas por tipo + filtro fecha',
+    'גרף חודשי, לפי קטגוריה, ניצול תקציב':'Gráfico, por categoría, presupuesto',
+    'סינון לפי תאריך + עריכה ומחיקה':'Filtro fecha + editar/eliminar',
+    'סוגי הוצאה':'Tipos de gasto','הוצאה חד פעמית רגילה':'Gasto único',
+    'חוזרת בכל חודש אוטומטית בסיכומים ובגרף':'Mensualmente automático',
+    'מתפרסת על חודשים. נקודות: ✓שולם / ●עכשיו / ○עתידי':'En cuotas. Puntos: ✓pagado / ●ahora / ○futuro',
+    'לחץ ✏️ ליד הוצאה או לחיצה ארוכה לעריכה':'Toca ✏️ o mantén presionado para editar',
+    'גיבוי עכשיו — מוריד קובץ JSON עם כל הנתונים כולל קבלות':'Copia de seguridad — JSON con todos los datos',
+    'שחזור — העלה קובץ JSON לשחזור מלא בין מכשירים':'Restaurar — sube JSON',
+    'דוח מקצועי עם שמך, קטגוריות, ופירוט מלא':'Informe profesional',
+    'מוריד קובץ לפתיחה ב-Excel':'Descargar para Excel',
+    'מייל עם אפשרות לצרף קבלות':'Email con opción de adjuntar recibos',
+    'מסכים ראשיים':'Pantallas principales',
+    'יומן ניהול הוצאות':'Diario de gastos',
+    'הדפס / שמור PDF':'Imprimir / Guardar PDF',
+    'חריגה':'Excedido','לפי קטגוריה:':'Por categoría:','פירוט:':'Detalles:',
+    'דוח הוצאות':'Informe de gastos','לפי קטגוריה':'Por categoría','שתף את MoneyNest':'Compartir MoneyNest',
     'מטבע':'Moneda','גרף עוגה':'Gráfico circular','תקציב חודשי':'Presupuesto mensual'
   },
   ar:{
@@ -642,7 +687,24 @@ var EXTRA_LANGS={
     'דלג':'تخطي','הבא ←':'التالي →','התחל 🚀':'ابدأ 🚀',
     'MoneyNest נעול':'MoneyNest مقفل','בחר 4 ספרות':'اختر 4 أرقام',
     'קוד שגוי, נסה שוב':'PIN خاطئ','טביעת אצבע':'بصمة الإصبع',
-    'הקבלה נשמרה להורדות':'تم حفظ الإيصال','שתף את MoneyNest':'مشاركة MoneyNest',
+    'הקבלה נשמרה להורדות':'تم حفظ الإيصال',
+    '4 טאבים לפי סוג + סינון תאריכים':'4 تبويبات حسب النوع + فلتر التاريخ',
+    'גרף חודשי, לפי קטגוריה, ניצול תקציב':'رسم، حسب الفئة، الميزانية',
+    'סינון לפי תאריך + עריכה ומחיקה':'فلتر التاريخ + تعديل/حذف',
+    'סוגי הוצאה':'أنواع المصاريف','הוצאה חד פעמית רגילה':'مصروف لمرة واحدة',
+    'חוזרת בכל חודש אוטומטית בסיכומים ובגרף':'شهرياً تلقائياً',
+    'מתפרסת על חודשים. נקודות: ✓שולם / ●עכשיו / ○עתידי':'على أقساط. نقاط: ✓مدفوع / ●الآن / ○مستقبلي',
+    'לחץ ✏️ ליד הוצאה או לחיצה ארוכה לעריכה':'اضغط ✏️ أو اضغط مطولاً للتعديل',
+    'גיבוי עכשיו — מוריד קובץ JSON עם כל הנתונים כולל קבלות':'نسخ احتياطي — JSON بجميع البيانات',
+    'שחזור — העלה קובץ JSON לשחזור מלא בין מכשירים':'استعادة — ارفع JSON',
+    'דוח מקצועי עם שמך, קטגוריות, ופירוט מלא':'تقرير احترافي',
+    'מוריד קובץ לפתיחה ב-Excel':'تحميل لـ Excel',
+    'מייל עם אפשרות לצרף קבלות':'بريد مع إمكانية إرفاق الإيصالات',
+    'מסכים ראשיים':'الشاشات الرئيسية',
+    'יומן ניהול הוצאות':'مفكرة المصاريف',
+    'הדפס / שמור PDF':'طباعة / حفظ PDF',
+    'חריגה':'تجاوز','לפי קטגוריה:':'حسب الفئة:','פירוט:':'التفاصيل:',
+    'דוח הוצאות':'تقرير المصاريف','לפי קטגוריה':'حسب الفئة','שתף את MoneyNest':'مشاركة MoneyNest',
     'מטבע':'العملة','גרף עוגה':'مخطط دائري','תקציב חודשי':'الميزانية الشهرية'
   }
 };
@@ -718,6 +780,7 @@ var DRB_PRESETS={
   r:[{v:'week',he:'שבוע',en:'Week'},{v:'month',he:'חודש',en:'Month'},{v:'year',he:'שנה',en:'Year'},{v:'all',he:'הכל',en:'All'},{v:'pick',he:'בחר חודש',en:'Pick Month'},{v:'custom',he:'מותאם',en:'Custom'}],
   x:[{v:'month',he:'חודש',en:'Month'},{v:'3m',he:'3 חודשים',en:'3 Months'},{v:'year',he:'שנה',en:'Year'},{v:'all',he:'הכל',en:'All'},{v:'custom',he:'מותאם',en:'Custom'}]
 };
+function drbT(p){return T(p.he,p.en);}
 function getCurF(sc){if(sc==='e')return curEF;if(sc==='h')return curHF;if(sc==='r')return curRF;return curXF;}
 function getCustFrom(sc){if(sc==='e')return eCustFrom;if(sc==='h')return hCustFrom;if(sc==='r')return rCustFrom;return xCustFrom;}
 function getCustTo(sc){if(sc==='e')return eCustTo;if(sc==='h')return hCustTo;if(sc==='r')return rCustTo;return xCustTo;}
@@ -726,13 +789,13 @@ function renderDrb(sc,f){
   var rowId={e:'eDrbRow',h:'hDrbRow',r:'rDrbRow',x:'xDrbRow'}[sc];
   var row=document.getElementById(rowId);if(!row)return;
   var presets=DRB_PRESETS[sc]||[];
-  var months=S.settings.lang==='he'?MHE:MEN;
+  var months=getMonths();
   var now=new Date();
 
   // Build preset buttons
   var html=presets.map(function(p){
     var isOn=(f===p.v)||(f&&f.startsWith('mon_')&&p.v==='pick');
-    return '<button class="drb-btn'+(isOn?' on':'')+'" onclick="clickDrb(\'' +sc+ '\',\'' +p.v+ '\')">'+( S.settings.lang==='he'?p.he:p.en)+'</button>';
+    return '<button class="drb-btn'+(isOn?' on':'')+'" onclick="clickDrb(\''+sc+'\',\''+p.v+'\')">'+drbT(p)+'</button>';
   }).join('');
 
   // Custom date range row
@@ -948,7 +1011,7 @@ function getFilterRange(f,sc){
 
 
 function renderHome(){
-  var now=new Date(),ms=S.settings.lang==='he'?MHE:MEN;
+  var now=new Date(),ms=getMonths();
   st('hMonth',ms[now.getMonth()]+' '+now.getFullYear());
   var tm=getMonthExps(now.getMonth(),now.getFullYear());
   var direct=S.expenses.filter(function(e){var d=new Date(e.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
@@ -990,7 +1053,7 @@ function updInst(){
   if(el&&a>0&&n>1)el.textContent=n+' '+T('תשלומים','payments')+' × ₪'+(a/n).toFixed(2)+' = '+T('סה"כ','Total')+' '+fmtC(a);
   else if(el)el.textContent='';
 }
-function allCats(){return(S.settings.lang==='he'?CATS_HE:CATS_EN).concat(S.customCats);}
+function allCats(){var l=S.settings.lang;var base=l==='ru'?CATS_RU:l==='es'?CATS_ES:l==='ar'?CATS_AR:l==='en'?CATS_EN:CATS_HE;return base.concat(S.customCats);}
 function catById(id){return allCats().find(function(c){return c.id===id;})||{icon:'📦',name:id};}
 function renderACats(){
   var cats=allCats(),grid=document.getElementById('aCatGrid');
@@ -1006,7 +1069,7 @@ function renderACats(){
 }
 function renderAPays(){
   var methods=['credit','cash'].concat(S.customPays).concat(['other']);
-  var labels=S.settings.lang==='he'?PHE:PEN,row=document.getElementById('aPayRow');
+  var labels=getPayLabels(),row=document.getElementById('aPayRow');
   row.innerHTML='';
   methods.forEach(function(m){
     var btn=document.createElement('button');btn.className='pay-btn'+(aS.pay===m?' on':'');
@@ -1064,7 +1127,7 @@ function renderExp(){
 }
 function paidI(e){var now=new Date(),s=new Date(e.date);return Math.min(Math.max(0,(now.getFullYear()-s.getFullYear())*12+now.getMonth()-s.getMonth()),e.instCount);}
 function eiHTML(e,editable){
-  var cat=catById(e.category),labels=S.settings.lang==='he'?PHE:PEN;
+  var cat=catById(e.category),labels=getPayLabels();
   var chips='';
   if(e.type==='fixed')chips+='<span class="chip b">🔄 '+T('קבוע','Fixed')+'</span> ';
   if(e.type==='installments'){var p=paidI(e);chips+='<span class="chip y">💳 '+(p+1)+'/'+e.instCount+'</span> ';}
@@ -1170,7 +1233,7 @@ function renderRpt(){
   if(listEx.length){
     html+=listEx.map(function(e){
       var cat=catById(e.category);
-      var labels=S.settings.lang==='he'?PHE:PEN;
+      var labels=getPayLabels();
       var badge='';
       if(e._instNum) badge='<span class="chip y" style="margin-inline-start:4px;">'+T('תשלום','Pay')+' '+e._instNum+'/'+e._instTotal+'</span>';
       else if(e._fixedRef) badge='<span class="chip b" style="margin-inline-start:4px;">🔄 '+T('קבוע','Fixed')+'</span>';
@@ -1200,7 +1263,7 @@ function buildChart(){
     var isFuture=ym>nowYM;
     var isCur=ym===nowYM;
     data.push({
-      label:(S.settings.lang==='he'?MHE:MEN)[mon].substring(0,3),
+      label:(getMonths())[mon].substring(0,3),
       total:mT,ym:ym,isCur:isCur,isFuture:isFuture,yr:yr,mon:mon
     });
     if(mT>maxV)maxV=mT;
@@ -1377,22 +1440,25 @@ function updXPrev(){
 }
 function doPDF(){
   var ex=getXExps(),user=S.settings.username||'MoneyNest',tot=ex.reduce(function(s,e){return s+e.amount;},0),now=new Date();
+  var l=S.settings.lang,isRTL=(l==='he'||l==='ar');
   var byCat={};ex.forEach(function(e){byCat[e.category]=(byCat[e.category]||0)+e.amount;});
   var catRows=Object.entries(byCat).sort(function(a,b){return b[1]-a[1];}).map(function(ce){var c=catById(ce[0]),p=tot>0?((ce[1]/tot)*100).toFixed(1):0;return '<tr><td>'+c.icon+' '+c.name+'</td><td>'+fmtC(ce[1])+'</td><td>'+p+'%</td></tr>';}).join('');
   var w=window.open('','_blank');if(!w){toast(T('אפשר חלונות קופצים','Allow popups'));return;}
-  w.document.write('<!DOCTYPE html><html dir="rtl" lang="he"><head><meta charset="UTF-8"><title>MoneyNest — '+user+'</title><style>*{box-sizing:border-box;}body{font-family:Arial,sans-serif;padding:30px;direction:rtl;color:#222;max-width:900px;margin:0 auto;}.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:15px;border-bottom:3px solid #1a7a4a;}.logo{font-size:1.5rem;font-weight:900;color:#1a7a4a;}.info{text-align:left;font-size:.9rem;color:#666;}h2{color:#1a7a4a;font-size:1.1rem;margin:20px 0 10px;border-bottom:1px solid #e5e5e5;padding-bottom:5px;}table{width:100%;border-collapse:collapse;font-size:.9rem;}th,td{border:1px solid #e0e0e0;padding:8px 12px;text-align:right;}th{background:#1a7a4a;color:#fff;}tr:nth-child(even){background:#f9f9f9;}.sums{display:flex;gap:15px;margin:15px 0;flex-wrap:wrap;}.sum{flex:1;min-width:120px;background:#f0f9f4;border-radius:8px;padding:12px;border:1px solid #c0e0cc;text-align:center;}.sv{font-size:1.4rem;font-weight:700;color:#1a7a4a;}.sl{font-size:.75rem;color:#666;margin-top:3px;}.ft{margin-top:30px;padding-top:15px;border-top:1px solid #e5e5e5;font-size:.75rem;color:#999;text-align:center;}@media print{.noprint{display:none;}}</style></head><body>');
-  w.document.write('<div class="header"><div class="logo">🦅 MoneyNest<div style="font-size:.75rem;font-weight:400;color:#666;margin-top:3px;">יומן ניהול הוצאות</div></div><div class="info"><div><strong>'+user+'</strong></div><div>'+now.toLocaleDateString('he-IL')+' '+now.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})+'</div><div>'+ex.length+' רשומות</div></div></div>');
-  w.document.write('<div class="sums"><div class="sum"><div class="sv">'+fmtC(tot)+'</div><div class="sl">סה"כ הוצאות</div></div><div class="sum"><div class="sv">'+ex.length+'</div><div class="sl">רשומות</div></div>'+(S.budget.monthly>0?'<div class="sum"><div class="sv" style="color:'+(S.budget.monthly-tot>=0?'#1a7a4a':'#e05555')+';">'+fmtC(Math.abs(S.budget.monthly-tot))+'</div><div class="sl">'+(S.budget.monthly-tot>=0?'נותר':'חריגה')+'</div></div>':'')+'</div>');
-  w.document.write('<h2>📊 לפי קטגוריה</h2><table><tr><th>קטגוריה</th><th>סכום</th><th>אחוז</th></tr>'+catRows+'</table>');
-  w.document.write('<h2>📋 פירוט</h2><table><tr><th>תיאור</th><th>קטגוריה</th><th>סוג</th><th>אמצעי תשלום</th><th>תאריך</th><th>סכום</th></tr>');
-  var tp={regular:'רגילה',fixed:'קבועה',installments:'תשלומים'};
-  ex.forEach(function(e){var c=catById(e.category);w.document.write('<tr><td>'+e.desc+(e.notes?'<br><small style="color:#888;">'+e.notes+'</small>':'')+'</td><td>'+c.icon+' '+c.name+'</td><td>'+tp[e.type]+'</td><td>'+(PHE[e.pay]||e.pay)+'</td><td>'+fmtD(e.date)+'</td><td><strong>'+fmtC(e.amount)+'</strong></td></tr>');});
-  w.document.write('<tr style="background:#f0f9f4;font-weight:700;"><td colspan="5">סה"כ</td><td>'+fmtC(tot)+'</td></tr></table>');
-  w.document.write('<div class="ft">הופק ע"י MoneyNest • AppNest © 2025 | '+user+'</div><button class="noprint" onclick="window.print()" style="margin-top:20px;padding:12px 30px;background:#1a7a4a;color:white;border:none;border-radius:8px;font-size:1rem;cursor:pointer;">🖨️ הדפס / שמור PDF</button></body></html>');
+  var dir=isRTL?'rtl':'ltr';
+  var tp={regular:T('רגילה','Regular'),fixed:T('קבועה','Fixed'),installments:T('תשלומים','Payments')};
+  var pLabels=getPayLabels();
+  w.document.write('<!DOCTYPE html><html dir="'+dir+'" lang="'+l+'"><head><meta charset="UTF-8"><title>MoneyNest — '+user+'</title><style>*{box-sizing:border-box;}body{font-family:Arial,sans-serif;padding:30px;direction:'+dir+';color:#222;max-width:900px;margin:0 auto;}.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:15px;border-bottom:3px solid #1a7a4a;}.logo{font-size:1.5rem;font-weight:900;color:#1a7a4a;}h2{color:#1a7a4a;font-size:1.1rem;margin:20px 0 10px;border-bottom:1px solid #e5e5e5;padding-bottom:5px;}table{width:100%;border-collapse:collapse;font-size:.9rem;}th,td{border:1px solid #e0e0e0;padding:8px 12px;text-align:'+dir+';}th{background:#1a7a4a;color:#fff;}tr:nth-child(even){background:#f9f9f9;}.sums{display:flex;gap:15px;margin:15px 0;flex-wrap:wrap;}.sum{flex:1;min-width:120px;background:#f0f9f4;border-radius:8px;padding:12px;border:1px solid #c0e0cc;text-align:center;}.sv{font-size:1.4rem;font-weight:700;color:#1a7a4a;}.sl{font-size:.75rem;color:#666;margin-top:3px;}.ft{margin-top:30px;padding-top:15px;border-top:1px solid #e5e5e5;font-size:.75rem;color:#999;text-align:center;}@media print{.noprint{display:none;}}</style></head><body>');
+  w.document.write('<div class="header"><div class="logo">🦅 MoneyNest<div style="font-size:.75rem;font-weight:400;color:#666;margin-top:3px;">'+T('יומן ניהול הוצאות','Expense Journal')+'</div></div><div><div><strong>'+user+'</strong></div><div>'+fmtD(now.toISOString().split('T')[0])+'</div><div>'+ex.length+' '+T('רשומות','Records')+'</div></div></div>');
+  w.document.write('<div class="sums"><div class="sum"><div class="sv">'+fmtC(tot)+'</div><div class="sl">'+T('סה"כ','Total')+'</div></div><div class="sum"><div class="sv">'+ex.length+'</div><div class="sl">'+T('רשומות','Records')+'</div></div>'+(S.budget.monthly>0?'<div class="sum"><div class="sv" style="color:'+(S.budget.monthly-tot>=0?'#1a7a4a':'#e05555')+';">'+fmtC(Math.abs(S.budget.monthly-tot))+'</div><div class="sl">'+(S.budget.monthly-tot>=0?T('נותר','Left'):T('חריגה','Over'))+'</div></div>':'')+'</div>');
+  w.document.write('<h2>📊 '+T('לפי קטגוריה','By Category')+'</h2><table><tr><th>'+T('קטגוריה','Category')+'</th><th>'+T('סכום','Amount')+'</th><th>%</th></tr>'+catRows+'</table>');
+  w.document.write('<h2>📋 '+T('פירוט:','Details:')+'</h2><table><tr><th>'+T('תיאור','Description')+'</th><th>'+T('קטגוריה','Category')+'</th><th>'+T('סוג','Type')+'</th><th>'+T('אמצעי תשלום','Payment')+'</th><th>'+T('תאריך','Date')+'</th><th>'+T('סכום','Amount')+'</th></tr>');
+  ex.forEach(function(e){var c=catById(e.category);w.document.write('<tr><td>'+e.desc+(e.notes?'<br><small style="color:#888;">'+e.notes+'</small>':'')+'</td><td>'+c.icon+' '+c.name+'</td><td>'+tp[e.type]+'</td><td>'+(pLabels[e.pay]||e.pay)+'</td><td>'+fmtD(e.date)+'</td><td><strong>'+fmtC(e.amount)+'</strong></td></tr>');});
+  w.document.write('<tr style="background:#f0f9f4;font-weight:700;"><td colspan="5">'+T('סה"כ','Total')+'</td><td>'+fmtC(tot)+'</td></tr></table>');
+  w.document.write('<div class="ft">MoneyNest • AppNest © 2025 | '+user+'</div><button class="noprint" onclick="window.print()" style="margin-top:20px;padding:12px 30px;background:#1a7a4a;color:white;border:none;border-radius:8px;font-size:1rem;cursor:pointer;">🖨️ '+T('הדפס / שמור PDF','Print / Save PDF')+'</button></body></html>');
   w.document.close();setTimeout(function(){w.print();},800);
 }
 function doCSV(){
-  var ex=getXExps(),labels=S.settings.lang==='he'?PHE:PEN;
+  var ex=getXExps(),labels=getPayLabels();
   var tp={regular:T('רגילה','Regular'),fixed:T('קבועה','Fixed'),installments:T('תשלומים','Payments')};
   var rows=[[T('תיאור','Description'),T('קטגוריה','Category'),T('סוג','Type'),T('אמצעי תשלום','Payment'),T('תאריך','Date'),T('סכום','Amount')]];
   ex.forEach(function(e){var c=catById(e.category);rows.push([e.desc,c.name,tp[e.type]||e.type,labels[e.pay]||e.pay,e.date,e.amount]);});
@@ -1599,14 +1665,33 @@ function doRestore(ev){
 function dlAllRecs(){if(!S.receipts.length){toast(T('אין קבלות','No receipts'));return;}S.receipts.forEach(function(r,i){setTimeout(function(){var a=document.createElement('a');a.href=r.data;a.download='receipt_'+r.date+'_'+(i+1)+'.jpg';a.click();},i*400);});}
 // ============ HELP ============
 function renderHelp(){
-  var isHe=S.settings.lang==='he';
-  document.getElementById('helpBody').innerHTML='<div class="help-sec"><h3>📱 '+(isHe?'מסכים ראשיים':'Main Screens')+'</h3><div class="h-item"><div class="h-ic">📋</div><div class="h-tx"><strong>'+(isHe?'הוצאות':'Expenses')+'</strong> — '+(isHe?'4 טאבים לפי סוג + סינון תאריכים':'4 type tabs + date filter')+'</div></div><div class="h-item"><div class="h-ic">📊</div><div class="h-tx"><strong>'+(isHe?'דוחות':'Reports')+'</strong> — '+(isHe?'גרף חודשי, לפי קטגוריה, ניצול תקציב':'Monthly chart, by category, budget usage')+'</div></div><div class="h-item"><div class="h-ic">🕐</div><div class="h-tx"><strong>'+(isHe?'היסטוריה':'History')+'</strong> — '+(isHe?'סינון לפי תאריך + עריכה ומחיקה':'Date filter + edit/delete')+'</div></div></div><div class="help-sec"><h3>➕ '+(isHe?'סוגי הוצאה':'Expense Types')+'</h3><div class="h-item"><div class="h-ic">💸</div><div class="h-tx"><strong>'+(isHe?'רגילה':'Regular')+'</strong> — '+(isHe?'הוצאה חד פעמית רגילה':'One-time expense')+'</div></div><div class="h-item"><div class="h-ic">🔄</div><div class="h-tx"><strong>'+(isHe?'קבועה':'Fixed')+'</strong> — '+(isHe?'חוזרת בכל חודש אוטומטית בסיכומים ובגרף':'Auto-appears every month in summaries & chart')+'</div></div><div class="h-item"><div class="h-ic">💳</div><div class="h-tx"><strong>'+(isHe?'תשלומים':'Payments')+'</strong> — '+(isHe?'מתפרסת על חודשים. נקודות: ✓שולם / ●עכשיו / ○עתידי':'Spread over months. Dots: ✓paid / ●now / ○future')+'</div></div><div class="h-item"><div class="h-ic">✏️</div><div class="h-tx">'+(isHe?'לחץ ✏️ ליד הוצאה או לחיצה ארוכה לעריכה':'Tap ✏️ or long press to edit')+'</div></div></div><div class="help-sec"><h3>💾 '+(isHe?'גיבוי ושחזור':'Backup & Restore')+'</h3><div class="h-item"><div class="h-ic">📥</div><div class="h-tx">'+(isHe?'גיבוי עכשיו — מוריד קובץ JSON עם כל הנתונים כולל קבלות':'Backup Now — downloads JSON with all data including receipts')+'</div></div><div class="h-item"><div class="h-ic">📂</div><div class="h-tx">'+(isHe?'שחזור — העלה קובץ JSON לשחזור מלא בין מכשירים':'Restore — upload JSON for full restore between devices')+'</div></div></div><div class="help-sec"><h3>📤 '+(isHe?'ייצוא':'Export')+'</h3><div class="h-item"><div class="h-ic">📄</div><div class="h-tx"><strong>PDF</strong> — '+(isHe?'דוח מקצועי עם שמך, קטגוריות, ופירוט מלא':'Professional report with your name, categories & full detail')+'</div></div><div class="h-item"><div class="h-ic">📊</div><div class="h-tx"><strong>CSV</strong> — '+(isHe?'מוריד קובץ לפתיחה ב-Excel':'Download file for Excel')+'</div></div><div class="h-item"><div class="h-ic">✉️</div><div class="h-tx">'+(isHe?'מייל עם אפשרות לצרף קבלות':'Email with option to attach receipts')+'</div></div></div>';
+  document.getElementById('helpBody').innerHTML=
+    '<div class="help-sec"><h3>📱 '+T('מסכים ראשיים','Main Screens')+'</h3>'
+    +'<div class="h-item"><div class="h-ic">📋</div><div class="h-tx"><strong>'+T('הוצאות','Expenses')+'</strong> — '+T('4 טאבים לפי סוג + סינון תאריכים','4 type tabs + date filter')+'</div></div>'
+    +'<div class="h-item"><div class="h-ic">📊</div><div class="h-tx"><strong>'+T('דוחות','Reports')+'</strong> — '+T('גרף חודשי, לפי קטגוריה, ניצול תקציב','Monthly chart, by category, budget usage')+'</div></div>'
+    +'<div class="h-item"><div class="h-ic">🕐</div><div class="h-tx"><strong>'+T('היסטוריה','History')+'</strong> — '+T('סינון לפי תאריך + עריכה ומחיקה','Date filter + edit/delete')+'</div></div></div>'
+    +'<div class="help-sec"><h3>➕ '+T('סוגי הוצאה','Expense Types')+'</h3>'
+    +'<div class="h-item"><div class="h-ic">💸</div><div class="h-tx"><strong>'+T('רגילה','Regular')+'</strong> — '+T('הוצאה חד פעמית רגילה','One-time expense')+'</div></div>'
+    +'<div class="h-item"><div class="h-ic">🔄</div><div class="h-tx"><strong>'+T('קבועה','Fixed')+'</strong> — '+T('חוזרת בכל חודש אוטומטית בסיכומים ובגרף','Auto-appears every month in summaries & chart')+'</div></div>'
+    +'<div class="h-item"><div class="h-ic">💳</div><div class="h-tx"><strong>'+T('תשלומים','Payments')+'</strong> — '+T('מתפרסת על חודשים. נקודות: ✓שולם / ●עכשיו / ○עתידי','Spread over months. Dots: ✓paid / ●now / ○future')+'</div></div>'
+    +'<div class="h-item"><div class="h-ic">✏️</div><div class="h-tx">'+T('לחץ ✏️ ליד הוצאה או לחיצה ארוכה לעריכה','Tap ✏️ or long press to edit')+'</div></div></div>'
+    +'<div class="help-sec"><h3>💾 '+T('גיבוי ושחזור','Backup & Restore')+'</h3>'
+    +'<div class="h-item"><div class="h-ic">📥</div><div class="h-tx">'+T('גיבוי עכשיו — מוריד קובץ JSON עם כל הנתונים כולל קבלות','Backup Now — downloads JSON with all data including receipts')+'</div></div>'
+    +'<div class="h-item"><div class="h-ic">📂</div><div class="h-tx">'+T('שחזור — העלה קובץ JSON לשחזור מלא בין מכשירים','Restore — upload JSON for full restore between devices')+'</div></div></div>'
+    +'<div class="help-sec"><h3>📤 '+T('ייצוא','Export')+'</h3>'
+    +'<div class="h-item"><div class="h-ic">📄</div><div class="h-tx"><strong>PDF</strong> — '+T('דוח מקצועי עם שמך, קטגוריות, ופירוט מלא','Professional report with your name, categories & full detail')+'</div></div>'
+    +'<div class="h-item"><div class="h-ic">📊</div><div class="h-tx"><strong>CSV</strong> — '+T('מוריד קובץ לפתיחה ב-Excel','Download file for Excel')+'</div></div>'
+    +'<div class="h-item"><div class="h-ic">✉️</div><div class="h-tx">'+T('מייל עם אפשרות לצרף קבלות','Email with option to attach receipts')+'</div></div></div>';
 }
 // ============ GUIDE ============
 var GHE=[{t:'ברוך הבא ל-MoneyNest',d:'הדרך החכמה לנהל את ההוצאות שלך. פשוט, מהיר, ובפרטיות מלאה.'},{t:'הוסף הוצאות',d:'3 סוגים: רגילה, קבועה חודשית, תשלומים מפוצלים. המקלדת גוללת עם הטופס.'},{t:'דוחות חכמים',d:'גרף חודשי, פירוט לפי קטגוריה, וניצול תקציב. עם סינון תאריכים גמיש.'},{t:'תקציב והכנסות',d:'הגדר תקציב ומקורות הכנסה. הדוחות יראו מאזן מלא — בפרטיות.'},{t:'קבלות וגיבוי',d:'צלם קבלות, שתף כמה בבת אחת, וגבה את כל הנתונים בכפתור אחד.'},{t:'הכל מוכן! 🎉',d:'הנתונים שמורים על המכשיר. גבה קבוע ל-JSON לשחזור בין מכשירים.'}];
 var GEN=[{t:'Welcome to MoneyNest',d:'The smart way to manage your expenses. Simple, fast, completely private.'},{t:'Add Expenses',d:'3 types: Regular, Fixed monthly, Split payments. Numpad scrolls with the form.'},{t:'Smart Reports',d:'Monthly chart, by category, budget usage. Flexible date filtering.'},{t:'Budget & Income',d:'Set budget and income sources. Reports show full balance — privately.'},{t:'Receipts & Backup',d:'Take receipts, share multiple at once, backup all data in one tap.'},{t:'All Set! 🎉',d:'Data saved on device. Backup to JSON to restore on new devices.'}];
+var GRU=[{t:'Добро пожаловать в MoneyNest',d:'Умный способ управлять расходами. Просто, быстро, конфиденциально.'},{t:'Добавить расходы',d:'3 типа: обычный, постоянный, рассрочка. Клавиатура прокручивается с формой.'},{t:'Умные отчёты',d:'Месячный график, по категориям, бюджет. Гибкий фильтр дат.'},{t:'Бюджет и доходы',d:'Установите бюджет и источники дохода. Полный баланс.'},{t:'Чеки и резервная копия',d:'Фотографируйте чеки, делитесь несколькими сразу, резервная копия одним нажатием.'},{t:'Всё готово! 🎉',d:'Данные на устройстве. Резервная копия в JSON для восстановления.'}];
+var GES=[{t:'Bienvenido a MoneyNest',d:'La forma inteligente de gestionar tus gastos. Simple, rápido y privado.'},{t:'Agregar gastos',d:'3 tipos: regular, fijo mensual, pagos divididos. El teclado se desplaza con el formulario.'},{t:'Informes inteligentes',d:'Gráfico mensual, por categoría, presupuesto. Filtro de fechas flexible.'},{t:'Presupuesto e ingresos',d:'Establece presupuesto y fuentes de ingreso. Balance completo.'},{t:'Recibos y copia',d:'Fotografía recibos, comparte varios a la vez, copia de seguridad con un toque.'},{t:'¡Todo listo! 🎉',d:'Datos en el dispositivo. Copia en JSON para restaurar en nuevos dispositivos.'}];
+var GAR=[{t:'مرحباً بك في MoneyNest',d:'الطريقة الذكية لإدارة مصاريفك. بسيط، سريع، وخاص تماماً.'},{t:'إضافة المصاريف',d:'3 أنواع: عادي، ثابت شهري، أقساط. لوحة الأرقام تتمرر مع النموذج.'},{t:'تقارير ذكية',d:'رسم بياني شهري، حسب الفئة، الميزانية. فلتر تواريخ مرن.'},{t:'الميزانية والدخل',d:'حدد الميزانية ومصادر الدخل. رصيد كامل.'},{t:'الإيصالات والنسخ',d:'التقط الإيصالات، شارك عدة مرة واحدة، نسخ احتياطي بلمسة واحدة.'},{t:'كل شيء جاهز! 🎉',d:'البيانات على الجهاز. نسخ احتياطي في JSON للاستعادة.'}];
+function getGuide(){var l=S.settings.lang;if(l==='ru')return GRU;if(l==='es')return GES;if(l==='ar')return GAR;if(l==='en')return GEN;return GHE;}
 function updGuideLbls(){
-  var data=S.settings.lang==='he'?GHE:GEN;
+  var data=getGuide();
   data.forEach(function(d,i){st('gt'+i,d.t);st('gd'+i,d.d);});
   st('gSkipBtn',T('דלג','Skip'));
   var nb=document.getElementById('gNextBtn');if(nb)nb.innerHTML=guideStep<5?T('הבא ←','Next →'):T('התחל 🚀','Start 🚀');
@@ -1626,7 +1711,7 @@ function showGuide(){guideStep=0;showGuideStep();}
 function fmt(n){if(!n||isNaN(n))return'0';return parseFloat(n.toFixed(2)).toLocaleString('he-IL');}
 function cur(){return (S.settings&&S.settings.currency)||'₪';}
 function fmtC(n){return cur()+fmt(n);}
-function fmtD(d){if(!d)return'';var dt=new Date(d+'T00:00:00');return S.settings.lang==='he'?dt.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit',year:'numeric'}):dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
+function fmtD(d){if(!d)return'';var dt=new Date(d+'T00:00:00');var l=S.settings.lang;if(l==='he')return dt.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit',year:'numeric'});if(l==='ar')return dt.toLocaleDateString('ar-SA',{day:'2-digit',month:'2-digit',year:'numeric'});return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
 function toast(msg){var el=document.createElement('div');el.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--ca);color:var(--tx);padding:10px 20px;border-radius:20px;border:1px solid var(--br);z-index:99999;font-size:.9rem;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap;pointer-events:none;';el.textContent=msg;document.body.appendChild(el);setTimeout(function(){el.remove();},2400);}
 function emptyHTML(ic,msg,sub){return'<div class="empty"><div class="ei2">'+ic+'</div><p>'+msg+'</p>'+(sub?'<p style="margin-top:6px;font-size:.8rem;">'+sub+'</p>':'')+'</div>';}
 // ============ INIT ============

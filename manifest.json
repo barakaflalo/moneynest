@@ -22,7 +22,6 @@
     {
       "name": "הוסף הוצאה",
       "short_name": "הוסף",
-      "description": "הוסף הוצאה חדשה במהירות",
       "url": "/moneynest/index.html#add",
       "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     }
