@@ -2,7 +2,7 @@
   "name": "MoneyNest — יומן ניהול הוצאות",
   "short_name": "MoneyNest",
   "description": "יומן ניהול הוצאות חכם ופרטי — עובד אופליין, ללא שרתים",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
