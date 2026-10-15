@@ -48,7 +48,7 @@
       <div class="highlight">
         📱 MoneyNest שומרת את כל הנתונים שלך על המכשיר בלבד. לא שולחים שום מידע לשרתים חיצוניים.
       </div>
-      <p class="updated">עדכון אחרון: מאי 2025</p>
+      <p class="updated">עדכון אחרון: אוקטובר 2026</p>
     </div>
 
     <div class="card">
@@ -60,9 +60,10 @@
     <div class="card">
       <h2>📊 מה נשמר ואיפה</h2>
       <ul>
-        <li><strong>הוצאות ונתונים פיננסיים</strong> — נשמרים ב-localStorage של המכשיר</li>
-        <li><strong>קבלות ותמונות</strong> — נשמרות מקומית כ-base64 על המכשיר</li>
+        <li><strong>הוצאות ונתונים פיננסיים</strong> — נשמרים באחסון המקומי של הדפדפן במכשיר (localStorage)</li>
+        <li><strong>קבלות ותמונות</strong> — נשמרות באחסון המקומי של המכשיר (IndexedDB) ולא נשלחות לשום מקום</li>
         <li><strong>הגדרות</strong> — נשמרות מקומית</li>
+<li><strong>קוד PIN</strong> — נשמר רק כגיבוב חד-כיווני (hash) על המכשיר — לא כקוד עצמו, ואינו נכלל בקובץ הגיבוי</li>
         <li><strong>גיבויים</strong> — קבצי JSON שאתה מוריד ושולט בהם לחלוטין</li>
       </ul>
       <p>אנחנו <strong>לא</strong> משתמשים ב: cookies, analytics, tracking, פרסומות, או כל שירות צד שלישי שאוסף מידע.</p>
@@ -73,6 +74,7 @@
       <p>האפליקציה עובדת <strong>לחלוטין אופליין</strong>. חיבור לאינטרנט נדרש רק ב:</p>
       <ul>
         <li>הורדת האפליקציה בפעם הראשונה</li>
+<li>טעינת הגופן (Heebo) מ-Google Fonts — בקשה רגילה לקובץ גופן, בלי שום מידע מהאפליקציה</li>
         <li>שיתוף קבצים ידני שאתה יוזם (כמו שליחת גיבוי ב-WhatsApp)</li>
       </ul>
     </div>
@@ -106,7 +108,7 @@
       <p>שאלות? פנה אלינו:</p>
       <p><strong>AppNest</strong> — פותח ע"י ברק אפללו</p>
       <p>📧 <a href="mailto:appnest55@gmail.com">appnest55@gmail.com</a></p>
-      <p>🌐 <a href="https://barakaflalo.github.io/appnest">barakaflalo.github.io/appnest</a></p>
+      <p>🌐 <a href="https://appnest-store.pages.dev">appnest-store.pages.dev</a></p>
     </div>
 
   </div>
@@ -118,7 +120,7 @@
       <div class="highlight">
         📱 MoneyNest stores all your data on your device only. No data is ever sent to external servers.
       </div>
-      <p class="updated">Last updated: May 2025</p>
+      <p class="updated">Last updated: October 2026</p>
     </div>
 
     <div class="card">
@@ -130,9 +132,10 @@
     <div class="card">
       <h2>📊 What Is Stored and Where</h2>
       <ul>
-        <li><strong>Expenses and financial data</strong> — stored in device localStorage</li>
-        <li><strong>Receipts and images</strong> — stored locally as base64 on your device</li>
+        <li><strong>Expenses and financial data</strong> — stored in the browser’s local storage on your device (localStorage)</li>
+        <li><strong>Receipts and images</strong> — stored in local device storage (IndexedDB) and never uploaded</li>
         <li><strong>Settings</strong> — stored locally</li>
+<li><strong>PIN code</strong> — stored only as a one-way hash on your device and never included in backup files</li>
         <li><strong>Backups</strong> — JSON files you download and fully control</li>
       </ul>
       <p>We do <strong>not</strong> use: cookies, analytics, tracking, advertising, or any third-party data collection services.</p>
@@ -143,6 +146,7 @@
       <p>The app works <strong>completely offline</strong>. Internet connection is only needed for:</p>
       <ul>
         <li>Downloading the app for the first time</li>
+<li>Loading the font (Heebo) from Google Fonts — a plain font file request that carries none of your app data</li>
         <li>Manual file sharing you initiate (e.g. sending a backup via WhatsApp)</li>
       </ul>
     </div>
@@ -176,14 +180,14 @@
       <p>Questions? Contact us:</p>
       <p><strong>AppNest</strong> — Built by Barak Aflalo</p>
       <p>📧 <a href="mailto:appnest55@gmail.com">appnest55@gmail.com</a></p>
-      <p>🌐 <a href="https://barakaflalo.github.io/appnest">barakaflalo.github.io/appnest</a></p>
+      <p>🌐 <a href="https://appnest-store.pages.dev">appnest-store.pages.dev</a></p>
     </div>
 
   </div>
 
   <div class="footer">
     <p>© 2025 AppNest — ברק אפללו | Barak Aflalo</p>
-    <p style="margin-top:8px;"><a href="https://barakaflalo.github.io/moneynest">MoneyNest App</a> | <a href="https://barakaflalo.github.io/appnest">AppNest</a></p>
+    <p style="margin-top:8px;"><a href="https://barakaflalo.github.io/moneynest">MoneyNest App</a> | <a href="https://appnest-store.pages.dev">AppNest</a></p>
   </div>
 
 </div>
