@@ -21,7 +21,7 @@
 
 /* MoneyNest SW v5 (app 2.2.0) — own address (Cloudflare Pages). Resilient install, network-first pages with offline fallback,
    cache-first assets, deletes ONLY its own old caches, cleans "redirected" page responses (Cloudflare pretty URLs). */
-var CACHE='moneynest-v8';
+var CACHE='moneynest-v9';
 var FILES=['./','./manifest.json','./icon-192.png','./icon-512.png','./privacy_policy.html'];
 function cleanNav(r){ if(!r||!r.redirected) return r; return r.blob().then(function(b){return new Response(b,{status:r.status,statusText:r.statusText,headers:r.headers});}); }
 self.addEventListener('install',function(e){
