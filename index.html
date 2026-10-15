@@ -31,6 +31,7 @@
 [data-theme="light"]{--bg:#F5F2FB;--bg2:#FFFFFF;--bg3:#FFFFFF;--ca:#FFFFFF;--cb:#EFEAF8;--br:#DCD2EE;--tx:#1E1530;--t2:#5B4B7C;--t3:#8C7DAA;--p:#6D3FD8;--pl:#6D3FD8;--pd:#5428B8;--ac:#B7790B;--ok:#1C944F;--dn:#C63C3B;--wn:#B7720D;--on-p:#fff;--ring-track:#E6DFF4;--shadow:0 10px 30px rgba(30,21,48,.12);}
 :root{--r:18px;--rs:12px;--fn:'Heebo',system-ui,sans-serif;--tabh:66px;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:16px;}
 button,input,select,textarea{font-family:inherit;color:inherit;}
 .num,[dir="ltr"].num{font-variant-numeric:tabular-nums;}
@@ -134,7 +135,11 @@ body.tabs-on #tabbar{display:flex;}
 .seg button{flex:1;border:none;background:none;padding:8px 6px;border-radius:9px;font-size:.82rem;font-weight:700;color:var(--t2);cursor:pointer;white-space:nowrap;}
 .seg button.on{background:var(--p);color:var(--on-p);}
 .add-top{padding:0 16px;flex-shrink:0;}
-.amt-disp{text-align:center;padding:8px 0 10px;}
+.amt-disp{display:block;width:100%;background:none;border:none;color:inherit;text-align:center;padding:8px 0 10px;cursor:pointer;}
+.amt-edit{font-size:.35em;color:var(--t3);margin-inline-start:6px;display:none;}
+#sc-add.pad-closed .amt-edit{display:inline;}
+#sc-add.pad-closed .numpad,#sc-add.pad-closed .pad-done{display:none;}
+.pad-done{display:block;margin:0 auto 8px;background:none;border:none;color:var(--t2);font-size:.82rem;font-weight:700;padding:4px 12px;cursor:pointer;}
 .amt-val{font-size:clamp(2.4rem,12vw,3.2rem);font-weight:900;display:flex;align-items:baseline;justify-content:center;gap:6px;font-variant-numeric:tabular-nums;line-height:1.1;}
 .amt-cur{color:var(--ac);font-size:.6em;}
 .amt-hint{font-size:.8rem;color:var(--t3);min-height:1.2em;}
@@ -371,7 +376,7 @@ select.inp option{background:var(--bg3);color:var(--tx);}
       <button data-t="fixed" onclick="setT('fixed',this)" data-i18n="tFixedMonthly">קבועה</button>
       <button data-t="installments" onclick="setT('installments',this)" data-i18n="tInst">תשלומים</button>
     </div>
-    <div class="amt-disp"><div class="amt-val" dir="ltr"><span class="amt-cur" id="aCur">₪</span><span id="aAmt">0</span></div><div class="amt-hint" id="aHint"></div></div>
+    <button class="amt-disp" id="aAmtBtn" onclick="openPad()" type="button"><div class="amt-val" dir="ltr"><span class="amt-cur" id="aCur">₪</span><span id="aAmt">0</span><span class="amt-edit" aria-hidden="true">✎</span></div><div class="amt-hint" id="aHint"></div></button>
   </div>
   <div class="add-scroll" id="addScroll">
     <div class="cat-grid" id="aCatGrid"></div>
@@ -383,8 +388,8 @@ select.inp option{background:var(--bg3);color:var(--tx);}
     <div id="instF" style="display:none;">
       <div class="ig"><div class="il" data-i18n="numPayments">מספר תשלומים</div><input type="number" inputmode="numeric" class="inp" id="iCnt" min="2" max="60" value="12" oninput="updInst()"></div>
     </div>
-    <button class="more-tg" id="aMoreTg" onclick="toggleMore()"><span data-i18n="moreDetails">פרטים נוספים</span><span class="car">▾</span></button>
-    <div class="more-box" id="aMoreBox">
+    <div class="sec-ttl" data-i18n="detailsOptional">פרטים (לא חובה)</div>
+    <div id="aMoreBox">
       <div class="ig"><div class="il" data-i18n="description">תיאור</div><input type="text" class="inp" id="aDesc" maxlength="80" list="descList" data-i18n-ph="descPh"><datalist id="descList"></datalist></div>
       <div class="ig"><div class="il" data-i18n="payMethod">אמצעי תשלום</div><div class="pay-row" id="aPayRow"></div></div>
       <div class="ig"><div class="il" data-i18n="notes">הערות</div><input type="text" class="inp" id="aNotes" maxlength="200" data-i18n-ph="notesPh"></div>
@@ -398,12 +403,13 @@ select.inp option{background:var(--bg3);color:var(--tx);}
     </div>
   </div>
   <div class="add-bottom">
-    <div class="numpad" dir="ltr">
+    <div class="numpad" id="aPad" dir="ltr">
       <button class="nk" onclick="np('1')">1</button><button class="nk" onclick="np('2')">2</button><button class="nk" onclick="np('3')">3</button>
       <button class="nk" onclick="np('4')">4</button><button class="nk" onclick="np('5')">5</button><button class="nk" onclick="np('6')">6</button>
       <button class="nk" onclick="np('7')">7</button><button class="nk" onclick="np('8')">8</button><button class="nk" onclick="np('9')">9</button>
       <button class="nk sp" onclick="np('.')">.</button><button class="nk" onclick="np('0')">0</button><button class="nk sp" onclick="np('del')" data-i18n-aria="backspace">⌫</button>
     </div>
+    <button class="pad-done" id="aPadDone" onclick="closePad()" type="button"><span data-i18n="padDone">סיום הקלדה</span> ▾</button>
     <button class="save-big" id="aSaveBtn" onclick="saveExp()" disabled>✓ <span id="aSaveLbl" data-i18n="saveExpense">שמור הוצאה</span></button>
   </div>
 </div>
@@ -570,7 +576,7 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 // MoneyNest — all UI text. One key, five languages. Missing key → English.
 // ===================================================================
 var LANG={
-he:{
+he:{detailsOptional:'פרטים (לא חובה)',padDone:'סיום הקלדת הסכום',
 undo:'בטל',prevMonth:'החודש הקודם',nextMonth:'החודש הבא',ofBudget:'מתוך ',overBy:'חריגה של {a}',setBudgetCta:'הקש להגדרת תקציב',firstExpense:'עוד אין הוצאות. הוסף את הראשונה — זה לוקח כמה שניות.',upcomingMonth:'צפוי בהמשך החודש',recentMonth:'אחרונות החודש',seeAll:'לכל ההוצאות',noExpensesYetMonth:'אין עדיין הוצאות החודש',fixedHint:'תיספר כל חודש מהתאריך שנבחר',saveAmt:'שמור {a}',newCategory:'חדשה',savedAmt:'✓ נשמר {a}',deletedItem:'נמחק: {d}',until:'עד {d}',found:'נמצאו {n}',noResults:'לא נמצאו הוצאות',today:'היום',yesterday:'אתמול',expected:'צפוי',tapBar:'הקש על חודש לפירוט',topExpenses:'ההוצאות הגדולות',selected:'נבחר',budgetOf:'{b} לחודש',notSet:'לא הוגדר',neverBackedUp:'עוד לא בוצע גיבוי',budgetHint:'תקציב חודשי מראה כמה נשאר לך עד סוף החודש.',paidOf:'שולמו {p} מתוך {n}',fixedEnded:'הסתיימה ב-{d}',fixedRunning:'פעילה מ-{d}, כל חודש',resumeFixed:'חדש את ההוצאה',stopFixed:'הפסק מהחודש הבא',fixedStopped:'✓ ההוצאה הקבועה תיפסק בסוף החודש',newExpense:'הוצאה חדשה',tFixedMonthly:'קבועה',moreDetails:'פרטים נוספים: תיאור, תשלום, קבלה',search:'חיפוש',more:'עוד',thDay:'יום (בהיר)',hHome:'הטבעת מראה כמה מהתקציב החודשי נוצל, ומתחת — מה צפוי ומה נרשם לאחרונה.',hExp:'כל ההוצאות לפי חודש, מקובצות לפי ימים. החצים מחליפים חודש, ו-🔍 מחפש בכל התקופות.',hRpt:'סיכום לפי חודש או תקופה, תקציב, גרף 12 חודשים (הקשה על עמודה פותחת את החודש) ופילוח לפי קטגוריה.',hEdit:'הקשה על הוצאה פותחת עריכה. אחרי מחיקה מופיע "בטל" לכמה שניות.',hFix:'חוזרת כל חודש (שכירות, מנוי). אפשר להפסיק אותה מהחודש הבא בחלון העריכה.',
 langShort:'עב',langName:'עברית',appSub:'יומן ניהול הוצאות',rights:'כל הזכויות שמורות',
 months:['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'],
@@ -620,7 +626,7 @@ version:'גרסה',developer:'פיתוח',platform:'פלטפורמה',storageLbl
 copyLink:'העתק קישור',feedback:'שלח משוב',privacyPolicy:'מדיניות פרטיות',moreApps:'עוד אפליקציות של AppNest',copied:'✓ הועתק',
 shareMsg:'היי! מצאתי אפליקציה נוחה לניהול הוצאות 💰\n📱 MoneyNest — חינם, עובדת בלי אינטרנט, והנתונים נשארים אצלך.\n👇',shareShort:'MoneyNest — ניהול הוצאות פשוט ופרטי',upcoming:'מחר יורד: {d} {a}',installApp:'התקן את MoneyNest במכשיר',install:'התקן'
 },
-en:{
+en:{detailsOptional:'Details (optional)',padDone:'Done with amount',
 undo:'Undo',prevMonth:'Previous month',nextMonth:'Next month',ofBudget:'of ',overBy:'{a} over',setBudgetCta:'Tap to set a budget',firstExpense:'No expenses yet. Add your first one — it takes a few seconds.',upcomingMonth:'Coming up this month',recentMonth:'Recent this month',seeAll:'See all',noExpensesYetMonth:'No expenses this month yet',fixedHint:'Counted every month from the chosen date',saveAmt:'Save {a}',newCategory:'New',savedAmt:'✓ Saved {a}',deletedItem:'Deleted: {d}',until:'until {d}',found:'{n} found',noResults:'No matching expenses',today:'Today',yesterday:'Yesterday',expected:'upcoming',tapBar:'Tap a month for details',topExpenses:'Biggest expenses',selected:'Selected',budgetOf:'{b} a month',notSet:'Not set',neverBackedUp:'No backup yet',budgetHint:'A monthly budget shows how much you have left until the end of the month.',paidOf:'{p} of {n} paid',fixedEnded:'Ended on {d}',fixedRunning:'Active since {d}, every month',resumeFixed:'Resume this expense',stopFixed:'Stop from next month',fixedStopped:'✓ This fixed expense stops at the end of the month',newExpense:'New expense',tFixedMonthly:'Fixed',moreDetails:'More: description, payment, receipt',search:'Search',more:'More',thDay:'Day (light)',hHome:'The ring shows how much of the monthly budget is used; below it, what is coming up and what was logged recently.',hExp:'All expenses by month, grouped by day. Arrows change the month; 🔍 searches all periods.',hRpt:'Summary by month or period, budget, a 12-month chart (tap a bar to open that month) and categories.',hEdit:'Tap an expense to edit it. After deleting, "Undo" appears for a few seconds.',hFix:'Repeats every month (rent, subscription). You can stop it from next month in the edit window.',
 langShort:'EN',langName:'English',appSub:'Expense Journal',rights:'All rights reserved',
 months:['January','February','March','April','May','June','July','August','September','October','November','December'],
@@ -670,7 +676,7 @@ version:'Version',developer:'Developer',platform:'Platform',storageLbl:'Storage'
 copyLink:'Copy link',feedback:'Send feedback',privacyPolicy:'Privacy policy',moreApps:'More AppNest apps',copied:'✓ Copied',
 shareMsg:'Hi! I found a handy expense tracker 💰\n📱 MoneyNest — free, works offline, and your data stays with you.\n👇',shareShort:'MoneyNest — simple, private expense tracking',upcoming:'Due tomorrow: {d} {a}',installApp:'Install MoneyNest on your device',install:'Install'
 },
-ru:{
+ru:{detailsOptional:'Подробности (необязательно)',padDone:'Сумма введена',
 undo:'Отменить',prevMonth:'Предыдущий месяц',nextMonth:'Следующий месяц',ofBudget:'из ',overBy:'перерасход {a}',setBudgetCta:'Нажмите, чтобы задать бюджет',firstExpense:'Расходов пока нет. Добавьте первый — это займёт пару секунд.',upcomingMonth:'Ожидается в этом месяце',recentMonth:'Последние за месяц',seeAll:'Все расходы',noExpensesYetMonth:'В этом месяце расходов пока нет',fixedHint:'Учитывается каждый месяц с выбранной даты',saveAmt:'Сохранить {a}',newCategory:'Новая',savedAmt:'✓ Сохранено {a}',deletedItem:'Удалено: {d}',until:'до {d}',found:'Найдено: {n}',noResults:'Ничего не найдено',today:'Сегодня',yesterday:'Вчера',expected:'ожидается',tapBar:'Нажмите на месяц для подробностей',topExpenses:'Крупнейшие расходы',selected:'Выбрано',budgetOf:'{b} в месяц',notSet:'Не задан',neverBackedUp:'Копий ещё не было',budgetHint:'Месячный бюджет показывает, сколько осталось до конца месяца.',paidOf:'Оплачено {p} из {n}',fixedEnded:'Завершён {d}',fixedRunning:'Активен с {d}, каждый месяц',resumeFixed:'Возобновить расход',stopFixed:'Остановить со следующего месяца',fixedStopped:'✓ Постоянный расход прекратится в конце месяца',newExpense:'Новый расход',tFixedMonthly:'Постоянный',moreDetails:'Ещё: описание, оплата, чек',search:'Поиск',more:'Ещё',thDay:'Дневная (светлая)',hHome:'Кольцо показывает, какая часть месячного бюджета использована; ниже — что ожидается и что записано недавно.',hExp:'Все расходы по месяцам, сгруппированные по дням. Стрелки меняют месяц, 🔍 ищет по всем периодам.',hRpt:'Сводка за месяц или период, бюджет, график за 12 месяцев (нажмите на столбец, чтобы открыть месяц) и категории.',hEdit:'Нажмите на расход, чтобы изменить его. После удаления на несколько секунд появляется «Отменить».',hFix:'Повторяется каждый месяц (аренда, подписка). Остановить со следующего месяца можно в окне изменения.',
 langShort:'РУ',langName:'Русский',appSub:'Журнал расходов',rights:'Все права защищены',
 months:['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
@@ -720,7 +726,7 @@ version:'Версия',developer:'Разработчик',platform:'Платфо
 copyLink:'Копировать ссылку',feedback:'Написать отзыв',privacyPolicy:'Политика конфиденциальности',moreApps:'Другие приложения AppNest',copied:'✓ Скопировано',
 shareMsg:'Привет! Нашёл удобное приложение для учёта расходов 💰\n📱 MoneyNest — бесплатно, работает без интернета, данные остаются у вас.\n👇',shareShort:'MoneyNest — простой и приватный учёт расходов',upcoming:'Завтра списание: {d} {a}',installApp:'Установите MoneyNest на устройство',install:'Установить'
 },
-es:{
+es:{detailsOptional:'Detalles (opcional)',padDone:'Listo con el importe',
 undo:'Deshacer',prevMonth:'Mes anterior',nextMonth:'Mes siguiente',ofBudget:'de ',overBy:'{a} de exceso',setBudgetCta:'Toca para fijar un presupuesto',firstExpense:'Aún no hay gastos. Añade el primero: tarda unos segundos.',upcomingMonth:'Próximo este mes',recentMonth:'Recientes del mes',seeAll:'Ver todos',noExpensesYetMonth:'Aún no hay gastos este mes',fixedHint:'Se cuenta cada mes desde la fecha elegida',saveAmt:'Guardar {a}',newCategory:'Nueva',savedAmt:'✓ Guardado {a}',deletedItem:'Eliminado: {d}',until:'hasta {d}',found:'{n} encontrados',noResults:'No hay gastos que coincidan',today:'Hoy',yesterday:'Ayer',expected:'previsto',tapBar:'Toca un mes para ver el detalle',topExpenses:'Gastos más grandes',selected:'Elegido',budgetOf:'{b} al mes',notSet:'Sin definir',neverBackedUp:'Aún sin copia',budgetHint:'Un presupuesto mensual muestra cuánto te queda hasta fin de mes.',paidOf:'{p} de {n} pagadas',fixedEnded:'Terminó el {d}',fixedRunning:'Activo desde el {d}, cada mes',resumeFixed:'Reanudar este gasto',stopFixed:'Detener desde el mes próximo',fixedStopped:'✓ Este gasto fijo termina a fin de mes',newExpense:'Nuevo gasto',tFixedMonthly:'Fijo',moreDetails:'Más: descripción, pago, recibo',search:'Buscar',more:'Más',thDay:'Día (claro)',hHome:'El anillo muestra cuánto del presupuesto mensual has usado; debajo, lo previsto y lo registrado recientemente.',hExp:'Todos los gastos por mes, agrupados por día. Las flechas cambian de mes; 🔍 busca en todos los periodos.',hRpt:'Resumen por mes o periodo, presupuesto, gráfico de 12 meses (toca una barra para abrir ese mes) y categorías.',hEdit:'Toca un gasto para editarlo. Tras eliminar, aparece "Deshacer" unos segundos.',hFix:'Se repite cada mes (alquiler, suscripción). Puedes detenerlo desde el mes próximo en la ventana de edición.',
 langShort:'ES',langName:'Español',appSub:'Diario de gastos',rights:'Todos los derechos reservados',
 months:['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
@@ -770,7 +776,7 @@ version:'Versión',developer:'Desarrollo',platform:'Plataforma',storageLbl:'Alma
 copyLink:'Copiar enlace',feedback:'Enviar comentarios',privacyPolicy:'Política de privacidad',moreApps:'Más apps de AppNest',copied:'✓ Copiado',
 shareMsg:'¡Hola! Encontré una app práctica para controlar gastos 💰\n📱 MoneyNest: gratis, funciona sin internet y tus datos se quedan contigo.\n👇',shareShort:'MoneyNest — control de gastos simple y privado',upcoming:'Mañana se cobra: {d} {a}',installApp:'Instala MoneyNest en tu dispositivo',install:'Instalar'
 },
-ar:{
+ar:{detailsOptional:'تفاصيل (اختياري)',padDone:'انتهيت من المبلغ',
 undo:'تراجع',prevMonth:'الشهر السابق',nextMonth:'الشهر التالي',ofBudget:'من ',overBy:'تجاوز بمقدار {a}',setBudgetCta:'اضغط لتحديد ميزانية',firstExpense:'لا مصاريف بعد. أضف أول مصروف — يستغرق ثوانٍ.',upcomingMonth:'قادم هذا الشهر',recentMonth:'الأحدث هذا الشهر',seeAll:'كل المصاريف',noExpensesYetMonth:'لا مصاريف هذا الشهر بعد',fixedHint:'يُحتسب كل شهر من التاريخ المختار',saveAmt:'حفظ {a}',newCategory:'جديدة',savedAmt:'✓ حُفظ {a}',deletedItem:'حُذف: {d}',until:'حتى {d}',found:'وُجد {n}',noResults:'لا مصاريف مطابقة',today:'اليوم',yesterday:'أمس',expected:'متوقع',tapBar:'اضغط على شهر للتفاصيل',topExpenses:'أكبر المصاريف',selected:'المحدد',budgetOf:'{b} شهريًا',notSet:'غير محددة',neverBackedUp:'لا توجد نسخة بعد',budgetHint:'الميزانية الشهرية تُظهر كم تبقّى لك حتى نهاية الشهر.',paidOf:'دُفع {p} من {n}',fixedEnded:'انتهى في {d}',fixedRunning:'نشط منذ {d}، كل شهر',resumeFixed:'استئناف هذا المصروف',stopFixed:'إيقاف من الشهر القادم',fixedStopped:'✓ سيتوقف هذا المصروف الثابت في نهاية الشهر',newExpense:'مصروف جديد',tFixedMonthly:'ثابت',moreDetails:'المزيد: الوصف، الدفع، الإيصال',search:'بحث',more:'المزيد',thDay:'نهاري (فاتح)',hHome:'الحلقة تُظهر نسبة ما استُخدم من الميزانية الشهرية، وتحتها ما هو قادم وما سُجّل مؤخرًا.',hExp:'كل المصاريف حسب الشهر، مجمّعة حسب الأيام. الأسهم تغيّر الشهر، و🔍 يبحث في كل الفترات.',hRpt:'ملخص حسب الشهر أو الفترة، والميزانية، ورسم 12 شهرًا (اضغط على عمود لفتح الشهر)، والفئات.',hEdit:'اضغط على مصروف لتعديله. بعد الحذف يظهر «تراجع» لبضع ثوانٍ.',hFix:'يتكرر كل شهر (إيجار، اشتراك). يمكن إيقافه من الشهر القادم في نافذة التعديل.',
 langShort:'عر',langName:'العربية',appSub:'دفتر المصاريف',rights:'جميع الحقوق محفوظة',
 months:['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
@@ -828,7 +834,7 @@ shareMsg:'مرحبًا! وجدت تطبيقًا مريحًا لمتابعة ال
 // IndexedDB for media + safe migration + persist() (ז, י״ב),
 // local dates only (no toISOString for calendar days), escaping of user text.
 // ===================================================================
-var APP_VERSION='2.2.0';
+var APP_VERSION='2.2.1';
 var APP_URL='https://moneynest-app.pages.dev/';
 var STORE_URL='https://appnest-store.pages.dev';
 var FEEDBACK_MAIL='appnest55@gmail.com';
@@ -1286,12 +1292,16 @@ function initAdd(){
   document.getElementById('instF').style.display='none';
   var p=document.getElementById('aRecPrev');p.style.display='none';p.innerHTML='';
   document.querySelectorAll('#aTypeSeg button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-t')==='regular');});
-  document.getElementById('aMoreTg').classList.remove('open');document.getElementById('aMoreBox').classList.remove('open');
+  openPad();
   var seen={},opts=[];S.expenses.forEach(function(e){var d=(e.desc||'').trim();if(d&&!seen[d]&&opts.length<40){seen[d]=1;opts.push('<option value="'+esc(d)+'">');}});
   document.getElementById('descList').innerHTML=opts.join('');
   renderACats();renderAPays();updAddState();
 }
-function toggleMore(){var tg=document.getElementById('aMoreTg'),bx=document.getElementById('aMoreBox');var o=!bx.classList.contains('open');tg.classList.toggle('open',o);bx.classList.toggle('open',o);}
+// number pad: open while typing the amount; folds away for the category/details so nothing hides behind it
+function openPad(){document.getElementById('sc-add').classList.remove('pad-closed');var a=document.activeElement;if(a&&a.blur&&a.id!=='aAmtBtn')a.blur();}
+function closePad(){document.getElementById('sc-add').classList.add('pad-closed');}
+(function(){var sc=document.getElementById('addScroll'),y0=0;sc.addEventListener('scroll',function(){if(document.getElementById('sc-add').classList.contains('pad-closed'))return;if(sc.scrollTop-y0>40&&parseFloat(aS.amt)>0)closePad();},{passive:true});sc.addEventListener('touchstart',function(){y0=sc.scrollTop;},{passive:true});})();
+document.addEventListener('focusin',function(e){if(e.target&&e.target.closest&&e.target.closest('#addScroll')&&/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))closePad();});
 function pickDay(off){document.getElementById('aDt').value=ymd(addDays(new Date(),off));markDayChips();}
 function markDayChips(){var v=document.getElementById('aDt').value;document.querySelectorAll('#aDateRow .chipbtn').forEach(function(b){b.classList.toggle('on',ymd(addDays(new Date(),+b.getAttribute('data-d')))===v);});}
 function np(k){
@@ -1321,7 +1331,7 @@ function renderACats(){
   document.getElementById('aCatGrid').innerHTML=cats.map(function(c){return '<button class="cat-btn'+(aS.cat===c.id?' on':'')+'" onclick="pickCat(\''+c.id+'\')"><div class="cat-ic">'+esc(c.icon)+'</div><div class="cat-nm">'+esc(c.name)+'</div></button>';}).join('')
     +'<button class="cat-btn" onclick="openStatic(\'addCatOv\')"><div class="cat-ic">＋</div><div class="cat-nm">'+esc(T('newCategory'))+'</div></button>';
 }
-function pickCat(id){aS.cat=aS.cat===id?'':id;renderACats();}
+function pickCat(id){aS.cat=aS.cat===id?'':id;renderACats();if(aS.cat&&parseFloat(aS.amt)>0)closePad();}
 function renderAPays(){
   document.getElementById('aPayRow').innerHTML=payMethods().map(function(m,i){return '<button class="pay-btn'+(aS.pay===m?' on':'')+'" onclick="pickPay('+i+')">'+esc(payLabel(m))+'</button>';}).join('')
     +'<button class="pay-btn" onclick="openStatic(\'addPayOv\')">+ '+esc(T('add'))+'</button>';
