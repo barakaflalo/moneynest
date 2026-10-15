@@ -81,7 +81,7 @@ body.tabs-on #tabbar{display:flex;}
 .hm-stat .l{font-size:.72rem;color:var(--t3);margin-top:2px;}
 .sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:18px 2px 8px;}
 .sec-h h2{font-size:1rem;font-weight:800;}
-.sec-h .lnk{background:none;border:none;color:var(--pl);font-size:.85rem;font-weight:700;cursor:pointer;padding:4px;}
+.sec-h .lnk,.lnk{background:none;border:none;color:var(--pl);font-size:.85rem;font-weight:700;cursor:pointer;padding:4px;}
 .first-card{text-align:center;padding:26px 18px;border:1.5px dashed var(--br);border-radius:var(--r);color:var(--t2);}
 .first-card p{margin:6px 0 14px;font-size:.92rem;line-height:1.5;}
 
@@ -355,6 +355,35 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 .gi.on{border-color:var(--pl);background:var(--ca);}
 .goal-quick{flex-wrap:wrap;}
 .toast.above{bottom:calc(var(--tabh) + 84px);}
+
+/* 2.4 — voice · import */
+.voice-btn{color:var(--pl);}
+.voice-dlg{text-align:center;}
+.mic-pulse{font-size:2.6rem;width:84px;height:84px;margin:6px auto 12px;border-radius:50%;background:var(--p);display:flex;align-items:center;justify-content:center;animation:micp 1.3s ease-in-out infinite;}
+@keyframes micp{0%,100%{box-shadow:0 0 0 0 rgba(59,190,122,.55);}50%{box-shadow:0 0 0 18px rgba(59,190,122,0);}}
+@media (prefers-reduced-motion:reduce){.mic-pulse{animation:none;}}
+.voice-live{min-height:1.6em;font-size:1.1rem;font-weight:700;margin:6px 0 10px;color:var(--tx);}
+.voice-ex{margin:0 0 14px;}
+.imp-how{text-align:center;padding:20px 16px;}
+.imp-how p{margin:6px 0 14px;line-height:1.5;color:var(--t2);font-size:.92rem;}
+.imp-big{font-size:2.4rem;}
+.imp-wait{text-align:center;padding:40px 0;color:var(--t2);}
+.imp-sum{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;}
+.imp-list{margin-bottom:84px;}
+.imp-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--br);opacity:.55;}
+.imp-row.on{opacity:1;}
+.imp-row:last-child{border-bottom:none;}
+.imp-ck{flex:0 0 auto;width:26px;height:26px;border-radius:8px;border:2px solid var(--br);background:none;color:var(--on-p,#fff);font-weight:900;cursor:pointer;}
+.imp-row.on .imp-ck{background:var(--pl);border-color:var(--pl);}
+.imp-mid{flex:1;min-width:0;cursor:pointer;}
+.imp-desc{font-weight:700;font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.imp-meta{font-size:.75rem;color:var(--t3);margin-top:2px;}
+.imp-r{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto;}
+.imp-amt{font-weight:800;font-size:.92rem;}
+.imp-cat{background:var(--bg3);color:var(--tx);border:1px solid var(--br);border-radius:8px;font-size:.75rem;padding:3px 4px;max-width:118px;}
+.tag-w{color:var(--ac);font-weight:700;}.tag-ok{color:var(--ok);font-weight:700;}
+.imp-bar{position:sticky;bottom:0;display:flex;gap:8px;padding:10px 0 4px;background:linear-gradient(transparent,var(--bg) 30%);}
+.imp-bar .btn-p{flex:1;}
 </style>
 </head>
 <body>
@@ -395,7 +424,7 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 
 <!-- ADD EXPENSE -->
 <div class="sc" id="sc-add">
-  <div class="tb"><button class="tb-back" onclick="goBack()"><span class="bk-ar"></span> <span data-i18n="cancel">ביטול</span></button><div class="tb-title" id="aTitle" data-i18n="newExpense">הוצאה חדשה</div></div>
+  <div class="tb"><button class="tb-back" onclick="goBack()"><span class="bk-ar"></span> <span data-i18n="cancel">ביטול</span></button><div class="tb-title" id="aTitle" data-i18n="newExpense">הוצאה חדשה</div><div class="tb-acts"><button class="tb-btn voice-btn" id="aVoiceBtn" onclick="startVoice()" type="button">🎤 <span data-i18n="voice">בקול</span></button></div></div>
   <div class="add-top">
     <div class="seg" id="aTypeSeg" role="tablist">
       <button class="on" data-t="regular" onclick="setT('regular',this)" data-i18n="tRegular">רגילה</button>
@@ -474,6 +503,13 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 <div class="sc" id="sc-goals">
   <div class="tb"><button class="tb-back" onclick="goBack()"><span class="bk-ar"></span> <span class="bk-lbl"></span></button><div class="tb-title" data-i18n="goals">יעדי חיסכון</div></div>
   <div class="sb" id="goalsBody"></div>
+</div>
+
+<!-- IMPORT -->
+<div class="sc" id="sc-import">
+  <div class="tb"><button class="tb-back" onclick="goBack()"><span class="bk-ar"></span> <span class="bk-lbl"></span></button><div class="tb-title" data-i18n="importStmt">ייבוא מקובץ</div></div>
+  <div class="sb" id="impBody"></div>
+  <input type="file" id="impInp" accept=".xlsx,.xls,.csv,.txt,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" style="display:none" onchange="handleImportFile(event)">
 </div>
 
 <!-- RECEIPTS -->
@@ -608,7 +644,8 @@ select.inp option{background:var(--bg3);color:var(--tx);}
 // MoneyNest — all UI text. One key, five languages. Missing key → English.
 // ===================================================================
 var LANG={
-he:{catBudgets:"תקציב לפי קטגוריה",catBudgetHint:"הקש על קטגוריה כדי להגדיר לה תקרה חודשית — תקבל התראה כשמתקרבים אליה.",noLimit:"ללא תקרה · הקש להגדרה",leftOf:"נותרו {a}",monthlyLimit:"תקרה חודשית",spentThisMonth:"הוצאת החודש: {a}",removeLimit:"הסר תקרה",catOver:"⚠️ {c}: חרגת מהתקרה ב-{a}",catNear:"⚠️ {c}: ניצלת {p}% מהתקרה",catsSumOver:"סך תקרות הקטגוריות ({a}) גבוה מהתקציב החודשי",insights:"תובנות החודש",insLess:"הוצאת עד היום {p}% פחות מאשר באותה נקודה בחודש שעבר",insMore:"הוצאת עד היום {p}% יותר מאשר באותה נקודה בחודש שעבר",insSame:"קצב ההוצאות דומה לחודש שעבר",insTop:"הכי הרבה הלך על {c}: {a} ({p}% מההוצאות)",insForecastOk:"בקצב הזה החודש ייסגר בערך ב-{a}, בתוך התקציב",insForecastOver:"בקצב הזה צפויה חריגה של כ-{a} עד סוף החודש",insCatOver:"{c} כבר מעבר לתקרה ב-{a}",goals:"יעדי חיסכון",goalsCount:"{n} יעדים",goalsEmpty:"עוד אין יעדים. הצב יעד (חופשה, רכב, קרן חירום) ועקוב אחרי ההתקדמות.",newGoal:"יעד חדש",editGoal:"עריכת יעד",goalName:"שם היעד",goalNamePh:"למשל: חופשה, רכב, קרן חירום",goalTarget:"סכום היעד",goalSaved:"נחסך עד עכשיו",goalDeadline:"עד מתי (לא חובה)",goalIcon:"סמל",deposit:"הפקדה",withdraw:"משיכה",depositedAmt:"הופקדו {a}",withdrewAmt:"נמשכו {a}",goalReached:"🎉 כל הכבוד! הגעת ליעד \"{n}\"",goalPerMonth:"{a} לחודש כדי להגיע בזמן",goalLeft:"נותרו {a}",goalDone:"הושג!",goalDeadlinePassed:"תאריך היעד עבר",totalSaved:"סה״כ נחסך",goalsHint:"היעדים הם מעקב בלבד: האפליקציה לא מעבירה כסף. כשאתה חוסך בפועל, רשום כאן הפקדה.",hCatBud:"תקרה חודשית לכל קטגוריה, עם פס התקדמות והתראה ב-80% ובחריגה.",hIns:"בדף הבית: השוואה לחודש שעבר, תחזית לסוף החודש והקטגוריה הגדולה.",hGoals:"ב\"עוד\" ← יעדי חיסכון: הצב יעד, רשום הפקדות וראה כמה צריך לחסוך בחודש.",
+he:{voice:"בקול",voiceNoSupport:"הדפדפן הזה לא תומך בהקלטה קולית. נסה ב-Chrome.",listening:"מקשיב…",voiceExample:"אמור למשל: \"50 שקל סופר\" או \"דלק 200\"",micDenied:"אין הרשאה למיקרופון. אפשר לאשר בהגדרות הדפדפן.",voiceNothing:"לא נקלט דיבור. נסה שוב.",voiceErr:"הזיהוי הקולי נכשל. בדוק חיבור לאינטרנט.",voiceGot:"✓ {a} · {c}. בדוק ושמור",voicePickCat:"✓ {a}. בחר קטגוריה ושמור",voiceNoAmount:"לא זוהה סכום. אמור מספר, למשל \"50 שקל\"",importStmt:"ייבוא מקובץ",reading:"קורא את הקובץ…",impNeedNet:"לקריאת קובץ אקסל צריך חיבור לאינטרנט בפעם הראשונה.",impFail:"לא הצלחתי לקרוא את הקובץ.",impIntro:"מייבאים את פירוט העסקאות מחברת האשראי או מהבנק, ולא צריך להקליד כל הוצאה ידנית. האפליקציה מזהה לבד תאריך, בית עסק וסכום, ומציעה קטגוריה.",impChoose:"בחר קובץ (Excel או CSV)",impWhere:"איפה מוצאים את הקובץ?",impIsra:"באתר (במחשב): פירוט עסקאות ← אייקון האקסל / \"ייצוא לאקסל\"",impMax:"באתר: פירוט חיובים ועסקאות ← \"ייצוא לאקסל\"",impCal:"באתר: פירוט עסקאות ← \"הורדה לאקסל\"",impBank:"בבנק: עובר ושב ← ייצוא לאקסל. בדרך כלל הייצוא קיים רק באתר ולא באפליקציה.",impPrivacy:"הקובץ נקרא רק על המכשיר שלך ולא נשלח לשום מקום.",impNone:"לא נמצאו עסקאות בקובץ \"{f}\". ודא שזה קובץ פירוט עסקאות.",impFound:"נמצאו {n} עסקאות",impDups:"{n} כבר קיימות אצלך ולכן לא סומנו",impNoneSel:"בטל הכל",impAllSel:"סמן הכל",impDup:"כבר קיים",impRefund:"זיכוי",impGo:"ייבא {n} · {a}",impDone:"יובאו {n} הוצאות · {a}",hVoice:"במסך הוספת הוצאה לוחצים על 🎤 ואומרים למשל \"50 שקל סופר\". הסכום, התיאור והקטגוריה ימולאו לבד.",hImport:"ב\"עוד\" ← ייבוא מקובץ: בוחרים קובץ אקסל של פירוט עסקאות, מסמנים מה לייבא, וזהו. כפילויות לא מסומנות.",
+catBudgets:"תקציב לפי קטגוריה",catBudgetHint:"הקש על קטגוריה כדי להגדיר לה תקרה חודשית — תקבל התראה כשמתקרבים אליה.",noLimit:"ללא תקרה · הקש להגדרה",leftOf:"נותרו {a}",monthlyLimit:"תקרה חודשית",spentThisMonth:"הוצאת החודש: {a}",removeLimit:"הסר תקרה",catOver:"⚠️ {c}: חרגת מהתקרה ב-{a}",catNear:"⚠️ {c}: ניצלת {p}% מהתקרה",catsSumOver:"סך תקרות הקטגוריות ({a}) גבוה מהתקציב החודשי",insights:"תובנות החודש",insLess:"הוצאת עד היום {p}% פחות מאשר באותה נקודה בחודש שעבר",insMore:"הוצאת עד היום {p}% יותר מאשר באותה נקודה בחודש שעבר",insSame:"קצב ההוצאות דומה לחודש שעבר",insTop:"הכי הרבה הלך על {c}: {a} ({p}% מההוצאות)",insForecastOk:"בקצב הזה החודש ייסגר בערך ב-{a}, בתוך התקציב",insForecastOver:"בקצב הזה צפויה חריגה של כ-{a} עד סוף החודש",insCatOver:"{c} כבר מעבר לתקרה ב-{a}",goals:"יעדי חיסכון",goalsCount:"{n} יעדים",goalsEmpty:"עוד אין יעדים. הצב יעד (חופשה, רכב, קרן חירום) ועקוב אחרי ההתקדמות.",newGoal:"יעד חדש",editGoal:"עריכת יעד",goalName:"שם היעד",goalNamePh:"למשל: חופשה, רכב, קרן חירום",goalTarget:"סכום היעד",goalSaved:"נחסך עד עכשיו",goalDeadline:"עד מתי (לא חובה)",goalIcon:"סמל",deposit:"הפקדה",withdraw:"משיכה",depositedAmt:"הופקדו {a}",withdrewAmt:"נמשכו {a}",goalReached:"🎉 כל הכבוד! הגעת ליעד \"{n}\"",goalPerMonth:"{a} לחודש כדי להגיע בזמן",goalLeft:"נותרו {a}",goalDone:"הושג!",goalDeadlinePassed:"תאריך היעד עבר",totalSaved:"סה״כ נחסך",goalsHint:"היעדים הם מעקב בלבד: האפליקציה לא מעבירה כסף. כשאתה חוסך בפועל, רשום כאן הפקדה.",hCatBud:"תקרה חודשית לכל קטגוריה, עם פס התקדמות והתראה ב-80% ובחריגה.",hIns:"בדף הבית: השוואה לחודש שעבר, תחזית לסוף החודש והקטגוריה הגדולה.",hGoals:"ב\"עוד\" ← יעדי חיסכון: הצב יעד, רשום הפקדות וראה כמה צריך לחסוך בחודש.",
 detailsOptional:'פרטים (לא חובה)',padDone:'סיום הקלדת הסכום',
 undo:'בטל',prevMonth:'החודש הקודם',nextMonth:'החודש הבא',ofBudget:'מתוך ',overBy:'חריגה של {a}',setBudgetCta:'הקש להגדרת תקציב',firstExpense:'עוד אין הוצאות. הוסף את הראשונה — זה לוקח כמה שניות.',upcomingMonth:'צפוי בהמשך החודש',recentMonth:'אחרונות החודש',seeAll:'לכל ההוצאות',noExpensesYetMonth:'אין עדיין הוצאות החודש',fixedHint:'תיספר כל חודש מהתאריך שנבחר',saveAmt:'שמור {a}',newCategory:'חדשה',savedAmt:'✓ נשמר {a}',deletedItem:'נמחק: {d}',until:'עד {d}',found:'נמצאו {n}',noResults:'לא נמצאו הוצאות',today:'היום',yesterday:'אתמול',expected:'צפוי',tapBar:'הקש על חודש לפירוט',topExpenses:'ההוצאות הגדולות',selected:'נבחר',budgetOf:'{b} לחודש',notSet:'לא הוגדר',neverBackedUp:'עוד לא בוצע גיבוי',budgetHint:'תקציב חודשי מראה כמה נשאר לך עד סוף החודש.',paidOf:'שולמו {p} מתוך {n}',fixedEnded:'הסתיימה ב-{d}',fixedRunning:'פעילה מ-{d}, כל חודש',resumeFixed:'חדש את ההוצאה',stopFixed:'הפסק מהחודש הבא',fixedStopped:'✓ ההוצאה הקבועה תיפסק בסוף החודש',newExpense:'הוצאה חדשה',tFixedMonthly:'קבועה',moreDetails:'פרטים נוספים: תיאור, תשלום, קבלה',search:'חיפוש',more:'עוד',thDay:'יום (בהיר)',hHome:'הטבעת מראה כמה מהתקציב החודשי נוצל, ומתחת — מה צפוי ומה נרשם לאחרונה.',hExp:'כל ההוצאות לפי חודש, מקובצות לפי ימים. החצים מחליפים חודש, ו-🔍 מחפש בכל התקופות.',hRpt:'סיכום לפי חודש או תקופה, תקציב, גרף 12 חודשים (הקשה על עמודה פותחת את החודש) ופילוח לפי קטגוריה.',hEdit:'הקשה על הוצאה פותחת עריכה. אחרי מחיקה מופיע "בטל" לכמה שניות.',hFix:'חוזרת כל חודש (שכירות, מנוי). אפשר להפסיק אותה מהחודש הבא בחלון העריכה.',
 langShort:'עב',langName:'עברית',appSub:'יומן ניהול הוצאות',rights:'כל הזכויות שמורות',
@@ -659,7 +696,8 @@ version:'גרסה',developer:'פיתוח',platform:'פלטפורמה',storageLbl
 copyLink:'העתק קישור',feedback:'שלח משוב',privacyPolicy:'מדיניות פרטיות',moreApps:'עוד אפליקציות של AppNest',copied:'✓ הועתק',
 shareMsg:'היי! מצאתי אפליקציה נוחה לניהול הוצאות 💰\n📱 MoneyNest — חינם, עובדת בלי אינטרנט, והנתונים נשארים אצלך.\n👇',shareShort:'MoneyNest — ניהול הוצאות פשוט ופרטי',upcoming:'מחר יורד: {d} {a}',installApp:'התקן את MoneyNest במכשיר',install:'התקן'
 },
-en:{catBudgets:"Budget by category",catBudgetHint:"Tap a category to set a monthly limit — you will be alerted as you get close.",noLimit:"No limit · tap to set",leftOf:"{a} left",monthlyLimit:"Monthly limit",spentThisMonth:"Spent this month: {a}",removeLimit:"Remove limit",catOver:"⚠️ {c}: over the limit by {a}",catNear:"⚠️ {c}: {p}% of the limit used",catsSumOver:"Category limits add up to {a}, more than the monthly budget",insights:"This month",insLess:"So far you spent {p}% less than at this point last month",insMore:"So far you spent {p}% more than at this point last month",insSame:"Your spending pace is similar to last month",insTop:"Most went on {c}: {a} ({p}% of spending)",insForecastOk:"At this pace the month will end around {a}, within budget",insForecastOver:"At this pace you will go over by about {a} by month end",insCatOver:"{c} is already over its limit by {a}",goals:"Savings goals",goalsCount:"{n} goals",goalsEmpty:"No goals yet. Set one (a trip, a car, an emergency fund) and track your progress.",newGoal:"New goal",editGoal:"Edit goal",goalName:"Goal name",goalNamePh:"e.g. Vacation, Car, Emergency fund",goalTarget:"Target amount",goalSaved:"Saved so far",goalDeadline:"By when (optional)",goalIcon:"Icon",deposit:"Deposit",withdraw:"Withdraw",depositedAmt:"{a} deposited",withdrewAmt:"{a} withdrawn",goalReached:"🎉 Well done! You reached \"{n}\"",goalPerMonth:"{a} a month to make it on time",goalLeft:"{a} to go",goalDone:"Reached!",goalDeadlinePassed:"Target date has passed",totalSaved:"Total saved",goalsHint:"Goals are for tracking only — the app never moves money. When you actually save, record a deposit here.",hCatBud:"A monthly limit per category, with a progress bar and alerts at 80% and when exceeded.",hIns:"On Home: comparison with last month, a month-end forecast and your biggest category.",hGoals:"More → Savings goals: set a goal, record deposits and see how much to save each month.",
+en:{voice:"Voice",voiceNoSupport:"This browser does not support voice input. Try Chrome.",listening:"Listening…",voiceExample:"Say e.g. \"50 groceries\" or \"fuel 200\"",micDenied:"No microphone permission. You can allow it in the browser settings.",voiceNothing:"No speech detected. Try again.",voiceErr:"Voice recognition failed. Check your internet connection.",voiceGot:"✓ {a} · {c} — check and save",voicePickCat:"✓ {a} — pick a category and save",voiceNoAmount:"No amount recognized. Say a number, e.g. \"50\"",importStmt:"Import from file",reading:"Reading the file…",impNeedNet:"Reading an Excel file needs an internet connection the first time.",impFail:"Could not read the file.",impIntro:"Import the transaction list from your card company or bank instead of typing every expense. The date, merchant and amount are detected automatically, and a category is suggested.",impChoose:"Choose a file (Excel or CSV)",impWhere:"Where do I get the file?",impIsra:"On the website (computer): Transactions → Excel icon / \"Export to Excel\"",impMax:"On the website: Charges & transactions → \"Export to Excel\"",impCal:"On the website: Transactions → \"Download to Excel\"",impBank:"Bank: Current account → Export to Excel. Usually only on the website, not in the app.",impPrivacy:"The file is read only on your device and is never sent anywhere.",impNone:"No transactions found in \"{f}\". Make sure it is a transaction statement.",impFound:"{n} transactions found",impDups:"{n} already exist and were left unselected",impNoneSel:"Select none",impAllSel:"Select all",impDup:"Already added",impRefund:"Refund",impGo:"Import {n} · {a}",impDone:"{n} expenses imported · {a}",hVoice:"On the add screen tap 🎤 and say e.g. \"50 groceries\". Amount, description and category fill in by themselves.",hImport:"More → Import from file: choose your statement Excel file, tick what to import, done. Duplicates are left unticked.",
+catBudgets:"Budget by category",catBudgetHint:"Tap a category to set a monthly limit — you will be alerted as you get close.",noLimit:"No limit · tap to set",leftOf:"{a} left",monthlyLimit:"Monthly limit",spentThisMonth:"Spent this month: {a}",removeLimit:"Remove limit",catOver:"⚠️ {c}: over the limit by {a}",catNear:"⚠️ {c}: {p}% of the limit used",catsSumOver:"Category limits add up to {a}, more than the monthly budget",insights:"This month",insLess:"So far you spent {p}% less than at this point last month",insMore:"So far you spent {p}% more than at this point last month",insSame:"Your spending pace is similar to last month",insTop:"Most went on {c}: {a} ({p}% of spending)",insForecastOk:"At this pace the month will end around {a}, within budget",insForecastOver:"At this pace you will go over by about {a} by month end",insCatOver:"{c} is already over its limit by {a}",goals:"Savings goals",goalsCount:"{n} goals",goalsEmpty:"No goals yet. Set one (a trip, a car, an emergency fund) and track your progress.",newGoal:"New goal",editGoal:"Edit goal",goalName:"Goal name",goalNamePh:"e.g. Vacation, Car, Emergency fund",goalTarget:"Target amount",goalSaved:"Saved so far",goalDeadline:"By when (optional)",goalIcon:"Icon",deposit:"Deposit",withdraw:"Withdraw",depositedAmt:"{a} deposited",withdrewAmt:"{a} withdrawn",goalReached:"🎉 Well done! You reached \"{n}\"",goalPerMonth:"{a} a month to make it on time",goalLeft:"{a} to go",goalDone:"Reached!",goalDeadlinePassed:"Target date has passed",totalSaved:"Total saved",goalsHint:"Goals are for tracking only — the app never moves money. When you actually save, record a deposit here.",hCatBud:"A monthly limit per category, with a progress bar and alerts at 80% and when exceeded.",hIns:"On Home: comparison with last month, a month-end forecast and your biggest category.",hGoals:"More → Savings goals: set a goal, record deposits and see how much to save each month.",
 detailsOptional:'Details (optional)',padDone:'Done with amount',
 undo:'Undo',prevMonth:'Previous month',nextMonth:'Next month',ofBudget:'of ',overBy:'{a} over',setBudgetCta:'Tap to set a budget',firstExpense:'No expenses yet. Add your first one — it takes a few seconds.',upcomingMonth:'Coming up this month',recentMonth:'Recent this month',seeAll:'See all',noExpensesYetMonth:'No expenses this month yet',fixedHint:'Counted every month from the chosen date',saveAmt:'Save {a}',newCategory:'New',savedAmt:'✓ Saved {a}',deletedItem:'Deleted: {d}',until:'until {d}',found:'{n} found',noResults:'No matching expenses',today:'Today',yesterday:'Yesterday',expected:'upcoming',tapBar:'Tap a month for details',topExpenses:'Biggest expenses',selected:'Selected',budgetOf:'{b} a month',notSet:'Not set',neverBackedUp:'No backup yet',budgetHint:'A monthly budget shows how much you have left until the end of the month.',paidOf:'{p} of {n} paid',fixedEnded:'Ended on {d}',fixedRunning:'Active since {d}, every month',resumeFixed:'Resume this expense',stopFixed:'Stop from next month',fixedStopped:'✓ This fixed expense stops at the end of the month',newExpense:'New expense',tFixedMonthly:'Fixed',moreDetails:'More: description, payment, receipt',search:'Search',more:'More',thDay:'Day (light)',hHome:'The ring shows how much of the monthly budget is used; below it, what is coming up and what was logged recently.',hExp:'All expenses by month, grouped by day. Arrows change the month; 🔍 searches all periods.',hRpt:'Summary by month or period, budget, a 12-month chart (tap a bar to open that month) and categories.',hEdit:'Tap an expense to edit it. After deleting, "Undo" appears for a few seconds.',hFix:'Repeats every month (rent, subscription). You can stop it from next month in the edit window.',
 langShort:'EN',langName:'English',appSub:'Expense Journal',rights:'All rights reserved',
@@ -710,7 +748,8 @@ version:'Version',developer:'Developer',platform:'Platform',storageLbl:'Storage'
 copyLink:'Copy link',feedback:'Send feedback',privacyPolicy:'Privacy policy',moreApps:'More AppNest apps',copied:'✓ Copied',
 shareMsg:'Hi! I found a handy expense tracker 💰\n📱 MoneyNest — free, works offline, and your data stays with you.\n👇',shareShort:'MoneyNest — simple, private expense tracking',upcoming:'Due tomorrow: {d} {a}',installApp:'Install MoneyNest on your device',install:'Install'
 },
-ru:{catBudgets:"Бюджет по категориям",catBudgetHint:"Нажмите на категорию, чтобы задать месячный лимит — вы получите предупреждение при приближении к нему.",noLimit:"Без лимита · нажмите",leftOf:"Осталось {a}",monthlyLimit:"Месячный лимит",spentThisMonth:"Потрачено в этом месяце: {a}",removeLimit:"Убрать лимит",catOver:"⚠️ {c}: лимит превышен на {a}",catNear:"⚠️ {c}: использовано {p}% лимита",catsSumOver:"Сумма лимитов категорий ({a}) больше месячного бюджета",insights:"Итоги месяца",insLess:"Пока вы потратили на {p}% меньше, чем к этому дню прошлого месяца",insMore:"Пока вы потратили на {p}% больше, чем к этому дню прошлого месяца",insSame:"Темп расходов как в прошлом месяце",insTop:"Больше всего ушло на {c}: {a} ({p}% расходов)",insForecastOk:"При таком темпе месяц закончится примерно на {a} — в рамках бюджета",insForecastOver:"При таком темпе к концу месяца превышение составит около {a}",insCatOver:"{c}: лимит уже превышен на {a}",goals:"Цели накоплений",goalsCount:"Целей: {n}",goalsEmpty:"Целей пока нет. Поставьте цель (отпуск, машина, резервный фонд) и следите за прогрессом.",newGoal:"Новая цель",editGoal:"Изменить цель",goalName:"Название цели",goalNamePh:"Например: отпуск, машина, резерв",goalTarget:"Сумма цели",goalSaved:"Накоплено",goalDeadline:"Срок (необязательно)",goalIcon:"Значок",deposit:"Пополнить",withdraw:"Снять",depositedAmt:"Пополнено: {a}",withdrewAmt:"Снято: {a}",goalReached:"🎉 Отлично! Цель «{n}» достигнута",goalPerMonth:"{a} в месяц, чтобы успеть",goalLeft:"Осталось {a}",goalDone:"Достигнуто!",goalDeadlinePassed:"Срок прошёл",totalSaved:"Всего накоплено",goalsHint:"Цели — только для учёта: приложение не переводит деньги. Когда откладываете, запишите пополнение здесь.",hCatBud:"Месячный лимит для каждой категории с полосой прогресса и предупреждением при 80% и превышении.",hIns:"На главной: сравнение с прошлым месяцем, прогноз на конец месяца и главная категория.",hGoals:"Ещё → Цели накоплений: задайте цель, записывайте пополнения и смотрите, сколько откладывать в месяц.",
+ru:{voice:"Голос",voiceNoSupport:"Этот браузер не поддерживает голосовой ввод. Попробуйте Chrome.",listening:"Слушаю…",voiceExample:"Скажите, например: «50 продукты» или «бензин 200»",micDenied:"Нет доступа к микрофону. Разрешите его в настройках браузера.",voiceNothing:"Речь не распознана. Попробуйте ещё раз.",voiceErr:"Ошибка распознавания. Проверьте подключение к интернету.",voiceGot:"✓ {a} · {c} — проверьте и сохраните",voicePickCat:"✓ {a} — выберите категорию и сохраните",voiceNoAmount:"Сумма не распознана. Назовите число, например «50»",importStmt:"Импорт из файла",reading:"Читаю файл…",impNeedNet:"Для чтения Excel в первый раз нужен интернет.",impFail:"Не удалось прочитать файл.",impIntro:"Импортируйте выписку из компании кредитных карт или банка вместо ручного ввода. Дата, получатель и сумма определяются автоматически, категория предлагается.",impChoose:"Выбрать файл (Excel или CSV)",impWhere:"Где взять файл?",impIsra:"На сайте (с компьютера): список операций → значок Excel / «Экспорт в Excel»",impMax:"На сайте: списания и операции → «Экспорт в Excel»",impCal:"На сайте: список операций → «Скачать в Excel»",impBank:"Банк: текущий счёт → экспорт в Excel. Обычно только на сайте, не в приложении.",impPrivacy:"Файл читается только на вашем устройстве и никуда не отправляется.",impNone:"В файле «{f}» не найдено операций. Убедитесь, что это выписка.",impFound:"Найдено операций: {n}",impDups:"{n} уже есть у вас и не отмечены",impNoneSel:"Снять все",impAllSel:"Отметить все",impDup:"Уже есть",impRefund:"Возврат",impGo:"Импортировать {n} · {a}",impDone:"Импортировано расходов: {n} · {a}",hVoice:"На экране добавления нажмите 🎤 и скажите, например, «50 продукты». Сумма, описание и категория заполнятся сами.",hImport:"Ещё → Импорт из файла: выберите Excel-выписку, отметьте нужное — готово. Дубликаты не отмечаются.",
+catBudgets:"Бюджет по категориям",catBudgetHint:"Нажмите на категорию, чтобы задать месячный лимит — вы получите предупреждение при приближении к нему.",noLimit:"Без лимита · нажмите",leftOf:"Осталось {a}",monthlyLimit:"Месячный лимит",spentThisMonth:"Потрачено в этом месяце: {a}",removeLimit:"Убрать лимит",catOver:"⚠️ {c}: лимит превышен на {a}",catNear:"⚠️ {c}: использовано {p}% лимита",catsSumOver:"Сумма лимитов категорий ({a}) больше месячного бюджета",insights:"Итоги месяца",insLess:"Пока вы потратили на {p}% меньше, чем к этому дню прошлого месяца",insMore:"Пока вы потратили на {p}% больше, чем к этому дню прошлого месяца",insSame:"Темп расходов как в прошлом месяце",insTop:"Больше всего ушло на {c}: {a} ({p}% расходов)",insForecastOk:"При таком темпе месяц закончится примерно на {a} — в рамках бюджета",insForecastOver:"При таком темпе к концу месяца превышение составит около {a}",insCatOver:"{c}: лимит уже превышен на {a}",goals:"Цели накоплений",goalsCount:"Целей: {n}",goalsEmpty:"Целей пока нет. Поставьте цель (отпуск, машина, резервный фонд) и следите за прогрессом.",newGoal:"Новая цель",editGoal:"Изменить цель",goalName:"Название цели",goalNamePh:"Например: отпуск, машина, резерв",goalTarget:"Сумма цели",goalSaved:"Накоплено",goalDeadline:"Срок (необязательно)",goalIcon:"Значок",deposit:"Пополнить",withdraw:"Снять",depositedAmt:"Пополнено: {a}",withdrewAmt:"Снято: {a}",goalReached:"🎉 Отлично! Цель «{n}» достигнута",goalPerMonth:"{a} в месяц, чтобы успеть",goalLeft:"Осталось {a}",goalDone:"Достигнуто!",goalDeadlinePassed:"Срок прошёл",totalSaved:"Всего накоплено",goalsHint:"Цели — только для учёта: приложение не переводит деньги. Когда откладываете, запишите пополнение здесь.",hCatBud:"Месячный лимит для каждой категории с полосой прогресса и предупреждением при 80% и превышении.",hIns:"На главной: сравнение с прошлым месяцем, прогноз на конец месяца и главная категория.",hGoals:"Ещё → Цели накоплений: задайте цель, записывайте пополнения и смотрите, сколько откладывать в месяц.",
 detailsOptional:'Подробности (необязательно)',padDone:'Сумма введена',
 undo:'Отменить',prevMonth:'Предыдущий месяц',nextMonth:'Следующий месяц',ofBudget:'из ',overBy:'перерасход {a}',setBudgetCta:'Нажмите, чтобы задать бюджет',firstExpense:'Расходов пока нет. Добавьте первый — это займёт пару секунд.',upcomingMonth:'Ожидается в этом месяце',recentMonth:'Последние за месяц',seeAll:'Все расходы',noExpensesYetMonth:'В этом месяце расходов пока нет',fixedHint:'Учитывается каждый месяц с выбранной даты',saveAmt:'Сохранить {a}',newCategory:'Новая',savedAmt:'✓ Сохранено {a}',deletedItem:'Удалено: {d}',until:'до {d}',found:'Найдено: {n}',noResults:'Ничего не найдено',today:'Сегодня',yesterday:'Вчера',expected:'ожидается',tapBar:'Нажмите на месяц для подробностей',topExpenses:'Крупнейшие расходы',selected:'Выбрано',budgetOf:'{b} в месяц',notSet:'Не задан',neverBackedUp:'Копий ещё не было',budgetHint:'Месячный бюджет показывает, сколько осталось до конца месяца.',paidOf:'Оплачено {p} из {n}',fixedEnded:'Завершён {d}',fixedRunning:'Активен с {d}, каждый месяц',resumeFixed:'Возобновить расход',stopFixed:'Остановить со следующего месяца',fixedStopped:'✓ Постоянный расход прекратится в конце месяца',newExpense:'Новый расход',tFixedMonthly:'Постоянный',moreDetails:'Ещё: описание, оплата, чек',search:'Поиск',more:'Ещё',thDay:'Дневная (светлая)',hHome:'Кольцо показывает, какая часть месячного бюджета использована; ниже — что ожидается и что записано недавно.',hExp:'Все расходы по месяцам, сгруппированные по дням. Стрелки меняют месяц, 🔍 ищет по всем периодам.',hRpt:'Сводка за месяц или период, бюджет, график за 12 месяцев (нажмите на столбец, чтобы открыть месяц) и категории.',hEdit:'Нажмите на расход, чтобы изменить его. После удаления на несколько секунд появляется «Отменить».',hFix:'Повторяется каждый месяц (аренда, подписка). Остановить со следующего месяца можно в окне изменения.',
 langShort:'РУ',langName:'Русский',appSub:'Журнал расходов',rights:'Все права защищены',
@@ -761,7 +800,8 @@ version:'Версия',developer:'Разработчик',platform:'Платфо
 copyLink:'Копировать ссылку',feedback:'Написать отзыв',privacyPolicy:'Политика конфиденциальности',moreApps:'Другие приложения AppNest',copied:'✓ Скопировано',
 shareMsg:'Привет! Нашёл удобное приложение для учёта расходов 💰\n📱 MoneyNest — бесплатно, работает без интернета, данные остаются у вас.\n👇',shareShort:'MoneyNest — простой и приватный учёт расходов',upcoming:'Завтра списание: {d} {a}',installApp:'Установите MoneyNest на устройство',install:'Установить'
 },
-es:{catBudgets:"Presupuesto por categoría",catBudgetHint:"Toca una categoría para fijar un límite mensual: te avisaremos cuando te acerques.",noLimit:"Sin límite · toca para fijar",leftOf:"Quedan {a}",monthlyLimit:"Límite mensual",spentThisMonth:"Gastado este mes: {a}",removeLimit:"Quitar límite",catOver:"⚠️ {c}: superaste el límite en {a}",catNear:"⚠️ {c}: usaste el {p}% del límite",catsSumOver:"Los límites por categoría suman {a}, más que el presupuesto mensual",insights:"Este mes",insLess:"Hasta hoy gastaste un {p}% menos que en el mismo punto del mes pasado",insMore:"Hasta hoy gastaste un {p}% más que en el mismo punto del mes pasado",insSame:"Tu ritmo de gasto es similar al del mes pasado",insTop:"Lo que más se llevó: {c}, {a} ({p}% del gasto)",insForecastOk:"A este ritmo el mes cerrará en unos {a}, dentro del presupuesto",insForecastOver:"A este ritmo te pasarás unos {a} a fin de mes",insCatOver:"{c} ya supera su límite en {a}",goals:"Metas de ahorro",goalsCount:"{n} metas",goalsEmpty:"Aún no hay metas. Crea una (un viaje, un coche, un fondo de emergencia) y sigue tu progreso.",newGoal:"Nueva meta",editGoal:"Editar meta",goalName:"Nombre de la meta",goalNamePh:"p. ej.: Vacaciones, Coche, Fondo de emergencia",goalTarget:"Importe objetivo",goalSaved:"Ahorrado hasta ahora",goalDeadline:"Para cuándo (opcional)",goalIcon:"Icono",deposit:"Depositar",withdraw:"Retirar",depositedAmt:"{a} depositados",withdrewAmt:"{a} retirados",goalReached:"🎉 ¡Bien hecho! Alcanzaste \"{n}\"",goalPerMonth:"{a} al mes para llegar a tiempo",goalLeft:"Faltan {a}",goalDone:"¡Logrado!",goalDeadlinePassed:"La fecha ya pasó",totalSaved:"Total ahorrado",goalsHint:"Las metas son solo para seguimiento: la app nunca mueve dinero. Cuando ahorres de verdad, registra aquí un depósito.",hCatBud:"Un límite mensual por categoría, con barra de progreso y avisos al 80% y al superarlo.",hIns:"En Inicio: comparación con el mes pasado, previsión de fin de mes y tu mayor categoría.",hGoals:"Más → Metas de ahorro: crea una meta, registra depósitos y mira cuánto ahorrar al mes.",
+es:{voice:"Voz",voiceNoSupport:"Este navegador no admite entrada de voz. Prueba con Chrome.",listening:"Escuchando…",voiceExample:"Di p. ej.: \"50 supermercado\" o \"gasolina 200\"",micDenied:"Sin permiso de micrófono. Puedes permitirlo en los ajustes del navegador.",voiceNothing:"No se detectó voz. Inténtalo de nuevo.",voiceErr:"Falló el reconocimiento de voz. Revisa tu conexión.",voiceGot:"✓ {a} · {c} — revisa y guarda",voicePickCat:"✓ {a} — elige categoría y guarda",voiceNoAmount:"No se reconoció un importe. Di un número, p. ej. \"50\"",importStmt:"Importar archivo",reading:"Leyendo el archivo…",impNeedNet:"Para leer un Excel se necesita internet la primera vez.",impFail:"No se pudo leer el archivo.",impIntro:"Importa los movimientos de tu tarjeta o banco en lugar de escribir cada gasto. La fecha, el comercio y el importe se detectan solos, y se sugiere una categoría.",impChoose:"Elegir archivo (Excel o CSV)",impWhere:"¿Dónde consigo el archivo?",impIsra:"En la web (ordenador): Movimientos → icono de Excel / \"Exportar a Excel\"",impMax:"En la web: Cargos y movimientos → \"Exportar a Excel\"",impCal:"En la web: Movimientos → \"Descargar a Excel\"",impBank:"Banco: Cuenta corriente → Exportar a Excel. Suele estar solo en la web, no en la app.",impPrivacy:"El archivo se lee solo en tu dispositivo y no se envía a ningún sitio.",impNone:"No se encontraron movimientos en \"{f}\". Asegúrate de que sea un extracto.",impFound:"{n} movimientos encontrados",impDups:"{n} ya existen y quedaron sin marcar",impNoneSel:"Desmarcar todo",impAllSel:"Marcar todo",impDup:"Ya existe",impRefund:"Reembolso",impGo:"Importar {n} · {a}",impDone:"{n} gastos importados · {a}",hVoice:"En la pantalla de añadir toca 🎤 y di p. ej. \"50 supermercado\". Importe, descripción y categoría se rellenan solos.",hImport:"Más → Importar archivo: elige el Excel del extracto, marca lo que quieras y listo. Los duplicados quedan sin marcar.",
+catBudgets:"Presupuesto por categoría",catBudgetHint:"Toca una categoría para fijar un límite mensual: te avisaremos cuando te acerques.",noLimit:"Sin límite · toca para fijar",leftOf:"Quedan {a}",monthlyLimit:"Límite mensual",spentThisMonth:"Gastado este mes: {a}",removeLimit:"Quitar límite",catOver:"⚠️ {c}: superaste el límite en {a}",catNear:"⚠️ {c}: usaste el {p}% del límite",catsSumOver:"Los límites por categoría suman {a}, más que el presupuesto mensual",insights:"Este mes",insLess:"Hasta hoy gastaste un {p}% menos que en el mismo punto del mes pasado",insMore:"Hasta hoy gastaste un {p}% más que en el mismo punto del mes pasado",insSame:"Tu ritmo de gasto es similar al del mes pasado",insTop:"Lo que más se llevó: {c}, {a} ({p}% del gasto)",insForecastOk:"A este ritmo el mes cerrará en unos {a}, dentro del presupuesto",insForecastOver:"A este ritmo te pasarás unos {a} a fin de mes",insCatOver:"{c} ya supera su límite en {a}",goals:"Metas de ahorro",goalsCount:"{n} metas",goalsEmpty:"Aún no hay metas. Crea una (un viaje, un coche, un fondo de emergencia) y sigue tu progreso.",newGoal:"Nueva meta",editGoal:"Editar meta",goalName:"Nombre de la meta",goalNamePh:"p. ej.: Vacaciones, Coche, Fondo de emergencia",goalTarget:"Importe objetivo",goalSaved:"Ahorrado hasta ahora",goalDeadline:"Para cuándo (opcional)",goalIcon:"Icono",deposit:"Depositar",withdraw:"Retirar",depositedAmt:"{a} depositados",withdrewAmt:"{a} retirados",goalReached:"🎉 ¡Bien hecho! Alcanzaste \"{n}\"",goalPerMonth:"{a} al mes para llegar a tiempo",goalLeft:"Faltan {a}",goalDone:"¡Logrado!",goalDeadlinePassed:"La fecha ya pasó",totalSaved:"Total ahorrado",goalsHint:"Las metas son solo para seguimiento: la app nunca mueve dinero. Cuando ahorres de verdad, registra aquí un depósito.",hCatBud:"Un límite mensual por categoría, con barra de progreso y avisos al 80% y al superarlo.",hIns:"En Inicio: comparación con el mes pasado, previsión de fin de mes y tu mayor categoría.",hGoals:"Más → Metas de ahorro: crea una meta, registra depósitos y mira cuánto ahorrar al mes.",
 detailsOptional:'Detalles (opcional)',padDone:'Listo con el importe',
 undo:'Deshacer',prevMonth:'Mes anterior',nextMonth:'Mes siguiente',ofBudget:'de ',overBy:'{a} de exceso',setBudgetCta:'Toca para fijar un presupuesto',firstExpense:'Aún no hay gastos. Añade el primero: tarda unos segundos.',upcomingMonth:'Próximo este mes',recentMonth:'Recientes del mes',seeAll:'Ver todos',noExpensesYetMonth:'Aún no hay gastos este mes',fixedHint:'Se cuenta cada mes desde la fecha elegida',saveAmt:'Guardar {a}',newCategory:'Nueva',savedAmt:'✓ Guardado {a}',deletedItem:'Eliminado: {d}',until:'hasta {d}',found:'{n} encontrados',noResults:'No hay gastos que coincidan',today:'Hoy',yesterday:'Ayer',expected:'previsto',tapBar:'Toca un mes para ver el detalle',topExpenses:'Gastos más grandes',selected:'Elegido',budgetOf:'{b} al mes',notSet:'Sin definir',neverBackedUp:'Aún sin copia',budgetHint:'Un presupuesto mensual muestra cuánto te queda hasta fin de mes.',paidOf:'{p} de {n} pagadas',fixedEnded:'Terminó el {d}',fixedRunning:'Activo desde el {d}, cada mes',resumeFixed:'Reanudar este gasto',stopFixed:'Detener desde el mes próximo',fixedStopped:'✓ Este gasto fijo termina a fin de mes',newExpense:'Nuevo gasto',tFixedMonthly:'Fijo',moreDetails:'Más: descripción, pago, recibo',search:'Buscar',more:'Más',thDay:'Día (claro)',hHome:'El anillo muestra cuánto del presupuesto mensual has usado; debajo, lo previsto y lo registrado recientemente.',hExp:'Todos los gastos por mes, agrupados por día. Las flechas cambian de mes; 🔍 busca en todos los periodos.',hRpt:'Resumen por mes o periodo, presupuesto, gráfico de 12 meses (toca una barra para abrir ese mes) y categorías.',hEdit:'Toca un gasto para editarlo. Tras eliminar, aparece "Deshacer" unos segundos.',hFix:'Se repite cada mes (alquiler, suscripción). Puedes detenerlo desde el mes próximo en la ventana de edición.',
 langShort:'ES',langName:'Español',appSub:'Diario de gastos',rights:'Todos los derechos reservados',
@@ -812,7 +852,8 @@ version:'Versión',developer:'Desarrollo',platform:'Plataforma',storageLbl:'Alma
 copyLink:'Copiar enlace',feedback:'Enviar comentarios',privacyPolicy:'Política de privacidad',moreApps:'Más apps de AppNest',copied:'✓ Copiado',
 shareMsg:'¡Hola! Encontré una app práctica para controlar gastos 💰\n📱 MoneyNest: gratis, funciona sin internet y tus datos se quedan contigo.\n👇',shareShort:'MoneyNest — control de gastos simple y privado',upcoming:'Mañana se cobra: {d} {a}',installApp:'Instala MoneyNest en tu dispositivo',install:'Instalar'
 },
-ar:{catBudgets:"الميزانية حسب الفئة",catBudgetHint:"اضغط على فئة لتحديد حد شهري لها، وستصلك تنبيهات عند الاقتراب منه.",noLimit:"بلا حد · اضغط للتحديد",leftOf:"المتبقي {a}",monthlyLimit:"الحد الشهري",spentThisMonth:"المصروف هذا الشهر: {a}",removeLimit:"إزالة الحد",catOver:"⚠️ {c}: تجاوزت الحد بمقدار {a}",catNear:"⚠️ {c}: استخدمت {p}% من الحد",catsSumOver:"مجموع حدود الفئات ({a}) أعلى من الميزانية الشهرية",insights:"ملخص الشهر",insLess:"صرفت حتى الآن أقل بنسبة {p}% مقارنة بنفس الوقت من الشهر الماضي",insMore:"صرفت حتى الآن أكثر بنسبة {p}% مقارنة بنفس الوقت من الشهر الماضي",insSame:"وتيرة مصروفاتك مشابهة للشهر الماضي",insTop:"أكثر ما صرفت عليه {c}: {a} ({p}% من المصروفات)",insForecastOk:"بهذه الوتيرة سينتهي الشهر عند نحو {a}، ضمن الميزانية",insForecastOver:"بهذه الوتيرة يُتوقع تجاوز بنحو {a} حتى نهاية الشهر",insCatOver:"{c} تجاوزت حدها بمقدار {a}",goals:"أهداف الادخار",goalsCount:"{n} أهداف",goalsEmpty:"لا توجد أهداف بعد. حدد هدفًا (رحلة، سيارة، صندوق طوارئ) وتابع تقدمك.",newGoal:"هدف جديد",editGoal:"تعديل الهدف",goalName:"اسم الهدف",goalNamePh:"مثلًا: إجازة، سيارة، صندوق طوارئ",goalTarget:"المبلغ المستهدف",goalSaved:"المدخر حتى الآن",goalDeadline:"حتى متى (اختياري)",goalIcon:"رمز",deposit:"إيداع",withdraw:"سحب",depositedAmt:"تم إيداع {a}",withdrewAmt:"تم سحب {a}",goalReached:"🎉 أحسنت! وصلت إلى هدف \"{n}\"",goalPerMonth:"{a} شهريًا للوصول في الموعد",goalLeft:"المتبقي {a}",goalDone:"تحقق!",goalDeadlinePassed:"انقضى الموعد",totalSaved:"إجمالي المدخرات",goalsHint:"الأهداف للمتابعة فقط، فالتطبيق لا ينقل أي أموال. عندما تدخر فعلًا سجّل إيداعًا هنا.",hCatBud:"حد شهري لكل فئة مع شريط تقدم وتنبيه عند 80% وعند التجاوز.",hIns:"في الرئيسية: مقارنة بالشهر الماضي وتوقع لنهاية الشهر وأكبر فئة.",hGoals:"المزيد ← أهداف الادخار: حدد هدفًا وسجّل الإيداعات واعرف كم تدخر شهريًا.",
+ar:{voice:"صوت",voiceNoSupport:"هذا المتصفح لا يدعم الإدخال الصوتي. جرّب Chrome.",listening:"أستمع…",voiceExample:"قل مثلًا: \"50 بقالة\" أو \"وقود 200\"",micDenied:"لا يوجد إذن للميكروفون. يمكنك السماح به من إعدادات المتصفح.",voiceNothing:"لم يُلتقط كلام. حاول مجددًا.",voiceErr:"فشل التعرف الصوتي. تحقق من اتصال الإنترنت.",voiceGot:"✓ {a} · {c}. راجع واحفظ",voicePickCat:"✓ {a}. اختر فئة واحفظ",voiceNoAmount:"لم يُتعرف على مبلغ. قل رقمًا، مثلًا \"50\"",importStmt:"استيراد من ملف",reading:"جارٍ قراءة الملف…",impNeedNet:"قراءة ملف Excel تحتاج اتصالًا بالإنترنت في المرة الأولى.",impFail:"تعذّرت قراءة الملف.",impIntro:"استورد كشف المعاملات من شركة البطاقات أو البنك بدل كتابة كل مصروف يدويًا. يُكتشف التاريخ والتاجر والمبلغ تلقائيًا وتُقترح فئة.",impChoose:"اختر ملفًا (Excel أو CSV)",impWhere:"من أين أحصل على الملف؟",impIsra:"في الموقع (من الحاسوب): تفاصيل المعاملات ← أيقونة Excel / \"تصدير إلى Excel\"",impMax:"في الموقع: الخصومات والمعاملات ← \"تصدير إلى Excel\"",impCal:"في الموقع: تفاصيل المعاملات ← \"تنزيل إلى Excel\"",impBank:"البنك: الحساب الجاري ← تصدير إلى Excel. غالبًا في الموقع فقط وليس في التطبيق.",impPrivacy:"يُقرأ الملف على جهازك فقط ولا يُرسل إلى أي مكان.",impNone:"لم تُعثر على معاملات في \"{f}\". تأكد أنه كشف معاملات.",impFound:"تم العثور على {n} معاملة",impDups:"{n} موجودة لديك مسبقًا ولم تُحدد",impNoneSel:"إلغاء الكل",impAllSel:"تحديد الكل",impDup:"موجود مسبقًا",impRefund:"استرداد",impGo:"استيراد {n} · {a}",impDone:"تم استيراد {n} مصروفات · {a}",hVoice:"في شاشة الإضافة اضغط 🎤 وقل مثلًا \"50 بقالة\". يُملأ المبلغ والوصف والفئة تلقائيًا.",hImport:"المزيد ← استيراد من ملف: اختر ملف Excel للكشف وحدد ما تريد وانتهى. المكررات لا تُحدد.",
+catBudgets:"الميزانية حسب الفئة",catBudgetHint:"اضغط على فئة لتحديد حد شهري لها، وستصلك تنبيهات عند الاقتراب منه.",noLimit:"بلا حد · اضغط للتحديد",leftOf:"المتبقي {a}",monthlyLimit:"الحد الشهري",spentThisMonth:"المصروف هذا الشهر: {a}",removeLimit:"إزالة الحد",catOver:"⚠️ {c}: تجاوزت الحد بمقدار {a}",catNear:"⚠️ {c}: استخدمت {p}% من الحد",catsSumOver:"مجموع حدود الفئات ({a}) أعلى من الميزانية الشهرية",insights:"ملخص الشهر",insLess:"صرفت حتى الآن أقل بنسبة {p}% مقارنة بنفس الوقت من الشهر الماضي",insMore:"صرفت حتى الآن أكثر بنسبة {p}% مقارنة بنفس الوقت من الشهر الماضي",insSame:"وتيرة مصروفاتك مشابهة للشهر الماضي",insTop:"أكثر ما صرفت عليه {c}: {a} ({p}% من المصروفات)",insForecastOk:"بهذه الوتيرة سينتهي الشهر عند نحو {a}، ضمن الميزانية",insForecastOver:"بهذه الوتيرة يُتوقع تجاوز بنحو {a} حتى نهاية الشهر",insCatOver:"{c} تجاوزت حدها بمقدار {a}",goals:"أهداف الادخار",goalsCount:"{n} أهداف",goalsEmpty:"لا توجد أهداف بعد. حدد هدفًا (رحلة، سيارة، صندوق طوارئ) وتابع تقدمك.",newGoal:"هدف جديد",editGoal:"تعديل الهدف",goalName:"اسم الهدف",goalNamePh:"مثلًا: إجازة، سيارة، صندوق طوارئ",goalTarget:"المبلغ المستهدف",goalSaved:"المدخر حتى الآن",goalDeadline:"حتى متى (اختياري)",goalIcon:"رمز",deposit:"إيداع",withdraw:"سحب",depositedAmt:"تم إيداع {a}",withdrewAmt:"تم سحب {a}",goalReached:"🎉 أحسنت! وصلت إلى هدف \"{n}\"",goalPerMonth:"{a} شهريًا للوصول في الموعد",goalLeft:"المتبقي {a}",goalDone:"تحقق!",goalDeadlinePassed:"انقضى الموعد",totalSaved:"إجمالي المدخرات",goalsHint:"الأهداف للمتابعة فقط، فالتطبيق لا ينقل أي أموال. عندما تدخر فعلًا سجّل إيداعًا هنا.",hCatBud:"حد شهري لكل فئة مع شريط تقدم وتنبيه عند 80% وعند التجاوز.",hIns:"في الرئيسية: مقارنة بالشهر الماضي وتوقع لنهاية الشهر وأكبر فئة.",hGoals:"المزيد ← أهداف الادخار: حدد هدفًا وسجّل الإيداعات واعرف كم تدخر شهريًا.",
 detailsOptional:'تفاصيل (اختياري)',padDone:'انتهيت من المبلغ',
 undo:'تراجع',prevMonth:'الشهر السابق',nextMonth:'الشهر التالي',ofBudget:'من ',overBy:'تجاوز بمقدار {a}',setBudgetCta:'اضغط لتحديد ميزانية',firstExpense:'لا مصاريف بعد. أضف أول مصروف — يستغرق ثوانٍ.',upcomingMonth:'قادم هذا الشهر',recentMonth:'الأحدث هذا الشهر',seeAll:'كل المصاريف',noExpensesYetMonth:'لا مصاريف هذا الشهر بعد',fixedHint:'يُحتسب كل شهر من التاريخ المختار',saveAmt:'حفظ {a}',newCategory:'جديدة',savedAmt:'✓ حُفظ {a}',deletedItem:'حُذف: {d}',until:'حتى {d}',found:'وُجد {n}',noResults:'لا مصاريف مطابقة',today:'اليوم',yesterday:'أمس',expected:'متوقع',tapBar:'اضغط على شهر للتفاصيل',topExpenses:'أكبر المصاريف',selected:'المحدد',budgetOf:'{b} شهريًا',notSet:'غير محددة',neverBackedUp:'لا توجد نسخة بعد',budgetHint:'الميزانية الشهرية تُظهر كم تبقّى لك حتى نهاية الشهر.',paidOf:'دُفع {p} من {n}',fixedEnded:'انتهى في {d}',fixedRunning:'نشط منذ {d}، كل شهر',resumeFixed:'استئناف هذا المصروف',stopFixed:'إيقاف من الشهر القادم',fixedStopped:'✓ سيتوقف هذا المصروف الثابت في نهاية الشهر',newExpense:'مصروف جديد',tFixedMonthly:'ثابت',moreDetails:'المزيد: الوصف، الدفع، الإيصال',search:'بحث',more:'المزيد',thDay:'نهاري (فاتح)',hHome:'الحلقة تُظهر نسبة ما استُخدم من الميزانية الشهرية، وتحتها ما هو قادم وما سُجّل مؤخرًا.',hExp:'كل المصاريف حسب الشهر، مجمّعة حسب الأيام. الأسهم تغيّر الشهر، و🔍 يبحث في كل الفترات.',hRpt:'ملخص حسب الشهر أو الفترة، والميزانية، ورسم 12 شهرًا (اضغط على عمود لفتح الشهر)، والفئات.',hEdit:'اضغط على مصروف لتعديله. بعد الحذف يظهر «تراجع» لبضع ثوانٍ.',hFix:'يتكرر كل شهر (إيجار، اشتراك). يمكن إيقافه من الشهر القادم في نافذة التعديل.',
 langShort:'عر',langName:'العربية',appSub:'دفتر المصاريف',rights:'جميع الحقوق محفوظة',
@@ -866,12 +907,12 @@ shareMsg:'مرحبًا! وجدت تطبيقًا مريحًا لمتابعة ال
 };
 
 // ===================================================================
-// MoneyNest 2.3.0 — core (state · storage · dates · calculations)
+// MoneyNest 2.4.0 — core (state · storage · dates · calculations)
 // Lessons applied (AppNest requirements v31): LANG+T(key) (א),
 // IndexedDB for media + safe migration + persist() (ז, י״ב),
 // local dates only (no toISOString for calendar days), escaping of user text.
 // ===================================================================
-var APP_VERSION='2.3.0';
+var APP_VERSION='2.4.0';
 var APP_URL='https://moneynest-app.pages.dev/';
 var STORE_URL='https://appnest-store.pages.dev';
 var FEEDBACK_MAIL='appnest55@gmail.com';
@@ -1168,13 +1209,143 @@ function goalPerMonth(g){
   return round2((g.target-g.saved)/mLeft);
 }
 
+// ---------- 2.4: smart category · voice text · statement import ----------
+// keyword → category (all 5 languages). Matching is "word starts with keyword", so plurals/prefixes still match.
+var CAT_WORDS={
+  food:['סופר','שופרסל','רמי לוי','ויקטורי','יוחננוף','אושר עד','מגה','טיב טעם','אוכל','מסעד','קפה','פיצה','בורגר','מכולת','מאפי','ירקות','פירות','בשר','וולט','wolt','תן ביס','10bis','ארוחה','שווארמה','פלאפל','סושי','super','grocer','food','restaurant','cafe','coffee','pizza','burger','bakery','lunch','dinner','breakfast','еда','продукт','кафе','ресторан','кофе','пицц','супермаркет','comida','super','restaurante','café','cafetería','pizza','mercado','طعام','مطعم','قهوة','بقالة','سوبر','بيتزا','مخبز'],
+  transport:['דלק','פז','סונול','דור אלון','delek','ten','yellow','אוטובוס','רכבת','מונית','גט','gett','יאנגו','חניה','חנייה','פנגו','pango','סלופארק','כביש 6','רב קו','רב-קו','מוסך','טסט','רישוי','fuel','gas station','petrol','bus','train','taxi','uber','parking','toll','бензин','такси','автобус','поезд','парковк','gasolina','taxi','autobús','tren','parking','aparcamiento','وقود','بنزين','تاكسي','حافلة','قطار','موقف'],
+  shopping:['בגד','נעל','קניו','זארה','zara','h&m','קסטרו','fox','פוקס','איקאה','ikea','עלי אקספרס','aliexpress','amazon','אמזון','shein','שיין','ksp','באג','מתנה','צעצוע','clothes','shoes','shopping','gift','toy','mall','одежд','обувь','подарок','магазин','ropa','zapato','regalo','tienda','ملابس','حذاء','هدية','تسوق'],
+  health:['תרופ','רופא','מרקחת','סופר-פארם','סופר פארם','super-pharm','be ','קופת חולים','מכבי','כללית','מאוחדת','לאומית','שיניים','אופטיקה','משקפ','פיזיותרפ','pharm','doctor','dentist','medic','clinic','hospital','аптек','врач','лекарств','стоматолог','farmacia','médico','dentista','medicina','صيدلية','طبيب','دواء','أسنان'],
+  bills:['חשמל','מים','ארנונה','גז','אינטרנט','סלולר','טלפון','פלאפון','סלקום','פרטנר','הוט','yes','בזק','גולן','שכירות','שכר דירה','ועד בית','משכנתא','ביטוח','חברת החשמל','electric','water','rent','internet','phone','mobile','insurance','mortgage','utility','электр','вода','аренд','интернет','телефон','страхов','luz','agua','alquiler','internet','teléfono','seguro','كهرباء','ماء','إيجار','انترنت','هاتف','تأمين'],
+  entertainment:['סרט','קולנוע','סינמה','יס פלאנט','נטפליקס','netflix','spotify','ספוטיפיי','disney','דיסני','הופעה','כרטיס','בר ','פאב','משחק','steam','playstation','בילוי','טיול','מלון','cinema','movie','concert','ticket','game','bar ','pub','hotel','кино','концерт','билет','игр','отел','cine','concierto','entrada','juego','hotel','سينما','حفلة','تذكرة','لعبة','فندق'],
+  education:['ספר','קורס','חוג','שיעור','לימוד','אוניברסיט','מכללה','גן ','צהרון','מורה','book','course','class','lesson','school','tuition','university','книг','курс','урок','школ','libro','curso','clase','escuela','كتاب','دورة','درس','مدرسة']
+};
+function normTxt(s){return String(s||'').toLowerCase().replace(/[֑-ׇ]/g,'').replace(/["'״׳`]/g,'').trim();}
+function guessCat(desc){
+  var d=normTxt(desc);if(!d)return '';
+  // 1) what you chose before for the same description (most common wins)
+  var cnt={};S.expenses.forEach(function(e){if(normTxt(e.desc)===d)cnt[e.category]=(cnt[e.category]||0)+1;});
+  var best=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a];})[0];
+  if(best&&allCats().some(function(c){return c.id===best;}))return best;
+  // 2) custom category whose name appears in the text
+  var cc=(S.customCats||[]).find(function(c){return d.indexOf(normTxt(c.name))>=0;});if(cc)return cc.id;
+  // 3) built-in category name or keyword
+  var names=T('cats');for(var k in names){if(names[k]&&d.indexOf(normTxt(names[k]))>=0&&k!=='other')return k;}
+  var words=' '+d.replace(/[^\p{L}\p{N}&\- ]/gu,' ')+' ';
+  var bc='',bl=0; // the longest (most specific) keyword wins: "סופר-פארם" beats "סופר"
+  for(var c in CAT_WORDS)CAT_WORDS[c].forEach(function(w){w=normTxt(w);if(w.length>bl&&(words.indexOf(' '+w)>=0||(w.length>=4&&words.indexOf(w)>=0))){bl=w.length;bc=c;}});
+  return bc;
+}
+// "50 שקל סופר", "120.5 דלק", "מאתיים וחמישים שקל אוכל" → {amt, desc, cat}
+var NUM_WORDS={'אפס':0,'אחד':1,'אחת':1,'שתיים':2,'שניים':2,'שני':2,'שתי':2,'שלוש':3,'שלושה':3,'ארבע':4,'ארבעה':4,'חמש':5,'חמישה':5,'שש':6,'שישה':6,'שבע':7,'שבעה':7,'שמונה':8,'תשע':9,'תשעה':9,'עשר':10,'עשרה':10,
+  'עשרים':20,'שלושים':30,'ארבעים':40,'חמישים':50,'שישים':60,'שבעים':70,'שמונים':80,'תשעים':90,'מאה':100,'מאתיים':200,'מאות':100,'אלף':1000,'אלפיים':2000,'אלפים':1000};
+var CUR_WORDS=['שקל','שקלים','ש"ח','שח','₪','ils','nis','shekel','shekels','dollar','dollars','דולר','דולרים','euro','euros','יורו','руб','рубл','долл','евро','шекел','dólar','dólares','pesos','شيكل','دولار','يورو','ريال','جنيه'];
+function parseVoice(text){
+  var t=String(text||'').replace(/(\d),(\d{3})/g,'$1$2'),amt=0,m=t.match(/\d+(?:[.,]\d{1,2})?/);
+  if(m){amt=parseFloat(m[0].replace(',','.'));t=t.replace(m[0],' ');}
+  else{ // Hebrew number words
+    var toks=t.split(/\s+/),tot=0,cur=0,used=[];
+    toks.forEach(function(w,i){var x=w.replace(/^ו/,'');
+      if(NUM_WORDS[x]!=null||NUM_WORDS[w]!=null){var v=NUM_WORDS[w]!=null?NUM_WORDS[w]:NUM_WORDS[x];used.push(i);
+        if(v===1000||(x==='אלפים')){cur=(cur||1)*1000;tot+=cur;cur=0;}else if(x==='מאות'){cur=(cur||1)*100;}else cur+=v;}
+      else if(x==='וחצי'||w==='וחצי'||x==='חצי'){cur+=0.5;used.push(i);}});
+    amt=tot+cur;if(amt>0)t=toks.filter(function(w,i){return used.indexOf(i)<0;}).join(' ');
+  }
+  var low=t.toLowerCase();
+  CUR_WORDS.forEach(function(c){low=low.split(c).join(' ');});
+  var desc=low.replace(/\s+(על|ב|של|for|on|at|en|на|за|في|على)\s+/g,' ').replace(/^\s*(על|ב|for|on|en|на|за|على)\s+/,'').replace(/\s+/g,' ').trim();
+  // keep the original casing of the remaining words
+  var orig=t.split(/\s+/).filter(function(w){return w&&desc.indexOf(w.toLowerCase())>=0&&CUR_WORDS.indexOf(w.toLowerCase())<0;}).join(' ').trim();
+  desc=(orig||desc).replace(/^(על|ב|for|on)\s+/,'').slice(0,80);
+  return {amt:round2(amt),desc:desc,cat:guessCat(desc)};
+}
+// ----- statement import (card company / bank Excel or CSV) -----
+function parseAmountCell(v){
+  if(typeof v==='number')return v;
+  var s=String(v==null?'':v).replace(/[₪$€£\s‎‏]|ש"ח|ILS|NIS/g,'');
+  if(!s)return NaN;
+  var neg=/^-|-$|^\(.*\)$/.test(s);s=s.replace(/[()\-]/g,'');
+  if(/^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(s))s=s.replace(/\./g,'').replace(',','.'); // 1.234,50
+  else s=s.replace(/,/g,'');
+  if(!/^\d+(\.\d+)?$/.test(s))return NaN;
+  var n=parseFloat(s);return neg?-n:n;
+}
+function parseDateCell(v){
+  if(v instanceof Date&&!isNaN(v))return ymd(new Date(v.getFullYear(),v.getMonth(),v.getDate()+(v.getHours()>=12?1:0)));
+  if(typeof v==='number'&&v>20000&&v<80000){var d=new Date(Math.round((v-25569)*864e5));return ymd(new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));}
+  var s=String(v==null?'':v).trim(),m;
+  if((m=s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/)))return okDate(+m[1],+m[2],+m[3]);
+  if((m=s.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})/))){var y=+m[3];if(y<100)y+=2000;return okDate(y,+m[2],+m[1]);}
+  return '';
+}
+function okDate(y,mo,d){if(mo<1||mo>12||d<1||d>31||y<2000||y>2100)return '';return ymd(new Date(y,mo-1,d));}
+var IMP_HEAD={
+  date:['תאריך עסקה','תאריך רכישה','תאריך העסקה','תאריך','date','transaction date','дата','fecha','التاريخ','تاريخ'],
+  desc:['שם בית העסק','שם בית עסק','בית העסק','בית עסק','תיאור','פירוט','הפעולה','merchant','description','details','payee','name','описание','назначение','descripción','concepto','comercio','الوصف','التاجر','البيان'],
+  amount:['סכום חיוב','סכום לחיוב','סכום החיוב','חיוב בש"ח','סכום בש"ח','סכום עסקה','סכום העסקה','סכום','חובה','amount','charge','debit','сумма','importe','monto','cargo','المبلغ','مدين']
+};
+function headScore(cell,kind){
+  var c=normTxt(cell);if(!c||c.length>40)return 0;
+  var best=0;IMP_HEAD[kind].forEach(function(k,i){k=normTxt(k);if(c===k)best=Math.max(best,100-i);else if(c.indexOf(k)>=0)best=Math.max(best,60-i);});
+  if(kind==='amount'&&/מקור|original|מטבע/.test(c))best=Math.max(0,best-30); // prefer the charge in local currency
+  if(kind==='date'&&/חיוב|charge/.test(c))best=Math.max(0,best-30);           // prefer purchase date over billing date
+  return best;
+}
+function findHeader(row){
+  var map={},sc={};
+  ['date','desc','amount'].forEach(function(k){row.forEach(function(cell,i){var s=headScore(cell,k);if(s>(sc[k]||0)&&[map.date,map.desc,map.amount].indexOf(i)<0){sc[k]=s;map[k]=i;}});});
+  return (map.date!=null&&map.amount!=null)?map:null;
+}
+function guessColumns(rows){ // no header row: decide by content
+  var n=Math.max.apply(null,rows.map(function(r){return r.length;}).concat([0])),st=[];
+  for(var i=0;i<n;i++)st.push({d:0,a:0,t:0,len:0});
+  rows.slice(0,200).forEach(function(r){r.forEach(function(c,i){if(parseDateCell(c))st[i].d++;else if(!isNaN(parseAmountCell(c)))st[i].a++;else if(String(c||'').trim()){st[i].t++;st[i].len+=String(c).length;}});});
+  var pick=function(f){var b=-1,bi=-1;st.forEach(function(s,i){var v=f(s);if(v>b){b=v;bi=i;}});return b>0?bi:null;};
+  var map={date:pick(function(s){return s.d;})};
+  map.amount=pick(function(s){return st.indexOf(s)===map.date?0:s.a;});
+  map.desc=pick(function(s){var i=st.indexOf(s);return (i===map.date||i===map.amount)?0:s.t*10+s.len/50;});
+  return (map.date!=null&&map.amount!=null)?map:null;
+}
+// sheets: [[row,...],...] → [{date,desc,amount}]
+function extractTransactions(sheets){
+  var out=[];
+  sheets.forEach(function(rows){
+    var map=null,found=false;
+    rows.forEach(function(r){
+      if(!r||!r.length)return;
+      var h=findHeader(r);if(h){map=h;found=true;return;}
+      if(!map)return;
+      var d=parseDateCell(r[map.date]),a=parseAmountCell(r[map.amount]);
+      if(!d||isNaN(a)||a===0)return;
+      out.push({date:d,desc:String(map.desc!=null&&r[map.desc]!=null?r[map.desc]:'').replace(/\s+/g,' ').trim().slice(0,80),amount:round2(a)});
+    });
+    if(!found){var g=guessColumns(rows);if(g)rows.forEach(function(r){var d=parseDateCell(r[g.date]),a=parseAmountCell(r[g.amount]);
+      if(d&&!isNaN(a)&&a!==0)out.push({date:d,desc:String(g.desc!=null&&r[g.desc]!=null?r[g.desc]:'').trim().slice(0,80),amount:round2(a)});});}
+  });
+  return out;
+}
+function parseCSV(text){
+  var first=(text.split(/\r?\n/)[0]||''),delim=[',',';','\t'].sort(function(a,b){return first.split(b).length-first.split(a).length;})[0];
+  var rows=[],row=[],f='',q=false;
+  for(var i=0;i<text.length;i++){var ch=text[i];
+    if(q){if(ch==='"'){if(text[i+1]==='"'){f+='"';i++;}else q=false;}else f+=ch;}
+    else if(ch==='"')q=true;else if(ch===delim){row.push(f);f='';}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f='';}
+    else f+=ch;}
+  if(f||row.length){row.push(f);rows.push(row);}
+  return rows.map(function(r){return r.map(function(c){return c.trim();});});
+}
+function isDuplicate(t){
+  return S.expenses.some(function(e){return e.type==='regular'&&e.date===t.date&&Math.abs(e.amount-t.amount)<0.01;});
+}
+
 // ===================================================================
 // MoneyNest 2.2.0 — UI (tab bar · ring home · merged expenses · quick add · undo)
 // ===================================================================
 var curSc='sc-home';
 var TABS=['sc-home','sc-exp','sc-rpt','sc-more'];
 var NO_TABBAR={'sc-add':1};
-var SC_LBL={'sc-home':'home','sc-exp':'expenses','sc-rpt':'reports','sc-more':'more','sc-set':'settings','sc-bud':'budget','sc-goals':'goals','sc-rec':'receipts','sc-export':'export','sc-design':'design','sc-bk':'backupRestore','sc-help':'guide','sc-about':'about'};
+var SC_LBL={'sc-home':'home','sc-exp':'expenses','sc-rpt':'reports','sc-more':'more','sc-set':'settings','sc-bud':'budget','sc-goals':'goals','sc-import':'importStmt','sc-rec':'receipts','sc-export':'export','sc-design':'design','sc-bk':'backupRestore','sc-help':'guide','sc-about':'about'};
 var PREV={};
 var FILT={x:'month'};
 var CUST={r:{},x:{}};
@@ -1239,6 +1410,7 @@ function onGo(id){
   else if(id==='sc-more')renderMore();
   else if(id==='sc-bud')renderBud();
   else if(id==='sc-goals')renderGoals();
+  else if(id==='sc-import')renderImpScreen();
   else if(id==='sc-rec')renderRecs();
   else if(id==='sc-export'){renderDrb('x');updXPrev();}
   else if(id==='sc-design')renderDesign();
@@ -1652,7 +1824,7 @@ function renderMore(){
   var b=S.budget.monthly>0?T('budgetOf',{b:fmtC(S.budget.monthly)}):T('notSet');
   var last=S.settings.lastBackup?T('lastBackup')+' '+fmtD(S.settings.lastBackup):T('neverBackedUp');
   document.getElementById('moreBody').innerHTML=
-    '<div class="grp">'+it('sc-bud','🎯','budget',b)+it('sc-goals','🐷','goals',S.goals.length?T('goalsCount',{n:S.goals.length}):'')+it('sc-rec','📷','receipts',String(S.receipts.length))+it('sc-export','📤','export','PDF · CSV')+'</div>'
+    '<div class="grp">'+it('sc-bud','🎯','budget',b)+it('sc-goals','🐷','goals',S.goals.length?T('goalsCount',{n:S.goals.length}):'')+it('sc-rec','📷','receipts',String(S.receipts.length))+it('sc-import','📥','importStmt','Excel · CSV')+it('sc-export','📤','export','PDF · CSV')+'</div>'
    +'<div class="grp">'+it('sc-set','⚙️','settings','')+it('sc-design','🎨','design','')+it('sc-bk','💾','backupRestore',last)+'</div>'
    +'<div class="grp">'+it('sc-help','📖','guide','')+it('sc-about','ℹ️','about','')
    +'<div class="set-item" onclick="shareApp()"><div class="set-l"><div class="set-ic">📣</div><div class="set-nm">'+esc(T('shareApp'))+'</div></div><div class="chev"></div></div></div>'
@@ -2171,7 +2343,7 @@ function clearAll(){
 function renderHelp(){
   var sec=function(t,items){return '<div class="help-sec"><h3>'+esc(t)+'</h3><div class="grp">'+items.map(function(i){return '<div class="h-item"><div class="h-ic">'+i[0]+'</div><div class="h-tx">'+(i[1]?'<strong>'+esc(T(i[1]))+'</strong> — ':'')+esc(T(i[2]))+'</div></div>';}).join('')+'</div></div>';};
   document.getElementById('helpBody').innerHTML=
-    sec('📱 '+T('hMain'),[['🏠','home','hHome'],['📋','expenses','hExp'],['📊','reports','hRpt'],['🎯','budget','hBud'],['📂','catBudgets','hCatBud'],['💡','insights','hIns'],['🐷','goals','hGoals']])
+    sec('📱 '+T('hMain'),[['🏠','home','hHome'],['📋','expenses','hExp'],['📊','reports','hRpt'],['🎯','budget','hBud'],['📂','catBudgets','hCatBud'],['💡','insights','hIns'],['🐷','goals','hGoals'],['🎤','voice','hVoice'],['📥','importStmt','hImport']])
    +sec('➕ '+T('hTypes'),[['💸','tRegular','hReg'],['🔄','tFixed','hFix'],['💳','tInst','hInst'],['✏️','','hEdit']])
    +sec('🔐 '+T('security'),[['🔢','','hPin'],['🙈','','hHide']])
    +sec('💾 '+T('backupRestore'),[['📥','','hBk'],['📂','','hRs'],['⚠️','','hBkWhy']])
@@ -2269,6 +2441,122 @@ function init(){
   else after();
 }
 init();
+
+// ===================================================================
+// MoneyNest 2.4 — voice entry + statement import (Excel / CSV)
+// ===================================================================
+// ---------- voice ----------
+var SPEECH_LANG={he:'he-IL',en:'en-US',ru:'ru-RU',es:'es-ES',ar:'ar-IL'};
+function voiceSupported(){return !!(window.SpeechRecognition||window.webkitSpeechRecognition);}
+var _rec=null;
+function startVoice(){
+  if(!voiceSupported()){toast(T('voiceNoSupport'),3500);return;}
+  var R=window.SpeechRecognition||window.webkitSpeechRecognition,r=new R(),got='',done=false;
+  r.lang=SPEECH_LANG[L()]||'he-IL';r.interimResults=true;r.maxAlternatives=1;r.continuous=false;
+  var w=document.createElement('div');w.className='dlg voice-dlg';
+  w.innerHTML='<div class="mic-pulse">🎤</div><div class="dlg-ttl" style="text-align:center"></div><div class="voice-live" aria-live="polite"></div><p class="hint voice-ex"></p><button class="btn btn-s btn-bl"></button>';
+  w.querySelector('.dlg-ttl').textContent=T('listening');
+  w.querySelector('.voice-ex').textContent=T('voiceExample');
+  var live=w.querySelector('.voice-live'),btn=w.querySelector('button');btn.textContent=T('cancel');
+  var ov=makeOv(w,9500);
+  var finish=function(){if(done)return;done=true;try{r.abort();}catch(e){}closeOv(ov);_rec=null;};
+  btn.onclick=finish;
+  r.onresult=function(e){var s='';for(var i=0;i<e.results.length;i++)s+=e.results[i][0].transcript;got=s;live.textContent='"'+s+'"';};
+  r.onerror=function(e){finish();toast(e.error==='not-allowed'||e.error==='service-not-allowed'?T('micDenied'):(e.error==='no-speech'?T('voiceNothing'):T('voiceErr')),3500);};
+  r.onend=function(){if(done)return;finish();if(got.trim())applyVoice(got);else toast(T('voiceNothing'),3000);};
+  try{r.start();_rec=r;}catch(e){finish();toast(T('voiceErr'));}
+}
+function applyVoice(text){
+  var v=parseVoice(text);
+  if(v.amt>0){aS.amt=String(v.amt);st('aAmt',v.amt.toLocaleString('en-US',{maximumFractionDigits:2}));}
+  if(v.desc)document.getElementById('aDesc').value=v.desc;
+  if(v.cat)aS.cat=v.cat;
+  renderACats();updAddState();
+  if(v.amt>0)closePad();
+  toast(v.amt>0?(v.cat?T('voiceGot',{a:fmtC(v.amt),c:catById(v.cat).name}):T('voicePickCat',{a:fmtC(v.amt)})):T('voiceNoAmount'),3200);
+}
+// description typed → suggest category if none chosen yet
+document.addEventListener('change',function(e){
+  if(e.target&&e.target.id==='aDesc'&&!aS.cat){var c=guessCat(e.target.value);if(c){aS.cat=c;renderACats();}}
+});
+
+// ---------- import ----------
+var IMP={rows:[],name:''};
+var XLSX_URL='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+function loadXLSX(){
+  if(window.XLSX)return Promise.resolve(window.XLSX);
+  return new Promise(function(res,rej){var s=document.createElement('script');s.src=XLSX_URL;s.onload=function(){window.XLSX?res(window.XLSX):rej();};s.onerror=rej;document.head.appendChild(s);});
+}
+function readText(file){
+  return file.arrayBuffer().then(function(buf){
+    var t=new TextDecoder('utf-8').decode(buf);
+    if(t.indexOf('�')>=0){try{t=new TextDecoder('windows-1255').decode(buf);}catch(e){}}
+    return t.replace(/^﻿/,'');
+  });
+}
+function handleImportFile(ev){
+  var f=ev.target.files&&ev.target.files[0];ev.target.value='';if(!f)return;
+  IMP.name=f.name;
+  var box=document.getElementById('impBody');box.innerHTML='<div class="imp-wait">⏳ '+esc(T('reading'))+'</div>';
+  var isCSV=/\.(csv|txt)$/i.test(f.name)||/csv|text\/plain/.test(f.type);
+  var p=isCSV?readText(f).then(function(t){return [parseCSV(t)];})
+    :loadXLSX().then(function(X){return f.arrayBuffer().then(function(buf){
+        var wb=X.read(buf,{type:'array',cellDates:true});
+        return wb.SheetNames.map(function(n){return X.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:''});});
+      });},function(){throw new Error('nolib');});
+  p.then(function(sheets){
+    var tx=extractTransactions(sheets);
+    IMP.rows=tx.map(function(t,i){var dup=isDuplicate(t);
+      return {i:i,date:t.date,desc:t.desc,amount:t.amount,cat:guessCat(t.desc)||'other',dup:dup,refund:t.amount<0,on:!dup&&t.amount>0};});
+    renderImport();
+  }).catch(function(e){
+    box.innerHTML='';renderImport();
+    toast(e&&e.message==='nolib'?T('impNeedNet'):T('impFail'),4000);
+  });
+}
+function renderImport(){
+  var box=document.getElementById('impBody');
+  if(!IMP.rows.length){
+    box.innerHTML='<div class="card imp-how"><div class="imp-big">📥</div><p>'+esc(T('impIntro'))+'</p>'
+      +'<button class="btn btn-p btn-bl" onclick="document.getElementById(\'impInp\').click()">📂 '+esc(T('impChoose'))+'</button></div>'
+      +'<div class="sec-h"><h2>'+esc(T('impWhere'))+'</h2></div><div class="grp">'
+      +[['💳',L()==='he'?'ישראכרט':'Isracard','impIsra'],['💳',L()==='he'?'מקס':'Max','impMax'],['💳',L()==='he'?'כאל':'Cal','impCal'],['🏦','','impBank']].map(function(x){return '<div class="h-item"><div class="h-ic">'+x[0]+'</div><div class="h-tx">'+(x[1]?'<strong>'+esc(x[1])+'</strong> — ':'')+esc(T(x[2]))+'</div></div>';}).join('')
+      +'</div><p class="hint" style="margin:10px 2px;">🔒 '+esc(T('impPrivacy'))+'</p>';
+    if(IMP.name)box.innerHTML='<div class="warn-line">⚠️ '+esc(T('impNone',{f:IMP.name}))+'</div>'+box.innerHTML;
+    return;
+  }
+  var sel=IMP.rows.filter(function(r){return r.on;}),dups=IMP.rows.filter(function(r){return r.dup;}).length;
+  var cats=allCats();
+  var html='<div class="card imp-sum"><div><b>'+esc(T('impFound',{n:IMP.rows.length}))+'</b>'+(dups?'<div class="hint">'+esc(T('impDups',{n:dups}))+'</div>':'')+'</div>'
+    +'<button class="lnk" onclick="impAll()">'+esc(sel.length===IMP.rows.length?T('impNoneSel'):T('impAllSel'))+'</button></div>';
+  html+='<div class="grp imp-list">'+IMP.rows.map(function(r){
+    return '<div class="imp-row'+(r.on?' on':'')+'">'
+      +'<button class="imp-ck" onclick="impTog('+r.i+')" aria-pressed="'+r.on+'">'+(r.on?'✓':'')+'</button>'
+      +'<div class="imp-mid" onclick="impTog('+r.i+')"><div class="imp-desc">'+esc(r.desc||'—')+'</div><div class="imp-meta">'+esc(fmtD(r.date))
+      +(r.dup?' · <span class="tag-w">'+esc(T('impDup'))+'</span>':'')+(r.refund?' · <span class="tag-ok">'+esc(T('impRefund'))+'</span>':'')+'</div></div>'
+      +'<div class="imp-r"><div class="imp-amt" dir="ltr">'+fmtC(r.amount)+'</div>'
+      +'<select class="imp-cat" onchange="impCat('+r.i+',this.value)" aria-label="'+esc(T('category'))+'">'+cats.map(function(c){return '<option value="'+c.id+'"'+(c.id===r.cat?' selected':'')+'>'+esc(c.icon+' '+c.name)+'</option>';}).join('')+'</select></div></div>';
+  }).join('')+'</div>';
+  html+='<div class="imp-bar"><button class="btn btn-s" onclick="IMP={rows:[],name:\'\'};renderImport();">'+esc(T('cancel'))+'</button>'
+    +'<button class="btn btn-p" id="impGo" onclick="doImport()"'+(sel.length?'':' disabled')+'>'+esc(T('impGo',{n:sel.length,a:fmtC(sumOf(sel))}))+'</button></div>';
+  box.innerHTML=html;
+}
+function impTog(i){var r=IMP.rows[i];r.on=!r.on;renderImport();}
+function impAll(){var all=IMP.rows.every(function(r){return r.on;});IMP.rows.forEach(function(r){r.on=!all&&r.amount>0;});renderImport();}
+function impCat(i,v){IMP.rows[i].cat=v;
+  // same business elsewhere in the file → same category
+  var d=normTxt(IMP.rows[i].desc);if(d)IMP.rows.forEach(function(r){if(normTxt(r.desc)===d)r.cat=v;});renderImport();}
+function doImport(){
+  var sel=IMP.rows.filter(function(r){return r.on&&r.amount>0;});if(!sel.length)return;
+  var now=new Date().toISOString(),ids=[];
+  sel.forEach(function(r){var id=uid('e');ids.push(id);
+    S.expenses.push({id:id,amount:round2(r.amount),type:'regular',category:r.cat,desc:r.desc,date:r.date,notes:'',pay:'credit',instCount:1,createdAt:now,src:'import'});});
+  if(!save()){S.expenses=S.expenses.filter(function(e){return ids.indexOf(e.id)<0;});return;}
+  var n=sel.length,tot=sumOf(sel);IMP={rows:[],name:''};
+  goTab('sc-exp');
+  showUndo(T('impDone',{n:n,a:fmtC(tot)}),function(){S.expenses=S.expenses.filter(function(e){return ids.indexOf(e.id)<0;});save();rerender();});
+}
+function renderImpScreen(){renderImport();}
 
 </script>
 <script>
